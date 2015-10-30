@@ -278,15 +278,48 @@
             }
 		}
 
-		function save()
-		{
-			$id = $this->getId();
+        function exists($id)
+        {
+            $sql = "SELECT id FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."'";
 
+            if($this->db->query($sql)->fetch_row() > 0)
+            {
+                return true;
+            }
+        }
+
+        function entry($id)
+        {
+            $sql = "SELECT * FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."'";
+
+            if($this->db->query($sql)->fetch_row() > 0)
+            {
+                $query = $this->db->query($sql);
+                $result = $query->fetch_assoc();
+
+                $data['date'] = date("m/d/Y",$result['inTime']);
+                $data['inTime'] = date("h:i A",$result['inTime']);
+                $data['outTime'] = date("h:i A",$result['outTime']);
+                $data['lessTime'] = $result['lessTime'];
+                $data['code'] = $result['codeId'];
+
+                return $data;
+
+            }
+            else
+            {
+                return array();
+            }
+        }
+
+		function save($id = null)
+		{
             $inTime = strtotime($this->getDate()." ".$this->getInTime());
             $outTime = strtotime($this->getDate()." ".$this->getOutTime());
 
-            if($id == NULL)
+            if($id == null)
 			{
+                echo "Inserting";
 				//Insert new item
 				$sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId)
 					VALUES (
@@ -299,6 +332,8 @@
 			}
 			else
 			{
+
+                echo "Updating";
 				//Update item
 				$sql = "UPDATE timeEntries SET
 					userId='".$this->db->real_escape_string($this->getUserId())."',

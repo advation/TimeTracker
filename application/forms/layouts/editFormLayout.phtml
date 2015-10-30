@@ -13,24 +13,33 @@
         }
         echo $this->formstart();
     ?>
-    <div class="small-6 medium-4 columns">
+</div>
+<div class="row">
+    <div class="small-6 columns">
+            <a class="button secondary radius" href="<?php echo $this->link(array('timesheet')) ?>"><i class="fa fa-chevron-left"></i> Back</a>
+    </div>
+    <div class="small-6 columns text-right">
+        <a class="button radius alert" href="#"><i class="fa fa-trash"> Remove</i></a>
+    </div>
+    <div class="small-12 medium-4 columns">
         <?php echo $this->fields['date'] ?>
     </div>
-    <div class="small-6 medium-4 columns">
+    <div class="small-12 medium-4 columns">
         <?php echo $this->fields['inTime'] ?>
     </div>
-    <div class="small-6 medium-4 columns">
+    <div class="small-12 medium-4 columns">
         <?php echo $this->fields['outTime'] ?>
     </div>
-    <div class="small-6 medium-4 columns">
+    <div class="small-12 medium-4 columns">
         <?php echo $this->fields['lessTime'] ?>
     </div>
-    <div class="small-6 medium-4 columns">
+    <div class="small-12 medium-4 columns">
         <?php echo $this->fields['code'] ?>
     </div>
-    <div class="small-6 medium-4 columns">
+    <div class="small-12 medium-4 columns">
         <br>
         <?php echo $this->fields['submit'] ?>
+
     </div>
     <?php echo $this->formend(); ?>
 </div>

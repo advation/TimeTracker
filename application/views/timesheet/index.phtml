@@ -1,4 +1,4 @@
-<div class="section">
+<div class="section info">
     <div class="row">
         <?php
             if(count($this->message) > 0)
@@ -14,75 +14,72 @@
     </div>
 </div>
 <div class="section">
-<div class="row">
-    <div class="small-6 text-left columns">
-        <h2>October 2015</h2>
+    <div class="row">
+        <div class="small-12 medium-4 text-left columns">
+            <h2>October 2015</h2>
+        </div>
+        <div class="small-12 medium-8 text-right columns">
+            <ul class="button-group radius even-4 stack-for-small">
+                <li><a class="button secondary"><i class="fa fa-caret-left"></i> Prev.</a></li>
+                <li><a class="button secondary">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button"><i class="fa fa-print"></i> Print</a></li>
+                <li><a class="button success"><i class="fa fa-check"></i> Validate</a></li>
+            </ul>
+        </div>
     </div>
-    <div class="small-6 text-right columns">
-        <ul class="button-group radius">
-            <li><a class="button secondary"><i class="fa fa-caret-left"></i> Prev.</a></li>
-            <li><a class="button secondary">Next <i class="fa fa-caret-right"></i></a></li>
-        </ul>
-    </div>
-</div>
 
 <?php
-
     if(count($this->timesheet) > 0)
     {
         echo "
-
-                <div class=\"row\">
-                    <div class=\"small-2 columns\">
-                        <b>Date</b>
-                    </div>
-                    <div class=\"small-2 columns\">
-                        <b>Time In</b> <small>(Adjusted)</small>
-                    </div>
-                    <div class=\"small-2 columns\">
-                        <b>Time Out</b> <small>(Adjusted)</small>
-                    </div>
-                    <div class=\"small-2 columns\">
-                        <b>Less Time</b>
-                    </div>
-                    <div class=\"small-2 columns\">
-                        <b>Time Worked</b>
-                    </div>
-                    <div class=\"small-2 columns\">
-                        <b>Time Code</b>
-                    </div>
-                    <hr>
+            <div class=\"row\">
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Date</b>
                 </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time In</b> <small>(Adjusted)</small>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Out</b> <small>(Adjusted)</small>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Less Time</b>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Worked</b>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Code</b>
+                </div>
+                <hr>
+            </div>
         ";
-
-
 
         foreach($this->timesheet as $entry)
         {
             echo "
             <div class=\"row\">
-                <div class=\"small-2 columns\">
-                    <a href=\"\" class=\"button success radius expand\">".$entry['date']['dayShort']." ".$entry['date']['mdy']."</a>
+                <div class=\"small-4 medium-2 columns\">
+                    <a href=\"".$this->link(array('timesheet','edit',$entry['id']))."\" class=\"button secondary radius expand\">".$entry['date']['dayShort']." ".$entry['date']['mdy']."</a>
                 </div>
-                <div class=\"small-2 columns\">
+                <div class=\"small-4 medium-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawInTime']."\">".$entry['roundedInTime']."</span>
                 </div>
-                <div class=\"small-2 columns\">
+                <div class=\"small-4 medium-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawOutTime']."\">".$entry['roundedOutTime']."</span>
                 </div>
-                <div class=\"small-2 columns\">
+                <div class=\"small-4 medium-2 columns\">
                     ".$entry['lessTime']." <small>Min.</small>
                 </div>
-                <div class=\"small-2 columns\">
-                    <b>".$entry['timeWorkedDec']."</b> Hours
+                <div class=\"small-4 medium-2 columns\">
+                    <b>".$entry['timeWorkedDec']."</b> <small>Hours</small>
                 </div>
-                <div class=\"small-2 columns\">
+                <div class=\"small-4 medium-2 columns\">
                     ".$entry['code']."
                 </div>
                 <hr>
             </div>
             ";
-
         }
     }
     else

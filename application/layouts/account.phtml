@@ -13,12 +13,16 @@
         ?>
     </head>
     <body>
-        <div class="row">
-            <div class="small-12 column">
-                <div class="text-center"><h1><i class="fa fa-clock-o"></i> TimeTracker</h1></div>
+        <div class="header">
+            <div class="row">
+                <div class="small-12 column text-center">
+                    <h1><i class="fa fa-clock-o"></i> TimeTracker</h1>
+                </div>
             </div>
         </div>
-        <?php $this->content(); ?>
+        <div class="section">
+            <?php $this->content(); ?>
+        </div>
         <script>$(document).foundation();</script>
     </body>
 </html>

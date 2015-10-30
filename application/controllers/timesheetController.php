@@ -20,7 +20,7 @@ class timesheetController extends Staple_Controller
             {
                 $data = $insertTimeForm->exportFormData();
 
-                if($data['inTime'] < $data['outTime'])
+                if(strtotime($data['inTime']) < strtotime($data['outTime']))
                 {
                     //Set Varibales
                     $timesheet = new timesheetModel();
@@ -60,14 +60,69 @@ class timesheetController extends Staple_Controller
         }
     }
 
-    public function timesheet()
+    public function remove($id)
     {
 
     }
 
-    public function reports()
+    public function edit($id = null)
     {
+        if($id != null)
+        {
+            $timesheet = new timesheetModel();
+            if($timesheet->exists($id))
+            {
+                $form = new editTimeForm();
+                $form->setAction($this->_link(array('timesheet','edit',$id)));
+                $form->addData($timesheet->entry($id));
+                $form->id = $id;
 
+                if($form->wasSubmitted())
+                {
+                    $form->addData($_POST);
+                    if($form->validate())
+                    {
+                        $data = $form->exportFormData();
+                        //Set Varibales
+                        $userId = Staple_Auth::get();
+                        $user = new userModel($userId->getAuthId());
+                        $timesheet->setUserId($user->getId());
+                        $timesheet->setDate($data['date']);
+                        $timesheet->setInTime($data['inTime']);
+                        $timesheet->setOutTime($data['outTime']);
+                        $timesheet->setLessTime($data['lessTime']);
+                        $timesheet->setCodeId($data['code']);
+
+                        if($timesheet->save($id))
+                        {
+                            echo "Updated.";
+                        }
+                        else
+                        {
+                            echo "Not updated.";
+                        }
+                    }
+                    else
+                    {
+                        $this->view->form = $form;
+                    }
+                }
+                else
+                {
+                    $this->view->form = $form;
+                }
+            }
+            else
+            {
+                echo "Here";
+                //header("location: ".$this->_link(array('timesheet'))."");
+            }
+        }
+        else
+        {
+            echo "There";
+            //header("location: ".$this->_link(array('timesheet'))."");
+        }
     }
 }
 ?>
