@@ -1,5 +1,18 @@
 <div class="row">
-    <?php echo $this->formstart(); ?>
+    <?php
+        if(count($this->message) > 0)
+        {
+            echo "<div class=\"small-12 columns\">";
+            echo "<div data-alert class=\"alert-box alert\">";
+            foreach($this->message as $message)
+            {
+                echo $message;
+            }
+            echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+            echo "</div>";
+        }
+        echo $this->formstart();
+    ?>
     <div class="small-6 medium-2 columns">
         <?php echo $this->fields['date'] ?>
     </div>

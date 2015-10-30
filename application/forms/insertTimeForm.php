@@ -7,7 +7,7 @@ class insertTimeForm extends Staple_Form
         $this->setLayout('insertFormLayout');
 
         $this->setName('insertTimeForm')
-            ->setAction($this->link(array('index','timesheet')));
+            ->setAction($this->link(array('timesheet')));
 
         $date = new Staple_Form_FoundationDateElement('date','Date');
         $date->setRequired()
@@ -25,9 +25,10 @@ class insertTimeForm extends Staple_Form
         $lessTime->setRequired()
             ->addOptionsArray(array("0"=>"None","60"=>"1 Hour","30"=>"30 Minutes","15"=>"15 Minutes"));
 
+        $timeCodes = new codeModel();
         $code = new Staple_Form_FoundationSelectElement('code','Code');
         $code->setRequired()
-            ->addOptionsArray(array("normal"=>"Normal","vacation"=>"Vacation","sick"=>"Sick","holiday"=>"Holiday",));
+            ->addOptionsArray($timeCodes->allCodes());
 
         $submit = new Staple_Form_FoundationSubmitElement('submit','Submit');
         $submit->addClass('button radius');

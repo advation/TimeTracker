@@ -6,106 +6,123 @@
 
 		private $id;
 		private $userId;
+        private $date;
 		private $inTime;
 		private $outTime;
 		private $lessTime;
 		private $codeId;
 
-		/**
-		 * @return mixed
-		 */
-		public function getId()
-		{
-			return $this->id;
-		}
+        /**
+         * @return mixed
+         */
+        public function getId()
+        {
+            return $this->id;
+        }
 
-		/**
-		 * @param mixed $id
-		 */
-		public function setId($id)
-		{
-			$this->id = $id;
-		}
+        /**
+         * @param mixed $id
+         */
+        public function setId($id)
+        {
+            $this->id = $id;
+        }
 
-		/**
-		 * @return mixed
-		 */
-		public function getUserId()
-		{
-			return $this->userId;
-		}
+        /**
+         * @return mixed
+         */
+        public function getUserId()
+        {
+            return $this->userId;
+        }
 
-		/**
-		 * @param mixed $userId
-		 */
-		public function setUserId($userId)
-		{
-			$this->userId = $userId;
-		}
+        /**
+         * @param mixed $userId
+         */
+        public function setUserId($userId)
+        {
+            $this->userId = $userId;
+        }
 
-		/**
-		 * @return mixed
-		 */
-		public function getInTime()
-		{
-			return $this->inTime;
-		}
+        /**
+         * @return mixed
+         */
+        public function getDate()
+        {
+            return $this->date;
+        }
 
-		/**
-		 * @param mixed $inTime
-		 */
-		public function setInTime($inTime)
-		{
-			$this->inTime = $inTime;
-		}
+        /**
+         * @param mixed $date
+         */
+        public function setDate($date)
+        {
+            $this->date = $date;
+        }
 
-		/**
-		 * @return mixed
-		 */
-		public function getOutTime()
-		{
-			return $this->outTime;
-		}
+        /**
+         * @return mixed
+         */
+        public function getInTime()
+        {
+            return $this->inTime;
+        }
 
-		/**
-		 * @param mixed $outTime
-		 */
-		public function setOutTime($outTime)
-		{
-			$this->outTime = $outTime;
-		}
+        /**
+         * @param mixed $inTime
+         */
+        public function setInTime($inTime)
+        {
+            $this->inTime = $inTime;
+        }
 
-		/**
-		 * @return mixed
-		 */
-		public function getLessTime()
-		{
-			return $this->lessTime;
-		}
+        /**
+         * @return mixed
+         */
+        public function getOutTime()
+        {
+            return $this->outTime;
+        }
 
-		/**
-		 * @param mixed $lessTime
-		 */
-		public function setLessTime($lessTime)
-		{
-			$this->lessTime = $lessTime;
-		}
+        /**
+         * @param mixed $outTime
+         */
+        public function setOutTime($outTime)
+        {
+            $this->outTime = $outTime;
+        }
 
-		/**
-		 * @return mixed
-		 */
-		public function getCodeId()
-		{
-			return $this->codeId;
-		}
+        /**
+         * @return mixed
+         */
+        public function getLessTime()
+        {
+            return $this->lessTime;
+        }
 
-		/**
-		 * @param mixed $codeId
-		 */
-		public function setCodeId($codeId)
-		{
-			$this->codeId = $codeId;
-		}
+        /**
+         * @param mixed $lessTime
+         */
+        public function setLessTime($lessTime)
+        {
+            $this->lessTime = $lessTime;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getCodeId()
+        {
+            return $this->codeId;
+        }
+
+        /**
+         * @param mixed $codeId
+         */
+        public function setCodeId($codeId)
+        {
+            $this->codeId = $codeId;
+        }
 
 		function __construct()
 		{
@@ -169,6 +186,12 @@
 							//MonthYear
 							$data2['date']['my'] = $date->format("m/y");
 
+                            //MonthDay
+                            $data2['date']['md'] = $date->format("m/d");
+
+                            //DateMonthYear
+                            $data2['date']['mdy'] = $date->format("m/d/y");
+
 							//In Time
 							$data2['rawInTime'] = $date->format("g:i A");
 							$data2['roundedInTime'] = $this->nearestQuarterHour($date->format("g:i A"));
@@ -181,13 +204,38 @@
 							//Less Time
 							$data2['lessTime'] = $entry['lessTime'];
 
+                            switch($entry['lessTime'])
+                            {
+                                case 60:
+                                    $lessTime = 1;
+                                    break;
+                                case 30:
+                                    $lessTime = 0.5;
+                                    break;
+                                case 15:
+                                    $lessTime = 0.25;
+                                    break;
+                                default:
+                                    $lessTime = 0;
+                            }
+
 							//Total Worked Time
 							$dateTime1 = new DateTime($data2['roundedInTime']);
 							$dateTime2 = new DateTime($data2['roundedOutTime']);
 							$interval = $dateTime1->diff($dateTime2);
 
 							$data2['timeWorked'] = $interval->h.":".$interval->i;
-							$data2['timeWorkedDec'] = $this->time_to_decimal($interval->h.":".$interval->i);
+
+                            $timeWorked = $this->timeToDecimal($interval->h.":".$interval->i)-$lessTime;
+
+                            if($timeWorked > 0)
+                            {
+                                $data2['timeWorkedDec'] = $timeWorked;
+                            }
+                            else
+                            {
+                                $data2['timeWorkedDec'] = 0;
+                            }
 
 							$data2['code'] = $codeName;
 
@@ -204,46 +252,61 @@
             }
 		}
 
-		function nearestQuarterHour($time)
+		private function nearestQuarterHour($time)
 		{
 			$time = strtotime($time);
 			$round = 15*60;
 			$rounded = round($time/$round)*$round;
+
 			return date("g:i A", $rounded);
 		}
 
-		function time_to_decimal($time)
+		private function timeToDecimal($time)
 		{
 			$timeArr = explode(':', $time);
 			$hours = $timeArr[0]*1;
 			$minutes = $timeArr[1]/60;
 			$dec = $hours + $minutes;
-			return round($dec,2);
+
+            if($dec > 0)
+            {
+                return round($dec,2);
+            }
+            else
+            {
+                return 0;
+            }
 		}
 
 		function save()
 		{
 			$id = $this->getId();
-			
-			if($id == NULL)
+
+            $inTime = strtotime($this->getDate()." ".$this->getInTime());
+            $outTime = strtotime($this->getDate()." ".$this->getOutTime());
+
+            if($id == NULL)
 			{
 				//Insert new item
-				$sql = "INSERT INTO posts (title, content, expires, post) 
+				$sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId)
 					VALUES (
-						'".$this->db->real_escape_string($title)."',
-						'".$this->db->real_escape_string($content)."',
-						'".$this->db->real_escape_string($expire)."',
-						'".$this->db->real_escape_string($post)."'
+						'".$this->db->real_escape_string($this->getUserId())."',
+						'".$this->db->real_escape_string($inTime)."',
+						'".$this->db->real_escape_string($outTime)."',
+						'".$this->db->real_escape_string($this->getLessTime())."',
+						'".$this->db->real_escape_string($this->getCodeId())."'
 						)";
 			}
 			else
 			{
 				//Update item
-				$sql = "UPDATE posts SET
-					title='".$this->db->real_escape_string($title)."',
-					content='".$this->db->real_escape_string($content)."',
-					expires='".$this->db->real_escape_string($expire)."',
-					post='".$this->db->real_escape_string($post)."' WHERE id='".$this->db->real_escape_string($id)."'
+				$sql = "UPDATE timeEntries SET
+					userId='".$this->db->real_escape_string($this->getUserId())."',
+					inTime='".$this->db->real_escape_string($inTime)."',
+					outTime='".$this->db->real_escape_string($outTime)."',
+					lessTime='".$this->db->real_escape_string($this->getLessTime())."',
+                    codeId='".$this->db->real_escape_string($this->getCodeId())."'
+					WHERE id='".$this->db->real_escape_string($id)."'
 				";
 			}
 			

@@ -1,5 +1,13 @@
 <div class="section">
     <div class="row">
+        <?php
+            if(count($this->message) > 0)
+            {
+                echo "<div class=\"small-12 columns\"><div data-alert class=\"alert-box warning\">";
+                echo $this->message;
+                echo "<a href=\"#\" class=\"close\">&times;</a></div></div>";
+            }
+        ?>
         <div class="small-12 columns">
             <?php echo $this->insertTimeForm ?>
         </div>
@@ -54,7 +62,7 @@
             echo "
             <div class=\"row\">
                 <div class=\"small-2 columns\">
-                    <a href=\"\" class=\"button success radius expand\">".$entry['date']['dayShort']." ".$entry['date']['my']."</a>
+                    <a href=\"\" class=\"button success radius expand\">".$entry['date']['dayShort']." ".$entry['date']['mdy']."</a>
                 </div>
                 <div class=\"small-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawInTime']."\">".$entry['roundedInTime']."</span>
@@ -79,7 +87,13 @@
     }
     else
     {
-        echo "No time submitted.";
+        echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns text-center\">
+                    No time submitted.
+                </div>
+            </div>
+        ";
     }
 
 ?>

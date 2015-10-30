@@ -92,5 +92,20 @@
 				return true;
 			}
 		}
+
+		function allCodes()
+		{
+			$sql = "SELECT id, name FROM timeCodes WHERE 1";
+			if ($this->db->query($sql)->fetch_row() > 0)
+			{
+				$query = $this->db->query($sql);
+
+				while($result = $query->fetch_assoc())
+                {
+                    $data[$result['id']] = $result['name'];
+                }
+				return $data;
+			}
+		}
 	}
 ?>
