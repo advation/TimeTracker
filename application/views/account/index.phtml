@@ -1,0 +1,10 @@
+<div class="row">
+    <div class="small-12 medium-6 medium-centered columns">
+        <?php echo $this->form ?>
+    </div>
+</div>
+<div id="errorMessage" class="warning reveal-modal small text-center" data-reveal data-options="close_on_background_click:false" aria-labelledby="Error" aria-hidden="false" role="dialog">
+    <h2 id="modelTitle"><?php echo $this->message ?></h2>
+    <p>Your super-top-secert PIN didn't work.</p>
+    <a class="clearKeyPad button round" href="#">Try again</a>
+</div>

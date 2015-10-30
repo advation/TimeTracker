@@ -1,0 +1,86 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $this->insertTimeForm ?>
+        </div>
+    </div>
+</div>
+<div class="section">
+<div class="row">
+    <div class="small-6 text-left columns">
+        <h2>October 2015</h2>
+    </div>
+    <div class="small-6 text-right columns">
+        <ul class="button-group radius">
+            <li><a class="button secondary"><i class="fa fa-caret-left"></i> Prev.</a></li>
+            <li><a class="button secondary">Next <i class="fa fa-caret-right"></i></a></li>
+        </ul>
+    </div>
+</div>
+
+<?php
+
+    if(count($this->timesheet) > 0)
+    {
+        echo "
+
+                <div class=\"row\">
+                    <div class=\"small-2 columns\">
+                        <b>Date</b>
+                    </div>
+                    <div class=\"small-2 columns\">
+                        <b>Time In</b> <small>(Adjusted)</small>
+                    </div>
+                    <div class=\"small-2 columns\">
+                        <b>Time Out</b> <small>(Adjusted)</small>
+                    </div>
+                    <div class=\"small-2 columns\">
+                        <b>Less Time</b>
+                    </div>
+                    <div class=\"small-2 columns\">
+                        <b>Time Worked</b>
+                    </div>
+                    <div class=\"small-2 columns\">
+                        <b>Time Code</b>
+                    </div>
+                    <hr>
+                </div>
+        ";
+
+
+
+        foreach($this->timesheet as $entry)
+        {
+            echo "
+            <div class=\"row\">
+                <div class=\"small-2 columns\">
+                    <a href=\"\" class=\"button success radius expand\">".$entry['date']['dayShort']." ".$entry['date']['my']."</a>
+                </div>
+                <div class=\"small-2 columns\">
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawInTime']."\">".$entry['roundedInTime']."</span>
+                </div>
+                <div class=\"small-2 columns\">
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawOutTime']."\">".$entry['roundedOutTime']."</span>
+                </div>
+                <div class=\"small-2 columns\">
+                    ".$entry['lessTime']." <small>Min.</small>
+                </div>
+                <div class=\"small-2 columns\">
+                    <b>".$entry['timeWorkedDec']."</b> Hours
+                </div>
+                <div class=\"small-2 columns\">
+                    ".$entry['code']."
+                </div>
+                <hr>
+            </div>
+            ";
+
+        }
+    }
+    else
+    {
+        echo "No time submitted.";
+    }
+
+?>
+</div>

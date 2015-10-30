@@ -1,0 +1,40 @@
+<?php
+    if(count($this->messages) > 0)
+    {
+        echo "
+            <div class=\"section message\">
+                <div class=\"row\">
+                    <div class=\"small-12 columns\">";
+                        foreach($this->messages as $message)
+                        {
+                            echo "<p>".$message."</p>";
+                        }
+                        echo "
+                    </div>
+                </div>
+            </div>
+        ";
+    }
+?>
+<div class="section">
+    <div class="row">
+        <div class="small-12 medium-4 columns text-center">
+            <div class="radius">
+                <div class="circular">38</div>
+                <h5>Hours this week</h5>
+            </div>
+        </div>
+        <div class="small-12 medium-4 columns text-center">
+            <div class="radius">
+                <div class="circular">121</div>
+                <h5>Total Vacation Time</h5>
+            </div>
+        </div>
+        <div class="small-12 medium-4 columns text-center">
+            <div class="radius">
+                <div class="circular">205</div>
+                <h5>Total Sick Time</h5>
+            </div>
+        </div>
+    </div>
+</div>
