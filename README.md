@@ -1,2 +1,2 @@
-# timetracker
-A PHP time tracking solution using the PHP Framework Staple.
+# TimeTracker
+A PHP time tracking solution built with the PHP framework Staple.
