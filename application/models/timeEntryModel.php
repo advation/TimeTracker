@@ -6,10 +6,16 @@
 
 		private $id;
         private $date;
-		private $inTime;
-		private $outTime;
+        private $inTime;
+        private $inTimeRaw;
+        private $roundedInTime;
+        private $outTime;
+		private $outTimeRaw;
+        private $roundedOutTime;
 		private $lessTime;
 		private $codeId;
+        private $codeName;
+        private $timeWorked;
 
         /**
          * @return mixed
@@ -78,6 +84,38 @@
         /**
          * @return mixed
          */
+        public function getInTimeRaw()
+        {
+            return $this->inTimeRaw;
+        }
+
+        /**
+         * @param mixed $inTimeRaw
+         */
+        public function setInTimeRaw($inTimeRaw)
+        {
+            $this->inTimeRaw = $inTimeRaw;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getOutTimeRaw()
+        {
+            return $this->outTimeRaw;
+        }
+
+        /**
+         * @param mixed $outTimeRaw
+         */
+        public function setOutTimeRaw($outTimeRaw)
+        {
+            $this->outTimeRaw = $outTimeRaw;
+        }
+
+        /**
+         * @return mixed
+         */
         public function getLessTime()
         {
             return $this->lessTime;
@@ -107,6 +145,70 @@
             $this->codeId = $codeId;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getCodeName()
+        {
+            return $this->codeName;
+        }
+
+        /**
+         * @param mixed $codeName
+         */
+        public function setCodeName($codeName)
+        {
+            $this->codeName = $codeName;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getTimeWorked()
+        {
+            return $this->timeWorked;
+        }
+
+        /**
+         * @param mixed $timeWorked
+         */
+        public function setTimeWorked($timeWorked)
+        {
+            $this->timeWorked = $timeWorked;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getRoundedInTime()
+        {
+            return $this->roundedInTime;
+        }
+
+        /**
+         * @param mixed $roundedInTime
+         */
+        public function setRoundedInTime($roundedInTime)
+        {
+            $this->roundedInTime = $roundedInTime;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getRoundedOutTime()
+        {
+            return $this->roundedOutTime;
+        }
+
+        /**
+         * @param mixed $roundedOutTime
+         */
+        public function setRoundedOutTime($roundedOutTime)
+        {
+            $this->roundedOutTime = $roundedOutTime;
+        }
+
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -119,11 +221,65 @@
                     $query = $this->db->query($sql);
                     $result = $query->fetch_assoc();
 
+                    //Set ID and Date
+                    $this->setId($result['id']);
                     $this->setDate(date("m/d/Y",$result['inTime']));
-                    $this->setInTime(date("h:i A",$result['inTime']));
-                    $this->setOutTime(date("h:i A",$result['outTime']));
+
+                    //Set inTime
+                    $inTime = new DateTime();
+                    $inTime->setTimestamp($result['inTime']);
+                    $this->setInTime($inTime->format('h:i A'));
+                    $this->setInTimeRaw($result['inTime']);
+                    $this->setRoundedInTime($this->nearestQuarterHour($result['inTime']));
+
+                    //Out Time
+                    $outTime = new DateTime();
+                    $outTime->setTimestamp($result['outTime']);
+                    $this->setOutTime($outTime->format('h:i A'));
+                    $this->setOutTimeRaw($result['outTime']);
+                    $this->setRoundedOutTime($this->nearestQuarterHour($result['outTime']));
+
                     $this->setLessTime($result['lessTime']);
+
+                    //Calculate Time Worked
+                    switch($result['lessTime'])
+                    {
+                        case 60:
+                            $lessTime = 1;
+                            break;
+                        case 30:
+                            $lessTime = 0.5;
+                            break;
+                        case 15:
+                            $lessTime = 0.25;
+                            break;
+                        default:
+                            $lessTime = 0;
+                    }
+
+                    //Total Worked Time
+                    $dateTime1 = new DateTime($this->roundedInTime);
+                    $dateTime2 = new DateTime($this->roundedOutTime);
+                    $interval = $dateTime1->diff($dateTime2);
+
+                    $timeWorked = $this->timeToDecimal($interval->h.":".$interval->i)-$lessTime;
+
+                    if($timeWorked !== 0)
+                    {
+                        $this->setTimeWorked($timeWorked);
+                    }
+                    else
+                    {
+                        $this->setTimeWorked(0);
+                    }
+
+                    //Get Code Information
+                    $code = new codeModel();
                     $this->setCodeId($result['codeId']);
+                    $code->load($result['codeId']);
+                    $this->setCodeName($code->getName());
+
+                    return true;
                 }
             }
 		}
@@ -188,6 +344,32 @@
 				return true;
 			}
 		}
-	}
 
+        function nearestQuarterHour($time)
+        {
+            //$time = strtotime($time);
+            $round = 15*60;
+            $rounded = round($time/$round)*$round;
+
+            return date("g:i A", $rounded);
+        }
+
+        function timeToDecimal($time)
+        {
+            $timeArr = explode(':', $time);
+            $hours = $timeArr[0]*1;
+            $minutes = $timeArr[1]/60;
+            $dec = $hours + $minutes;
+
+            if($dec > 0)
+            {
+                return round($dec,2);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+	}
 ?>

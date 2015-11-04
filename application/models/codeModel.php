@@ -81,7 +81,8 @@
 		function load($id = NULL)
 		{
 			$sql = "SELECT * FROM timeCodes WHERE id = '" . $this->db->real_escape_string($id) . "'";
-			if ($this->db->query($sql)->fetch_row() > 0) {
+			if($this->db->query($sql)->fetch_row() > 0)
+			{
 				$query = $this->db->query($sql);
 				$result = $query->fetch_assoc();
 
@@ -96,7 +97,7 @@
 		function allCodes()
 		{
 			$sql = "SELECT id, name FROM timeCodes WHERE 1";
-			if ($this->db->query($sql)->fetch_row() > 0)
+			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
 
@@ -104,7 +105,22 @@
                 {
                     $data[$result['id']] = $result['name'];
                 }
+
 				return $data;
+			}
+		}
+
+		function getIdFor($term = null)
+		{
+			if($term !== null)
+			{
+				$sql = "SELECT id FROM timeCodes WHERE name like '%".$this->db->real_escape_string($term)."%'";
+				if($this->db->query($sql)->fetch_row() > 0)
+				{
+					$query = $this->db->query($sql);
+					$result = $query->fetch_assoc();
+					return $result;
+				}
 			}
 		}
 	}

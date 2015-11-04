@@ -2,12 +2,12 @@
 <div class="section">
     <div class="row">
         <div class="small-12 medium-4 text-left columns">
-            <h3><?php echo $this->month." ".$this->year?></h3>
+            <h3><?php echo $this->timesheet->currentMonthText." ".$this->timesheet->currentYear ?></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
             <ul class="button-group radius even-4 stack-for-small">
-                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->previousMonth, $this->year)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
-                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->nextMonth, $this->year)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
+                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
                 <li><a class="button"><i class="fa fa-print"></i> Print</a></li>
                 <?php
                     if($this->validateRange)
@@ -20,7 +20,7 @@
     </div>
 
 <?php
-    if(count($this->timesheet) > 0)
+    if(count($this->timesheet->entries) > 0)
     {
         echo "
             <div class=\"row\">
@@ -46,27 +46,27 @@
             </div>
         ";
 
-        foreach($this->timesheet as $entry)
+        foreach($this->timesheet->entries as $entry)
         {
             echo "
             <div class=\"row\">
                 <div class=\"small-4 medium-2 columns\">
-                    <a href=\"".$this->link(array('timesheet','edit',$entry['id']))."\" class=\"button secondary radius expand\">".$entry['date']['dayShort']." ".$entry['date']['mdy']."</a>
+                    <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\" class=\"button secondary radius expand\">".$entry->date."</a>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawInTime']."\">".$entry['roundedInTime']."</span>
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry['rawOutTime']."\">".$entry['roundedOutTime']."</span>
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->outTime."\">".$entry->roundedOutTime."</span>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    ".$entry['lessTime']." <small>Min.</small>
+                    ".$entry->lessTime." <small>Min.</small>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <b>".$entry['timeWorkedDec']."</b> <small>Hours</small>
+                    <b>".$entry->timeWorked."</b> <small>Hours</small>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    ".$entry['code']."
+                    ".$entry->codeName."
                 </div>
                 <hr>
             </div>

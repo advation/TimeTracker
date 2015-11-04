@@ -6,7 +6,7 @@ class timesheetController extends Staple_Controller
 
     }
 
-    public function index($month = null, $year = null)
+    public function index($year = null, $month = null)
     {
         //Typecast variables
         $month = (int) $month;
@@ -64,19 +64,24 @@ class timesheetController extends Staple_Controller
             $this->view->insertTimeForm = $form;
         }
 
+        //Set year and month variables if undefined.
+        if($year == null)
+        {
+            $date = new DateTime();
+            $year = $date->format('Y');
+        }
+
+        if($month == null)
+        {
+            $date = new DateTime();
+            $month = $date->format('m');
+        }
+
         //Load timesheet for user.
-        $timesheet = new timesheetModel($month,$year);
-        echo $timesheet->getStartDate()."<br>";
-        echo $timesheet->getEndDate();
+        $timesheet = new timesheetModel($year,$month);
 
-        //View
-        $this->view->year = $timesheet->getYear();
-        $this->view->nextYear = $timesheet->getNextYear();
-        $this->view->previousYear = $timesheet->getPreviousYear();
-
-        $this->view->month = $timesheet->getMonth();
-        $this->view->previousMonth = $timesheet->getPreviousMonth();
-        $this->view->nextMonth = $timesheet->getNextMonth();
+        //Pass timesheet object to view
+        $this->view->timesheet = $timesheet;
     }
 
     public function remove($id)
@@ -112,11 +117,14 @@ class timesheetController extends Staple_Controller
     {
         if($id != null)
         {
-            $entry = new timeEntryModel();
-            if($entry->load($id))
+            $entry = new timeEntryModel($id);
+            if($entry)
             {
                 $form = new editTimeForm();
                 $form->setAction($this->_link(array('timesheet','edit',$id)));
+                //$form->addData();
+
+                $this->view->form = $form;
 
             }
             else
