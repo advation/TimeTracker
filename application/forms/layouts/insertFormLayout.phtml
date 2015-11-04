@@ -1,36 +1,81 @@
-<div class="row">
-    <?php
-        if(count($this->message) > 0)
-        {
-            echo "<div class=\"small-12 columns\">";
-            echo "<div data-alert class=\"alert-box alert\">";
-            foreach($this->message as $message)
-            {
-                echo $message;
-            }
-            echo "<a href=\"#\" class=\"close\">&times;</a></div>";
-            echo "</div>";
-        }
-        echo $this->formstart();
-    ?>
-    <div class="small-6 medium-4 columns">
-        <?php echo $this->fields['date'] ?>
+<div class="info">
+    <div class="row" id="entryToggle">
+        <div class="small-12 columns text-center">
+            <p><br><a class="" href="#"><i id="entryToggleIcon" class="fa fa-chevron-circle-up"></i> <span id="entryToggleText">Hide</span></a></p>
+        </div>
     </div>
-    <div class="small-6 medium-4 columns">
-        <?php echo $this->fields['inTime'] ?>
+    <div id="entryForm">
+        <div class="row">
+            <div class="small-12 columns">
+                <div class="row">
+                    <?php
+                    if(count($this->message) > 0)
+                    {
+                        echo "<div class=\"small-12 columns\">";
+                        echo "<div data-alert class=\"alert-box alert\">";
+                        foreach($this->message as $message)
+                        {
+                            echo $message;
+                        }
+                        echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+                        echo "</div>";
+                    }
+                    echo $this->formstart();
+                    ?>
+                </div>
+                <div class="row">
+                    <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['date'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['inTime'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['outTime'] ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['lessTime'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['code'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns">
+                        <br>
+                        <?php echo $this->fields['submit'] ?>
+                    </div>
+                    <?php echo $this->formend(); ?>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="small-6 medium-4 columns">
-        <?php echo $this->fields['outTime'] ?>
-    </div>
-    <div class="small-6 medium-4 columns">
-        <?php echo $this->fields['lessTime'] ?>
-    </div>
-    <div class="small-6 medium-4 columns">
-        <?php echo $this->fields['code'] ?>
-    </div>
-    <div class="small-6 medium-4 columns">
-        <br>
-        <?php echo $this->fields['submit'] ?>
-    </div>
-    <?php echo $this->formend(); ?>
 </div>
+
+<script>
+    $(document).ready(function() {
+
+        $(function() {
+            $( "#date" ).datepicker({ minDate: "<?php echo date("m/d/Y", strtotime("-1 month + 23 days")) ?>", maxDate: "<?php echo date("m/d/Y", strtotime("+6 month")) ?>" });
+        });
+
+        $('#entryToggle').click(function()
+        {
+            if($('#entryForm').is(":visible"))
+            {
+                $('#entryToggleIcon').addClass('fa-chevron-circle-down');
+                $('#entryToggleIcon').removeClass('fa-chevron-circle-up');
+                $('#entryToggleText').html('Show');
+            }
+            else
+            {
+                $('#entryToggleIcon').addClass('fa-chevron-circle-up');
+                $('#entryToggleIcon').removeClass('fa-chevron-circle-down');
+                $('#entryToggleText').html('Hide')
+            }
+            $('#entryForm').slideToggle(400);
+        });
+
+
+    });
+</script>

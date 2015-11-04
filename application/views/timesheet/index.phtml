@@ -1,29 +1,20 @@
-<div class="section info">
-    <div class="row">
-        <?php
-            if(count($this->message) > 0)
-            {
-                echo "<div class=\"small-12 columns\"><div data-alert class=\"alert-box warning\">";
-                echo $this->message;
-                echo "<a href=\"#\" class=\"close\">&times;</a></div></div>";
-            }
-        ?>
-        <div class="small-12 columns">
-            <?php echo $this->insertTimeForm ?>
-        </div>
-    </div>
-</div>
+<?php echo $this->insertTimeForm ?>
 <div class="section">
     <div class="row">
         <div class="small-12 medium-4 text-left columns">
-            <h2>October 2015</h2>
+            <h3><?php echo $this->month." ".$this->year?></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
             <ul class="button-group radius even-4 stack-for-small">
-                <li><a class="button secondary"><i class="fa fa-caret-left"></i> Prev.</a></li>
-                <li><a class="button secondary">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->previousMonth, $this->year)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
+                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->nextMonth, $this->year)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
                 <li><a class="button"><i class="fa fa-print"></i> Print</a></li>
-                <li><a class="button success"><i class="fa fa-check"></i> Validate</a></li>
+                <?php
+                    if($this->validateRange)
+                    {
+                        echo "<li><a class=\"button success\"><i class=\"fa fa-check\"></i> Validate</a></li>";
+                    }
+                ?>
             </ul>
         </div>
     </div>

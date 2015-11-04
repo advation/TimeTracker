@@ -1,7 +1,27 @@
 <div class="section">
     <div class="row">
+        <div class="small-6 columns">
+            <a class="button secondary radius" href="<?php echo $this->link(array('timesheet')) ?>"><i class="fa fa-chevron-left"></i> Back</a>
+        </div>
+        <div class="small-6 columns text-right">
+            <a  class="button radius alert" href="#" data-reveal-id="confirm"><i class="fa fa-trash"> Remove</i></a>
+        </div>
         <div class="small-12 columns">
             <?php echo $this->form ?>
         </div>
     </div>
 </div>
+<div id="confirm" class="reveal-modal small text-center" data-reveal aria-labelledby="confirm" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Please confirm action</h2>
+    <p class="lead">Would you like to remove this entry?</p>
+    <ul class="button-group radius">
+        <li><a class="alert button" href="<?php echo $this->link(array('timesheet','remove',$this->id)) ?>"><i class="fa fa-trash"></i> Remove</a></li>
+        <li><a class="secondary button" id="closeConfirm" href="#"><i class="fa fa-close"></i> Cancel</a></li>
+    </ul>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+<script>
+    $('#closeConfirm').click(function() {
+        $('#confirm').foundation('reveal','close');
+    });
+</script>
