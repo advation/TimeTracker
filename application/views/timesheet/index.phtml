@@ -2,7 +2,7 @@
 <div class="section">
     <div class="row">
         <div class="small-12 medium-4 text-left columns">
-            <h3><?php echo $this->timesheet->currentMonthText." ".$this->timesheet->currentYear ?></h3>
+            <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
             <ul class="button-group radius even-4 stack-for-small">
@@ -18,7 +18,6 @@
             </ul>
         </div>
     </div>
-
 <?php
     if(count($this->timesheet->entries) > 0)
     {
@@ -85,4 +84,22 @@
     }
 
 ?>
+</div>
+<div class="section">
+    <div class="row">
+        <div class="small-4 text-center columns">
+            <h5><b>Total Hours Submitted:</b> <?php echo $this->timesheet->normalWorked ?></h5>
+        </div>
+        <div class="small-4 text-center columns">
+            <h5><b>Vacation Used:</b> <?php echo $this->timesheet->vacationUsed ?></h5>
+        </div>
+        <div class="small-4 text-center columns">
+            <h5><b>Sick Time Used:</b> <?php echo $this->timesheet->sickUsed ?></h5>
+        </div>
+    </div>
+</div>
+<div id="yearForm" class="reveal-modal small text-center" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Select a Year</h2>
+    <?php echo $this->changeYearForm ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>

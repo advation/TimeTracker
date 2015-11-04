@@ -82,6 +82,9 @@ class timesheetController extends Staple_Controller
 
         //Pass timesheet object to view
         $this->view->timesheet = $timesheet;
+
+        $changeYearForm = new changeYearForm();
+        $this->view->changeYearForm = $changeYearForm;
     }
 
     public function remove($id)

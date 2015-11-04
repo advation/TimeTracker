@@ -22,6 +22,10 @@
 
 		private $entries;
 
+		private $vacationUsed;
+		private $normalWorked;
+		private $sickUsed;
+
 		/**
 		 * @return string
 		 */
@@ -246,6 +250,54 @@
 			$this->startDateTimeString = $startDateTimeString;
 		}
 
+		/**
+		 * @return int
+		 */
+		public function getVacationUsed()
+		{
+			return $this->vacationUsed;
+		}
+
+		/**
+		 * @param int $vacationUsed
+		 */
+		public function setVacationUsed($vacationUsed)
+		{
+			$this->vacationUsed = $vacationUsed;
+		}
+
+		/**
+		 * @return int
+		 */
+		public function getNormalWorked()
+		{
+			return $this->normalWorked;
+		}
+
+		/**
+		 * @param int $normalWorked
+		 */
+		public function setNormalWorked($normalWorked)
+		{
+			$this->normalWorked = $normalWorked;
+		}
+
+		/**
+		 * @return int
+		 */
+		public function getSickUsed()
+		{
+			return $this->sickUsed;
+		}
+
+		/**
+		 * @param int $sickUsed
+		 */
+		public function setSickUsed($sickUsed)
+		{
+			$this->sickUsed = $sickUsed;
+		}
+
 		function __construct($year, $month)
 		{
 			$this->db = Staple_DB::get();
@@ -286,8 +338,19 @@
 			//Time Entries
 			$this->entries = $this->entries($this->startDate, $this->endDate);
 
-			//Totals
-			$vacationTotal = $this->vacationEntries($this->startDate, $this->endDate);
+			$timeCode = new codeModel();
+
+			//Vacation Total
+			$code = $timeCode->getIdFor('vacation');
+			$this->vacationUsed = $this->calculatedTotals($code['id'],$this->startDate, $this->endDate);
+
+			//Normal Total
+			$code = $timeCode->getIdFor('normal');
+			$this->normalWorked = $this->calculatedTotals($code['id'],$this->startDate, $this->endDate);
+
+			//Sick Total
+			$code = $timeCode->getIdFor('sick');
+			$this->sickUsed = $this->calculatedTotals($code['id'],$this->startDate,$this->endDate);
 		}
 
 		function entries($startDate,$endDate)
@@ -314,88 +377,23 @@
 			}
 		}
 
-		function vacationEntries($startDate,$endDate)
+		function calculatedTotals($code,$startDate,$endDate)
 		{
 			//Get user ID from Auth
 			$user = new userModel();
 			$userId = $user->getId();
 
-			//Get vacation timecode ID.
-			$code = new codeModel();
-			$codes = $code->getIdFor('vacation');
-			$timeCode = $codes['id'];
+			$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 00:00:00') AND userId = $userId AND codeId = $code;";
 
-			$sql = "SELECT * FROM timeEntries WHERE inTime BETWEEN $this->startDateTimeString AND $this->endDateTimeString AND userId = $userId AND codeId = $timeCode";
-
-			echo $sql;
-
-			if($this->db->query($sql)->fetch_row() > 0)
+			if($this->db->query($sql)->num_rows > 0)
 			{
 				$query = $this->db->query($sql);
 				$result = $query->fetch_assoc();
-
-				//Set inTime
-				$inTime = new DateTime();
-				$inTime->setTimestamp($result['inTime']);
-
-				//$this->setInTime($inTime->format('h:i A'));
-				$vacationInTime = $inTime->format('h:i A');
-
-				//$this->setInTimeRaw($result['inTime']);
-				$vacationInTimeRaw = $result['inTime'];
-
-				//$this->setRoundedInTime($this->nearestQuarterHour($result['inTime']));
-
-				/*
-				//Out Time
-				$outTime = new DateTime();
-				$outTime->setTimestamp($result['outTime']);
-				$this->setOutTime($outTime->format('h:i A'));
-				$this->setOutTimeRaw($result['outTime']);
-				$this->setRoundedOutTime($this->nearestQuarterHour($result['outTime']));
-
-				$this->setLessTime($result['lessTime']);
-
-				//Calculate Time Worked
-				switch($result['lessTime'])
-				{
-					case 60:
-						$lessTime = 1;
-						break;
-					case 30:
-						$lessTime = 0.5;
-						break;
-					case 15:
-						$lessTime = 0.25;
-						break;
-					default:
-						$lessTime = 0;
-				}
-
-				//Total Worked Time
-				$dateTime1 = new DateTime($this->roundedInTime);
-				$dateTime2 = new DateTime($this->roundedOutTime);
-				$interval = $dateTime1->diff($dateTime2);
-
-				$timeWorked = $this->timeToDecimal($interval->h.":".$interval->i)-$lessTime;
-
-				if($timeWorked !== 0)
-				{
-					$this->setTimeWorked($timeWorked);
-				}
-				else
-				{
-					$this->setTimeWorked(0);
-				}
-
-				//Get Code Information
-				$code = new codeModel();
-				$this->setCodeId($result['codeId']);
-				$code->load($result['codeId']);
-				$this->setCodeName($code->getName());
-
-				return true;
-				*/
+				return round($result['totalTime'],2);
+			}
+			else
+			{
+				return 0;
 			}
 		}
 	}
