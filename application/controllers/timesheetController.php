@@ -145,5 +145,27 @@ class timesheetController extends Staple_Controller
             //header("location: ".$this->_link(array('timesheet'))."");
         }
     }
+
+    public function changeyear()
+    {
+        $form = new changeYearForm();
+        if($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if($form->validate())
+            {
+                $data = $form->exportFormData();
+                header("location: ".$this->_link(array('timesheet',$data['year']))."");
+            }
+            else
+            {
+                header("location: ".$this->_link(array('timesheet'))."");
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link(array('timesheet'))."");
+        }
+    }
 }
 ?>

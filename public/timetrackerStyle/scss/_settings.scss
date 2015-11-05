@@ -196,23 +196,24 @@ $primary-color: #374350;
   background-color: #fffea9;
 }
 
-.switch-on {
-  position: absolute;
-  left: -55px;
-  top: 10px;
-  color: white;
-  font-weight: bold;
-  font-size: 9px;
+.totals {
+  font-size:1.5em;
+  border-bottom:0px #eaeaea dotted;
+  padding:5px;
 }
 
-.switch-off {
-  position: absolute;
-  left: -25px;
-  top: 10px;
-  color: white;
-  font-weight: bold;
-  font-size: 9px;
+.totalsPanel {
+  background-color:#fff;
+  padding:20px;
+  border-bottom:10px $primary-color solid;
+  width:100%;
+  position:fixed;
+  top:0px;
+  left:0px;
+  display:none;
+  color:$primary-color;
 }
+
 // We use these to control various global styles
 // $body-bg: $white;
 // $body-font-color: $jet;

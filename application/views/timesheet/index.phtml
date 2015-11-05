@@ -6,13 +6,14 @@
         </div>
         <div class="small-12 medium-8 text-right columns">
             <ul class="button-group radius even-4 stack-for-small">
-                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
-                <li><a class="button secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
-                <li><a class="button"><i class="fa fa-print"></i> Print</a></li>
+                <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
+                <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button small toggleTotals"><i class="fa fa-calculator"></i> Totals</a></li>
+                <li><a class="button small"><i class="fa fa-print"></i> Print</a></li>
                 <?php
                     if($this->validateRange)
                     {
-                        echo "<li><a class=\"button success\"><i class=\"fa fa-check\"></i> Validate</a></li>";
+                        echo "<li><a class=\"button small success\"><i class=\"fa fa-check\"></i> Validate</a></li>";
                     }
                 ?>
             </ul>
@@ -85,21 +86,49 @@
 
 ?>
 </div>
-<div class="section">
-    <div class="row">
-        <div class="small-4 text-center columns">
-            <h5><b>Total Hours Submitted:</b> <?php echo $this->timesheet->normalWorked ?></h5>
-        </div>
-        <div class="small-4 text-center columns">
-            <h5><b>Vacation Used:</b> <?php echo $this->timesheet->vacationUsed ?></h5>
-        </div>
-        <div class="small-4 text-center columns">
-            <h5><b>Sick Time Used:</b> <?php echo $this->timesheet->sickUsed ?></h5>
-        </div>
-    </div>
-</div>
+
 <div id="yearForm" class="reveal-modal small text-center" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Select a Year</h2>
     <?php echo $this->changeYearForm ?>
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
+
+<div id="totals" class="totalsPanel">
+    <div class="row">
+        <div class="small-10 columns">
+            <h3 id="modalTitle"><i class="fa fa-calculator"></i> Totals for this month</h3>
+        </div>
+        <div class="small-2 columns text-right">
+            <a class="button secondary small radius toggleTotals" href="#"><i class="fa fa-chevron-up"></i></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-6 medium-4 large-3 columns totals">
+            <b>Total hours: </b> <?php echo $this->timesheet->normalWorked ?>
+        </div>
+        <div class="small-6 medium-4 large-3 columns totals">
+            <b>Vacation used: </b> <?php echo $this->timesheet->vacationUsed ?>
+        </div>
+        <div class="small-6 medium-4 large-3 columns totals end">
+            <b>Sick used: </b> <?php echo $this->timesheet->sickUsed ?>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $(".toggleTotals").click(function() {
+
+            if($("#totals").is(":visible"))
+            {
+                $('#entryForm').slideDown();
+            }
+            else
+            {
+                $('#entryForm').slideUp();
+            }
+
+            $("#totals").slideToggle();
+        });
+    });
+</script>
