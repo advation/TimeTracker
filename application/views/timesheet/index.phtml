@@ -50,7 +50,7 @@
             echo "
             <div class=\"row\">
                 <div class=\"small-4 medium-2 columns\">
-                    <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\" class=\"button secondary radius expand\">".$entry->date."</a>
+                    <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\" class=\"\">".$entry->date."</a>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>
@@ -59,10 +59,10 @@
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->outTime."\">".$entry->roundedOutTime."</span>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    ".$entry->lessTime." <small>Min.</small>
+                    ".$entry->lessTime." Min.
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <b>".$entry->timeWorked."</b> <small>Hours</small>
+                    <b>".$entry->timeWorked."</b> Hours
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     ".$entry->codeName."
