@@ -20,6 +20,11 @@
 		private $previousMonthText;
 		private $previousYear;
 
+		private $validated;
+		private $validatedDate;
+		private $approved;
+		private $approvalDate;
+
 		private $entries;
 
 		private $vacationUsed;
@@ -353,6 +358,16 @@
 			$this->sickUsed = $this->calculatedTotals($code['id'],$this->startDate,$this->endDate);
 		}
 
+		function validated($startDate,$endDate)
+		{
+			//Get user ID from Auth
+			$user = new userModel();
+			$userId = $user->getId();
+
+
+
+		}
+
 		function entries($startDate,$endDate)
 		{
 			//Get user ID from Auth
@@ -394,6 +409,37 @@
 			else
 			{
 				return 0;
+			}
+		}
+
+		function genSetNewBatch()
+		{
+			$this->db = Staple_DB::get();
+
+			$id = $this->getId();
+
+			$key = sha1(time().$this->getUsername());
+
+			//Check if key exists
+			$sql = "SELECT id FROM accounts WHERE batchId = '".$this->db->real_escape_string($key)."'";
+			if($this->db->query($sql)->fetch_row() > 0)
+			{
+				//Key already in use
+				return false;
+			}
+			else
+			{
+				//Set new key in user account
+				$sql = "UPDATE accounts SET batchId='".$this->db->real_escape_string($key)."' WHERE id=$id";
+
+				if($this->db->query($sql))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 	}

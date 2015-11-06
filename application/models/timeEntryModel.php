@@ -16,6 +16,7 @@
 		private $codeId;
         private $codeName;
         private $timeWorked;
+        private $batchId;
 
         /**
          * @return mixed
@@ -209,6 +210,22 @@
             $this->roundedOutTime = $roundedOutTime;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getBatchId()
+        {
+            return $this->batchId;
+        }
+
+        /**
+         * @param mixed $batchId
+         */
+        public function setBatchId($batchId)
+        {
+            $this->batchId = $batchId;
+        }
+
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -223,6 +240,7 @@
 
                     //Set ID and Date
                     $this->setId($result['id']);
+                    $this->setBatchId($result['batchId']);
                     $this->setDate(date("m/d/Y",$result['inTime']));
 
                     //Set inTime
@@ -308,6 +326,7 @@
             $auth = Staple_Auth::get();
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
+            $batchId = $user->getBatchId();
 
             $inTime = strtotime($this->getDate()." ".$this->getInTime());
             $outTime = strtotime($this->getDate()." ".$this->getOutTime());
@@ -315,13 +334,14 @@
             if($this->getId() == NULL)
 			{
 				//Insert new item
-				$sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId)
+				$sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId, batchId)
 					VALUES (
 						'".$this->db->real_escape_string($userId)."',
 						'".$this->db->real_escape_string($inTime)."',
 						'".$this->db->real_escape_string($outTime)."',
 						'".$this->db->real_escape_string($this->getLessTime())."',
-						'".$this->db->real_escape_string($this->getCodeId())."'
+						'".$this->db->real_escape_string($this->getCodeId())."',
+						'".$this->db->real_escape_string($batchId)."'
 						)";
 			}
 			else
@@ -332,8 +352,9 @@
 					inTime='".$this->db->real_escape_string($inTime)."',
 					outTime='".$this->db->real_escape_string($outTime)."',
 					lessTime='".$this->db->real_escape_string($this->getLessTime())."',
-                    codeId='".$this->db->real_escape_string($this->getCodeId())."'
-					WHERE id='".$this->db->real_escape_string($this->getId())."'
+                    codeId='".$this->db->real_escape_string($this->getCodeId())."',
+                    batchId='".$this->db->real_escape_string($this->getBatchId())."',
+					WHERE id='".$this->db->real_escape_string($batchId)."'
 				";
 			}
 			

@@ -5,17 +5,12 @@
             <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
-            <ul class="button-group radius even-4 stack-for-small">
+            <ul class="button-group radius even-5 stack-for-small">
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
-                <li><a class="button small toggleTotals"><i class="fa fa-calculator"></i> Totals</a></li>
-                <li><a class="button small"><i class="fa fa-print"></i> Print</a></li>
-                <?php
-                    if($this->validateRange)
-                    {
-                        echo "<li><a class=\"button small success\"><i class=\"fa fa-check\"></i> Validate</a></li>";
-                    }
-                ?>
+                <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
+                <li><a class="button small" href="#"><i class="fa fa-print"></i> Print</a></li>
+                <li><a class="button small success" href="<?php echo $this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))?>"><i class="fa fa-check"></i> Validate</a></li>
             </ul>
         </div>
     </div>

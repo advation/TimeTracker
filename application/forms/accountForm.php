@@ -12,7 +12,7 @@ class accountForm extends Staple_Form
 		$pin = new Staple_Form_FoundationPasswordElement('pin','User PIN');
 		$pin->setRequired()
 			->addAttrib("readonly","true")
-			->addValidator(new Staple_Form_Validate_Length(4,4))
+			->addValidator(new Staple_Form_Validate_Length(1,4))
 			->addValidator(new Staple_Form_Validate_Numeric());
 
 		$submit = new Staple_Form_FoundationSubmitElement('submit','Submit');

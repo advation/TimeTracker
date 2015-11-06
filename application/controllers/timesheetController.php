@@ -167,5 +167,20 @@ class timesheetController extends Staple_Controller
             header("location: ".$this->_link(array('timesheet'))."");
         }
     }
+
+    public function validate($year, $month)
+    {
+        $timesheet = new timesheetModel($year,$month);
+
+        echo $timesheet->getStartDateTimeString();
+
+        //Get Current Batch ID
+        $auth = Staple_Auth::get();
+        $user = new userModel($auth->getAuthId());
+        $batchId = $user->getBatchId();
+        $this->view->timesheet = $timesheet;
+
+
+    }
 }
 ?>

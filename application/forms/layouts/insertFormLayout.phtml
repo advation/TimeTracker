@@ -53,10 +53,11 @@
 </div>
 
 <script>
+    <?php $timesheet = new timesheetModel(date('Y'),date('m')) ?>
     $(document).ready(function() {
 
         $(function() {
-            $( "#date" ).datepicker({ minDate: "<?php echo date("m/d/Y", strtotime("-2 month + 23 days")) ?>", maxDate: "<?php echo date("m/d/Y", strtotime("+6 month")) ?>" });
+            $( "#date" ).datepicker({ minDate: "<?php echo date('m',strtotime('last month'))."/26/".date('Y') ?>", maxDate: "<?php echo date('m',strtotime('m'))."/25/".date('Y') ?>" });
         });
 
         $('#entryToggle').click(function()
