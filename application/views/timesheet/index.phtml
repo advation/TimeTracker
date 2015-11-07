@@ -10,11 +10,17 @@
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
                 <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
                 <li><a class="button small" href="#"><i class="fa fa-print"></i> Print</a></li>
-                <li><a class="button small success" href="<?php echo $this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))?>"><i class="fa fa-check"></i> Validate</a></li>
+                <?php
+                    if($this->needsValidation)
+                    {
+                        echo "<li><a class=\"button small success\" href=\"".$this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))."\"><i class=\"fa fa-check\"></i> Validate</a></li>";
+                    }
+                ?>
             </ul>
         </div>
     </div>
 <?php
+
     if(count($this->timesheet->entries) > 0)
     {
         echo "
@@ -45,8 +51,16 @@
         {
             echo "
             <div class=\"row\">
-                <div class=\"small-4 medium-2 columns\">
-                    <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\" class=\"\">".$entry->date."</a>
+                <div class=\"small-4 medium-2 columns\">";
+                   if($this->timesheet->getBatch() == $entry->batchId)
+                   {
+                       echo "<i class=\"fa fa-square-o\"></i> <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\">".$entry->date."</a>";
+                   }
+                   else
+                   {
+                       echo "<i class=\"fa fa-check-square-o green\"></i> ".$entry->date." ";
+                   }
+            echo "
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>

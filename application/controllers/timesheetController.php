@@ -86,6 +86,25 @@ class timesheetController extends Staple_Controller
         //Pass timesheet object to view
         $this->view->timesheet = $timesheet;
 
+        //Check for unvalidated entries
+        $i = 0;
+        foreach($timesheet->getEntries() as $entry)
+        {
+            if($entry->batchId == $timesheet->getBatch())
+            {
+                $i++;
+            }
+        }
+
+        if($i > 0)
+        {
+            $this->view->needsValidation = true;
+        }
+        else
+        {
+            $this->view->needsValidation = false;
+        }
+
         $changeYearForm = new changeYearForm();
         $this->view->changeYearForm = $changeYearForm;
     }
@@ -172,14 +191,44 @@ class timesheetController extends Staple_Controller
     {
         $timesheet = new timesheetModel($year,$month);
 
-        echo $timesheet->getStartDateTimeString();
-
         //Get Current Batch ID
         $auth = Staple_Auth::get();
         $user = new userModel($auth->getAuthId());
         $batchId = $user->getBatchId();
-        $this->view->timesheet = $timesheet;
 
+        //Check for unvalidated entries
+        $i = 0;
+        foreach($timesheet->getEntries() as $entry)
+        {
+            if($entry->batchId == $timesheet->getBatch())
+            {
+                $i++;
+            }
+        }
+
+        if($i > 0)
+        {
+            $this->view->timesheet = $timesheet;
+
+            $form = new validateTimeSheetForm();
+            $form->setAction($this->_link(array('timesheet','validate',$timesheet->getCurrentYear(),$timesheet->getCurrentMonth())));
+
+            if($form->wasSubmitted())
+            {
+                $timesheet->validate($batchId);
+                $this->view->needsValidation = true;
+            }
+            else
+            {
+                $this->view->form = $form;
+                $this->view->needsValidation = false;
+            }
+        }
+        else
+        {
+            $this->view->needsValidation = false;
+            $this->view->timesheet = array();
+        }
 
     }
 }

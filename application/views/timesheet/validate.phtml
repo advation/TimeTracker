@@ -3,6 +3,7 @@
         <div class="small-12 text-center">
             <h1>Validate Time Sheet</h1>
             <p>Review the following entries and if accurate submit for approval.</p>
+            <p>Once a time sheet has been validated entries <b>cannot</b> be modified.</p>
         </div>
     </div>
 </div>
@@ -65,13 +66,26 @@ if(count($this->timesheet) > 0)
 }
 else
 {
-    echo "
+    if($this->needsValidation)
+    {
+        echo "
             <div class=\"row\">
                 <div class=\"small-12 columns text-center\">
                     No time submitted.
                 </div>
             </div>
-        ";
+            ";
+    }
+    else
+    {
+        echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns text-center\">
+                    Timesheet already validated.
+                </div>
+            </div>
+            ";
+    }
 }
 
 ?>
@@ -85,10 +99,7 @@ if(count($this->timesheet) > 0)
         <div class=\"section\">
             <div class=\"row\">
                 <div class=\"small-12 medium-6 medium-centered columns\">
-                    <ul class=\"button-group even-2 radius\">
-                        <li><a class=\"button secondary\" href=\"\"><i class=\"fa fa-close\"> Cancel</i></a></li>
-                        <li><a class=\"button success\" href=\"\"><i class=\"fa fa-check\"> Submit</i></a></li>
-                    </ul>
+                   ".$this->form."
                 </div>
             </div>
         </div>
