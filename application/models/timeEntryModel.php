@@ -6,6 +6,7 @@
 
 		private $id;
         private $date;
+        private $fullDate;
         private $inTime;
         private $inTimeRaw;
         private $roundedInTime;
@@ -226,6 +227,22 @@
             $this->batchId = $batchId;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getFullDate()
+        {
+            return $this->fullDate;
+        }
+
+        /**
+         * @param mixed $fullDate
+         */
+        public function setFullDate($fullDate)
+        {
+            $this->fullDate = $fullDate;
+        }
+
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -242,6 +259,7 @@
                     $this->setId($result['id']);
                     $this->setBatchId($result['batchId']);
                     $this->setDate(date("m/d/Y",$result['inTime']));
+                    $this->setFullDate(date("l, F jS Y",$result['inTime']));
 
                     //Set inTime
                     $inTime = new DateTime();
@@ -333,19 +351,40 @@
 
             if($this->getId() == NULL)
 			{
-				//Insert new item
-				$sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId, batchId)
-					VALUES (
-						'".$this->db->real_escape_string($userId)."',
-						'".$this->db->real_escape_string($inTime)."',
-						'".$this->db->real_escape_string($outTime)."',
-						'".$this->db->real_escape_string($this->getLessTime())."',
-						'".$this->db->real_escape_string($this->getCodeId())."',
-						'".$this->db->real_escape_string($batchId)."'
-						)";
+                //TODO Check for overlap
+                if($this->_overlap($inTime))
+                {
+                    //Insert new item
+                    $sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId, batchId)
+                    VALUES (
+                        '" . $this->db->real_escape_string($userId) . "',
+                        '" . $this->db->real_escape_string($inTime) . "',
+                        '" . $this->db->real_escape_string($outTime) . "',
+                        '" . $this->db->real_escape_string($this->getLessTime()) . "',
+                        '" . $this->db->real_escape_string($this->getCodeId()) . "',
+                        '" . $this->db->real_escape_string($batchId) . "'
+                        )";
+
+                    $query = $this->db->query($sql);
+                    if($query === true)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    $ex = new Exception('Time block already in use. Submit a new entry or edit an already existing one.');
+                    return $ex;
+                }
 			}
 			else
 			{
+                //TODO Check for overlap
+
 				//Update item
 				$sql = "UPDATE timeEntries SET
 					userId='".$this->db->real_escape_string($userId)."',
@@ -356,13 +395,13 @@
                     batchId='".$this->db->real_escape_string($this->getBatchId())."',
 					WHERE id='".$this->db->real_escape_string($batchId)."'
 				";
-			}
-			
-			$query = $this->db->query($sql);
-			
-			if($query === true)
-			{
-				return true;
+
+                $query = $this->db->query($sql);
+
+                if($query === true)
+                {
+                    return true;
+                }
 			}
 		}
 
@@ -392,5 +431,24 @@
             }
         }
 
+        function _overlap($inTime)
+        {
+            $this->db = Staple_DB::get();
+
+            $auth = Staple_Auth::get();
+            $user = new userModel($auth->getAuthId());
+            $userId = $user->getId();
+
+            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND userId = '".$this->db->real_escape_string($userId)."'";
+
+            if($this->db->query($sql)->num_rows > 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 	}
 ?>

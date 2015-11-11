@@ -40,13 +40,14 @@ class timesheetController extends Staple_Controller
 
                     if($entry->save())
                     {
-                        $this->view->message = "Entry saved.";
                         $form = new insertTimeForm();
+                        $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
                         $this->view->insertTimeForm = $form;
                     }
                     else
                     {
-                        $this->view->message = "ERROR: Unable to save entry.";
+                        $message = $entry->save()->getMessage();
+                        $form->errorMessage = array($message);
                         $this->view->insertTimeForm = $form;
                     }
                 }
