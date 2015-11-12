@@ -27,34 +27,63 @@ class timesheetController extends Staple_Controller
                 //Export form data into an array
                 $data = $form->exportFormData();
 
-                //Compare in Times and out Times.
-                if(strtotime($data['inTime']) < strtotime($data['outTime']))
-                {
-                    //Create a new entry object
-                    $entry = new timeEntryModel();
-                    $entry->setDate($data['date']);
-                    $entry->setInTime($data['inTime']);
-                    $entry->setOutTime($data['outTime']);
-                    $entry->setLessTime($data['lessTime']);
-                    $entry->setCodeId($data['code']);
+                //Check if dates are within the current pay period.
+                $startMonth = date('m',strtotime('last month'));
 
-                    if($entry->save())
+                if($startMonth == 1)
+                {
+                    $startYear = date('Y',strtotime('last year'));
+                }
+                else
+                {
+                    $startYear = date('Y');
+                }
+
+                $endMonth = date('m');
+                $endYear = date('Y');
+
+                $startDate= strtotime($startMonth.'/26/'.$startYear);
+                $endDate = strtotime($endMonth.'/25/'.$endYear);
+
+                $userDate = strtotime($data['date']);
+                if($userDate >= $startDate && $userDate <= $endDate)
+                {
+                    //Date is within pay period
+                    //Compare in Times and out Times.
+                    if(strtotime($data['inTime']) < strtotime($data['outTime']))
                     {
-                        $form = new insertTimeForm();
-                        $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
-                        $this->view->insertTimeForm = $form;
+                        //Create a new entry object
+                        $entry = new timeEntryModel();
+                        $entry->setDate($data['date']);
+                        $entry->setInTime($data['inTime']);
+                        $entry->setOutTime($data['outTime']);
+                        $entry->setLessTime($data['lessTime']);
+                        $entry->setCodeId($data['code']);
+
+                        if($entry->save())
+                        {
+                            $form = new insertTimeForm();
+                            $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
+                            $this->view->insertTimeForm = $form;
+                        }
+                        else
+                        {
+                            $message = $entry->save()->getMessage();
+                            $form->errorMessage = array($message);
+                            $this->view->insertTimeForm = $form;
+                        }
                     }
                     else
                     {
-                        $message = $entry->save()->getMessage();
-                        $form->errorMessage = array($message);
+                        //Send form with error message back.
+                        $form->errorMessage = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
                         $this->view->insertTimeForm = $form;
                     }
                 }
                 else
                 {
                     //Send form with error message back.
-                    $form->message = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
+                    $form->errorMessage = array("<i class='fa fa-warning'></i> You may only submit time for the current date period.");
                     $this->view->insertTimeForm = $form;
                 }
             }
@@ -217,7 +246,7 @@ class timesheetController extends Staple_Controller
             if($form->wasSubmitted())
             {
                 $timesheet->validate($batchId);
-                $this->view->needsValidation = true;
+                header("location:".$this->_link(array('timesheet'))."");
             }
             else
             {

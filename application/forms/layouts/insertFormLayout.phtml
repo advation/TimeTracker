@@ -9,26 +9,26 @@
             <?php
             if(count($this->errorMessage) > 0)
             {
-                echo "<div class=\"small-12 columns\">";
-                echo "<div data-alert class=\"alert-box alert\">";
+
+                echo "<div data-alert class=\"alert-box warning\">";
                 foreach($this->errorMessage as $message)
                 {
                     echo $message;
                 }
                 echo "<a href=\"#\" class=\"close\">&times;</a></div>";
-                echo "</div>";
+
             }
 
             if(count($this->successMessage) > 0)
             {
-                echo "<div class=\"small-12 columns\">";
+
                 echo "<div data-alert class=\"alert-box success\">";
                 foreach($this->successMessage as $message)
                 {
                     echo $message;
                 }
                 echo "<a href=\"#\" class=\"close\">&times;</a></div>";
-                echo "</div>";
+
             }
             ?>
         </div>
