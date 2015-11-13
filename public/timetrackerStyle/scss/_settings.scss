@@ -126,6 +126,15 @@ $primary-color: #374350;
  $info-color: #cde0e8;
 
 //TimeTracker
+
+.green {
+  color:$success-color;
+}
+
+.orange {
+  color:$warning-color !important;
+}
+
 .keyButton {
   font-size:1.5em !important;
   margin:0px !important;
@@ -361,7 +370,9 @@ $primary-color: #374350;
 // We use these to style anchors
 // $anchor-text-decoration: none;
 // $anchor-text-decoration-hover: none;
+
 // $anchor-font-color: $primary-color;
+   $anchor-font-color: #79797e;
 // $anchor-font-color-hover: scale-color($anchor-font-color, $lightness: -14%);
 
 // We use these to style the <hr> element

@@ -1,0 +1,108 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 text-center">
+            <h1>Validate Time Sheet</h1>
+            <p>Review the following entries and if accurate submit for approval.</p>
+            <p>Once a time sheet has been validated entries <b>cannot</b> be modified.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+<?php
+
+if(count($this->timesheet) > 0)
+{
+    echo "
+            <div class=\"row\">
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Date</b>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time In</b> <small>(Adjusted)</small>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Out</b> <small>(Adjusted)</small>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Less Time</b>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Worked</b>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>Time Code</b>
+                </div>
+                <hr>
+            </div>
+        ";
+
+    foreach($this->timesheet->entries as $entry)
+    {
+        echo "
+            <div class=\"row\">
+                <div class=\"small-4 medium-2 columns\">
+                    ".$entry->date."
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->outTime."\">".$entry->roundedOutTime."</span>
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    ".$entry->lessTime." Min.
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    <b>".$entry->timeWorked."</b> Hours
+                </div>
+                <div class=\"small-4 medium-2 columns\">
+                    ".$entry->codeName."
+                </div>
+                <hr>
+            </div>
+            ";
+    }
+}
+else
+{
+    if($this->needsValidation)
+    {
+        echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns text-center\">
+                    No time submitted.
+                </div>
+            </div>
+            ";
+    }
+    else
+    {
+        echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns text-center\">
+                    Timesheet already validated.
+                </div>
+            </div>
+            ";
+    }
+}
+
+?>
+</div>
+
+<?php
+
+if(count($this->timesheet) > 0)
+{
+    echo "
+        <div class=\"section\">
+            <div class=\"row\">
+                <div class=\"small-12 medium-6 medium-centered columns\">
+                   ".$this->form."
+                </div>
+            </div>
+        </div>
+    ";
+}
+?>

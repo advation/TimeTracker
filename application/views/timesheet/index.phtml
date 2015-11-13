@@ -5,21 +5,22 @@
             <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
-            <ul class="button-group radius even-4 stack-for-small">
+            <ul class="button-group radius even-5 stack-for-small">
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
-                <li><a class="button small toggleTotals"><i class="fa fa-calculator"></i> Totals</a></li>
-                <li><a class="button small"><i class="fa fa-print"></i> Print</a></li>
+                <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
+                <li><a class="button small" href="#"><i class="fa fa-print"></i> Print</a></li>
                 <?php
-                    if($this->validateRange)
+                    if($this->needsValidation)
                     {
-                        echo "<li><a class=\"button small success\"><i class=\"fa fa-check\"></i> Validate</a></li>";
+                        echo "<li><a class=\"button small success\" href=\"".$this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))."\"><i class=\"fa fa-check\"></i> Validate</a></li>";
                     }
                 ?>
             </ul>
         </div>
     </div>
 <?php
+
     if(count($this->timesheet->entries) > 0)
     {
         echo "
@@ -37,21 +38,42 @@
                     <b>Less Time</b>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <b>Time Worked</b>
+                    <b>Total</b>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <b>Time Code</b>
+                    <b>Code</b>
                 </div>
                 <hr>
             </div>
         ";
-
+        $date = null;
         foreach($this->timesheet->entries as $entry)
         {
+            if($date != $entry->date)
+            {
+                echo "
+                    <div class=\"row\">
+                        <div class=\"small-12 columns\" style=\"padding:10px;\">
+                            <b>$entry->fullDate</b>
+                        </div>
+                    </div>
+                ";
+            }
+
             echo "
             <div class=\"row\">
-                <div class=\"small-4 medium-2 columns\">
-                    <a href=\"".$this->link(array('timesheet','edit',$entry->id))."\" class=\"\">".$entry->date."</a>
+                <div class=\"small-4 medium-2 columns\">";
+
+               if($this->timesheet->getBatch() == $entry->batchId)
+               {
+                    echo "<a href=\"".$this->link(array('timesheet','edit',$entry->id))."\"><i class=\"fa fa-edit\"></i> Edit</a>";
+               }
+               else
+               {
+                   echo "<i class=\"fa fa-check green\"></i> Validated ";
+               }
+
+            echo "
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>
@@ -63,14 +85,15 @@
                     ".$entry->lessTime." Min.
                 </div>
                 <div class=\"small-4 medium-2 columns\">
-                    <b>".$entry->timeWorked."</b> Hours
+                    ".$entry->timeWorked." Hours
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     ".$entry->codeName."
                 </div>
-                <hr>
             </div>
             ";
+
+            $date = $entry->date;
         }
     }
     else
@@ -87,7 +110,7 @@
 ?>
 </div>
 
-<div id="yearForm" class="reveal-modal small text-center" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
+<div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Select a Year</h2>
     <?php echo $this->changeYearForm ?>
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -104,13 +127,16 @@
     </div>
     <div class="row">
         <div class="small-6 medium-4 large-3 columns totals">
-            <b>Total hours: </b> <?php echo $this->timesheet->normalWorked ?>
+            <b>Normal: </b> <?php echo $this->timesheet->normalWorked ?>
         </div>
         <div class="small-6 medium-4 large-3 columns totals">
-            <b>Vacation used: </b> <?php echo $this->timesheet->vacationUsed ?>
+            <b>Vacation: </b> <?php echo $this->timesheet->vacationUsed ?>
         </div>
         <div class="small-6 medium-4 large-3 columns totals end">
-            <b>Sick used: </b> <?php echo $this->timesheet->sickUsed ?>
+            <b>Sick: </b> <?php echo $this->timesheet->sickUsed ?>
+        </div>
+        <div class="small-6 medium-4 large-3 columns totals end">
+            <b>Total: </b> <?php echo $this->timesheet->sickUsed ?>
         </div>
     </div>
 </div>

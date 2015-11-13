@@ -20,6 +20,8 @@
 		private $previousMonthText;
 		private $previousYear;
 
+		private $batch;
+
 		private $entries;
 
 		private $vacationUsed;
@@ -91,7 +93,23 @@
 		}
 
 		/**
-		 * @return DateTime
+		 * @return int
+		 */
+		public function getStartDateTimeString()
+		{
+			return $this->startDateTimeString;
+		}
+
+		/**
+		 * @param int $startDateTimeString
+		 */
+		public function setStartDateTimeString($startDateTimeString)
+		{
+			$this->startDateTimeString = $startDateTimeString;
+		}
+
+		/**
+		 * @return string
 		 */
 		public function getEndDate()
 		{
@@ -99,11 +117,27 @@
 		}
 
 		/**
-		 * @param DateTime $endDate
+		 * @param string $endDate
 		 */
 		public function setEndDate($endDate)
 		{
 			$this->endDate = $endDate;
+		}
+
+		/**
+		 * @return int
+		 */
+		public function getEndDateTimeString()
+		{
+			return $this->endDateTimeString;
+		}
+
+		/**
+		 * @param int $endDateTimeString
+		 */
+		public function setEndDateTimeString($endDateTimeString)
+		{
+			$this->endDateTimeString = $endDateTimeString;
 		}
 
 		/**
@@ -205,13 +239,29 @@
 		/**
 		 * @return mixed
 		 */
+		public function getBatch()
+		{
+			return $this->batch;
+		}
+
+		/**
+		 * @param mixed $batch
+		 */
+		public function setBatch($batch)
+		{
+			$this->batch = $batch;
+		}
+
+		/**
+		 * @return array
+		 */
 		public function getEntries()
 		{
 			return $this->entries;
 		}
 
 		/**
-		 * @param mixed $entries
+		 * @param array $entries
 		 */
 		public function setEntries($entries)
 		{
@@ -219,39 +269,7 @@
 		}
 
 		/**
-		 * @return int
-		 */
-		public function getEndDateTimeString()
-		{
-			return $this->endDateTimeString;
-		}
-
-		/**
-		 * @param int $endDateTimeString
-		 */
-		public function setEndDateTimeString($endDateTimeString)
-		{
-			$this->endDateTimeString = $endDateTimeString;
-		}
-
-		/**
-		 * @return int
-		 */
-		public function getStartDateTimeString()
-		{
-			return $this->startDateTimeString;
-		}
-
-		/**
-		 * @param int $startDateTimeString
-		 */
-		public function setStartDateTimeString($startDateTimeString)
-		{
-			$this->startDateTimeString = $startDateTimeString;
-		}
-
-		/**
-		 * @return int
+		 * @return float|int
 		 */
 		public function getVacationUsed()
 		{
@@ -259,7 +277,7 @@
 		}
 
 		/**
-		 * @param int $vacationUsed
+		 * @param float|int $vacationUsed
 		 */
 		public function setVacationUsed($vacationUsed)
 		{
@@ -267,7 +285,7 @@
 		}
 
 		/**
-		 * @return int
+		 * @return float|int
 		 */
 		public function getNormalWorked()
 		{
@@ -275,7 +293,7 @@
 		}
 
 		/**
-		 * @param int $normalWorked
+		 * @param float|int $normalWorked
 		 */
 		public function setNormalWorked($normalWorked)
 		{
@@ -283,7 +301,7 @@
 		}
 
 		/**
-		 * @return int
+		 * @return float|int
 		 */
 		public function getSickUsed()
 		{
@@ -291,7 +309,7 @@
 		}
 
 		/**
-		 * @param int $sickUsed
+		 * @param float|int $sickUsed
 		 */
 		public function setSickUsed($sickUsed)
 		{
@@ -301,6 +319,10 @@
 		function __construct($year, $month)
 		{
 			$this->db = Staple_DB::get();
+
+			//Get batchID
+			$user = new userModel();
+			$this->batch = $user->getBatchId();
 
 			//Current Dates
 			$currentDate = new DateTime();
@@ -353,6 +375,16 @@
 			$this->sickUsed = $this->calculatedTotals($code['id'],$this->startDate,$this->endDate);
 		}
 
+		function validate($batchId)
+		{
+			//Generate a new Batch ID for the user.
+			if($this->genSetNewBatch())
+			{
+				//TODO need to log how and when the timesheet validated.
+				return true;
+			}
+		}
+
 		function entries($startDate,$endDate)
 		{
 			//Get user ID from Auth
@@ -394,6 +426,38 @@
 			else
 			{
 				return 0;
+			}
+		}
+
+		function genSetNewBatch()
+		{
+			$this->db = Staple_DB::get();
+
+			$user = new userModel();
+			$userId = $user->getId();
+
+			$key = sha1(time().$user->getUsername().rand(999,9999999999));
+
+			//Check if key exists
+			$sql = "SELECT id FROM accounts WHERE batchId = '".$this->db->real_escape_string($key)."'";
+			if($this->db->query($sql)->fetch_row() > 0)
+			{
+				//Key already in use
+				return false;
+			}
+			else
+			{
+				//Set new key in user account
+				$sql = "UPDATE accounts SET batchId='".$this->db->real_escape_string($key)."' WHERE id=$userId";
+
+				if($this->db->query($sql))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
 	}

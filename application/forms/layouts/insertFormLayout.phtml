@@ -6,22 +6,38 @@
     </div>
     <div id="entryForm">
         <div class="row">
+            <?php
+            if(count($this->errorMessage) > 0)
+            {
+
+                echo "<div data-alert class=\"alert-box warning\">";
+                foreach($this->errorMessage as $message)
+                {
+                    echo $message;
+                }
+                echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+
+            }
+
+            if(count($this->successMessage) > 0)
+            {
+
+                echo "<div data-alert class=\"alert-box success\">";
+                foreach($this->successMessage as $message)
+                {
+                    echo $message;
+                }
+                echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+
+            }
+            ?>
+        </div>
+        <div class="row">
             <div class="small-12 columns">
                 <div class="row">
-                    <?php
-                    if(count($this->message) > 0)
-                    {
-                        echo "<div class=\"small-12 columns\">";
-                        echo "<div data-alert class=\"alert-box alert\">";
-                        foreach($this->message as $message)
-                        {
-                            echo $message;
-                        }
-                        echo "<a href=\"#\" class=\"close\">&times;</a></div>";
-                        echo "</div>";
-                    }
+                   <?php
                     echo $this->formstart();
-                    ?>
+                   ?>
                 </div>
                 <div class="row">
                     <div class="small-6 medium-4 columns">
@@ -53,10 +69,11 @@
 </div>
 
 <script>
+    <?php $timesheet = new timesheetModel(date('Y'),date('m')) ?>
     $(document).ready(function() {
 
         $(function() {
-            $( "#date" ).datepicker({ minDate: "<?php echo date("m/d/Y", strtotime("-2 month + 23 days")) ?>", maxDate: "<?php echo date("m/d/Y", strtotime("+6 month")) ?>" });
+            $( "#date" ).datepicker({numberOfMonths:2, minDate: "<?php echo date('m',strtotime('last month'))."/26/".date('Y') ?>", maxDate: "<?php echo date('m',strtotime('m'))."/25/".date('Y') ?>" });
         });
 
         $('#entryToggle').click(function()
