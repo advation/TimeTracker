@@ -377,8 +377,7 @@
                 }
                 else
                 {
-                    $ex = new Exception('Time block already in use. Submit a new entry or edit an already existing one.');
-                    return $ex;
+                    return false;
                 }
 			}
 			else

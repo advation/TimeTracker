@@ -11,18 +11,17 @@ class insertTimeForm extends Staple_Form
 
         $date = new Staple_Form_FoundationTextElement('date','Date');
         $date->setRequired()
-            ->addValidator(new Staple_Form_Validate_Length('1','10'))
             ->addValidator(new Staple_Form_Validate_Date())
             ->addAttrib('placeholder','mm/dd/yyyy');
 
         $inTime = new Staple_Form_FoundationTextElement('inTime','Time In');
         $inTime->setRequired()
-            ->addValidator(new Staple_Form_Validate_Length('1','8'))
+            ->addValidator(new Staple_Form_Validate_Regex('/^(0|[0-9]|1[012]):[0-5][0-9] ?((a|p)m|(A|P)M)$/','Invalid time format. Expected format: h:mm am/pm.'))
             ->addAttrib('placeholder','h:mm am/pm');
 
         $outTime = new Staple_Form_FoundationTextElement('outTime','Time Out');
         $outTime->setRequired()
-            ->addValidator(new Staple_Form_Validate_Length('1','8'))
+            ->addValidator(new Staple_Form_Validate_Regex('/^(0|[0-9]|1[012]):[0-5][0-9] ?((a|p)m|(A|P)M)$/','Invalid time format. Expected format: h:mm am/pm.'))
             ->addAttrib('placeholder','h:mm am/pm');;
 
         $lessTime = new Staple_Form_FoundationSelectElement('lessTime','Less Time');

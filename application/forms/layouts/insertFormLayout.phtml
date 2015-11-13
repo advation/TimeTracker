@@ -73,7 +73,7 @@
     $(document).ready(function() {
 
         $(function() {
-            $( "#date" ).datepicker({ minDate: "<?php echo date('m',strtotime('last month'))."/26/".date('Y') ?>", maxDate: "<?php echo date('m',strtotime('m'))."/25/".date('Y') ?>" });
+            $( "#date" ).datepicker({numberOfMonths:2, minDate: "<?php echo date('m',strtotime('last month'))."/26/".date('Y') ?>", maxDate: "<?php echo date('m',strtotime('m'))."/25/".date('Y') ?>" });
         });
 
         $('#entryToggle').click(function()

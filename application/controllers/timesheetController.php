@@ -46,13 +46,14 @@ class timesheetController extends Staple_Controller
                 $endDate = strtotime($endMonth.'/25/'.$endYear);
 
                 $userDate = strtotime($data['date']);
+
+                //Date is within pay period
                 if($userDate >= $startDate && $userDate <= $endDate)
                 {
-                    //Date is within pay period
                     //Compare in Times and out Times.
                     if(strtotime($data['inTime']) < strtotime($data['outTime']))
                     {
-                        //Create a new entry object
+                        //Create a new entry object and set properties
                         $entry = new timeEntryModel();
                         $entry->setDate($data['date']);
                         $entry->setInTime($data['inTime']);
@@ -60,40 +61,45 @@ class timesheetController extends Staple_Controller
                         $entry->setLessTime($data['lessTime']);
                         $entry->setCodeId($data['code']);
 
+                        //Save entry data to table.
                         if($entry->save())
                         {
+                            //Return a new time form with success message
                             $form = new insertTimeForm();
                             $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
                             $this->view->insertTimeForm = $form;
                         }
                         else
                         {
-                            $message = $entry->save()->getMessage();
+                            //Return the same form with a warning message
+                            $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. Please add a new entry or edit an already existing one.";
                             $form->errorMessage = array($message);
                             $this->view->insertTimeForm = $form;
                         }
                     }
                     else
                     {
-                        //Send form with error message back.
+                        //Return the same form with error message.
                         $form->errorMessage = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
                         $this->view->insertTimeForm = $form;
                     }
                 }
                 else
                 {
-                    //Send form with error message back.
+                    //Return the same form with error message.
                     $form->errorMessage = array("<i class='fa fa-warning'></i> You may only submit time for the current date period.");
                     $this->view->insertTimeForm = $form;
                 }
             }
             else
             {
+                //Return form with invalid data.
                 $this->view->insertTimeForm = $form;
             }
         }
         else
         {
+            //Return form
             $this->view->insertTimeForm = $form;
         }
 
@@ -173,20 +179,7 @@ class timesheetController extends Staple_Controller
         if($id != null)
         {
             $entry = new timeEntryModel($id);
-            if($entry)
-            {
-                $form = new editTimeForm();
-                $form->setAction($this->_link(array('timesheet','edit',$id)));
-                //$form->addData();
-
-                $this->view->form = $form;
-
-            }
-            else
-            {
-                echo "Entry loaded";
-                //header("location: ".$this->_link(array('timesheet'))."");
-            }
+            print_r($entry);
         }
         else
         {
