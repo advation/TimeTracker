@@ -365,24 +365,15 @@
                         )";
 
                     $query = $this->db->query($sql);
-                    if($query === true)
+                    if ($query === true)
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
                 }
 			}
 			else
 			{
-                //TODO Check for overlap
-                if($this->_overlap($inTime))
+                if($this->_overlap($inTime,$this->getId()))
                 {
                     //Update item
                     $sql = "UPDATE timeEntries SET
@@ -430,7 +421,7 @@
             }
         }
 
-        function _overlap($inTime)
+        function _overlap($inTime,$id = null)
         {
             $this->db = Staple_DB::get();
 
@@ -438,7 +429,7 @@
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
-            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND userId = '".$this->db->real_escape_string($userId)."'";
+            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
 
             if($this->db->query($sql)->num_rows > 0)
             {

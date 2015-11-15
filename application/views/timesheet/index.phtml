@@ -18,13 +18,13 @@
                 ?>
             </ul>
         </div>
-    </div>
+    </div><!-- end row -->
 <?php
 
     if(count($this->timesheet->entries) > 0)
     {
         echo "
-            <div class=\"row\">
+            <div class=\"row\" style=\"margin-bottom:10px;\">
                 <div class=\"small-4 medium-2 columns\">
                     <b>Date</b>
                 </div>
@@ -43,54 +43,54 @@
                 <div class=\"small-4 medium-2 columns\">
                     <b>Code</b>
                 </div>
-                <hr>
-            </div>
+            </div><!-- end row -->
         ";
-        $date = null;
+        $date = 0;
+
         foreach($this->timesheet->entries as $entry)
         {
             if($date != $entry->date)
             {
                 echo "
-                    <div class=\"row\">
-                        <div class=\"small-12 columns\" style=\"padding:10px;\">
-                            <b>$entry->fullDate</b>
+                    <div class=\"row marker\" style=\"border-bottom:1px #ccc solid; background-color:#eaeaea; padding-top:15px; padding-bottom:15px;\"> \n
+                        <div class=\"small-12 columns timeTitle\" >
+                            <b>".$entry->fullDate."</b><i class=\"right fa fa-chevron-up\"></i>\n
                         </div>
-                    </div>
+                    </div> <!-- end row --> \n
                 ";
             }
 
             echo "
-            <div class=\"row\">
-                <div class=\"small-4 medium-2 columns\">";
+            <div class=\"row\" style=\"border-bottom:1px #ccc solid; padding:10px;\"> \n
+               <div class=\"small-4 medium-2 columns\"> \n";
 
                if($this->timesheet->getBatch() == $entry->batchId)
                {
-                    echo "<a href=\"".$this->link(array('timesheet','edit',$entry->id))."\"><i class=\"fa fa-edit\"></i> Edit</a>";
+                    echo "<a class=\"button radius tiny\" style=\"margin:0px; width:100%; left:-15px;\" href=\"".$this->link(array('timesheet','edit',$entry->id))."\"><i class=\"fa fa-edit\"></i> Edit</a> \n";
                }
                else
                {
-                   echo "<i class=\"fa fa-check green\"></i> Validated ";
+                   echo "<i class=\"fa fa-lock\"></i> Validated \n";
                }
 
             echo "
-                </div>
-                <div class=\"small-4 medium-2 columns\">
-                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span>
-                </div>
-                <div class=\"small-4 medium-2 columns\">
-                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->outTime."\">".$entry->roundedOutTime."</span>
-                </div>
-                <div class=\"small-4 medium-2 columns\">
-                    ".$entry->lessTime." Min.
-                </div>
-                <div class=\"small-4 medium-2 columns\">
-                    ".$entry->timeWorked." Hours
-                </div>
-                <div class=\"small-4 medium-2 columns\">
-                    ".$entry->codeName."
-                </div>
-            </div>
+                </div> \n
+                <div class=\"small-4 medium-2 columns\"> \n
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->inTime."\">".$entry->roundedInTime."</span> \n
+                </div> \n
+                <div class=\"small-4 medium-2 columns\"> \n
+                    <span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"Entered as: ".$entry->outTime."\">".$entry->roundedOutTime."</span> \n
+                </div> \n
+                <div class=\"small-4 medium-2 columns\"> \n
+                    ".$entry->lessTime." Min. \n
+                </div> \n
+                <div class=\"small-4 medium-2 columns\"> \n
+                    ".$entry->timeWorked." Hours \n
+                </div> \n
+                <div class=\"small-4 medium-2 columns\"> \n
+                    ".$entry->codeName." \n
+                </div> \n
+            </div> <!-- end row --> \n
             ";
 
             $date = $entry->date;
@@ -103,12 +103,11 @@
                 <div class=\"small-12 columns text-center\">
                     No time submitted.
                 </div>
-            </div>
+            </div><!-- end row -->
         ";
     }
-
 ?>
-</div>
+</div><!-- end section -->
 
 <div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Select a Year</h2>
@@ -124,7 +123,7 @@
         <div class="small-2 columns text-right">
             <a class="button secondary small radius toggleTotals" href="#"><i class="fa fa-chevron-up"></i></a>
         </div>
-    </div>
+    </div> <!-- end row -->
     <div class="row">
         <div class="small-6 medium-4 large-3 columns totals">
             <b>Normal: </b> <?php echo $this->timesheet->normalWorked ?>
@@ -156,5 +155,11 @@
 
             $("#totals").slideToggle();
         });
+
+        $(".timeTitle").click(function() {
+            $(this).parent().nextUntil(".marker").slideToggle("slow");
+            $(this).find("i").toggleClass("fa-chevron-up fa-chevron-down")
+        });
+
     });
 </script>

@@ -241,14 +241,13 @@ class timesheetController extends Staple_Controller
                             if($entry->save())
                             {
                                 //Return a new time form with success message
-                                $form = new insertTimeForm();
                                 $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
                                 $this->view->form = $form;
                             }
                             else
                             {
                                 //Return the same form with a warning message
-                                $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. Please add a new entry or edit an already existing one.";
+                                $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. If you are updating an already existing entry, remove that entry and submit a new one.";
                                 $form->errorMessage = array($message);
                                 $this->view->form = $form;
                             }
@@ -256,7 +255,7 @@ class timesheetController extends Staple_Controller
                         else
                         {
                             //Return the same form with error message.
-                            $form->errorMessage = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
+                            $form->errorMessage = array("<i class='fa fa-warning'></i> <b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
                             $this->view->form = $form;
                         }
                     }
