@@ -179,12 +179,108 @@ class timesheetController extends Staple_Controller
         if($id != null)
         {
             $entry = new timeEntryModel($id);
-            print_r($entry);
+
+            $data['inTime'] = $entry->getInTime();
+            $data['outTime'] = $entry->getOutTime();
+            $data['date'] = $entry->getDate();
+            $data['lessTime'] = $entry->getLessTime();
+            $data['code'] = $entry->getCodeId();
+
+            $form = new editTimeForm();
+            $form->setAction($this->_link(array('timesheet','edit',$id)));
+            $form->addData($data);
+
+            //Check for form submission
+            if($form->wasSubmitted())
+            {
+                //Add submitted data to the form
+                $form->addData($_POST);
+
+                //Check form validation
+                if($form->validate())
+                {
+                    //Export form data into an array
+                    $data = $form->exportFormData();
+
+                    //Check if dates are within the current pay period.
+                    $startMonth = date('m',strtotime('last month'));
+
+                    if($startMonth == 1)
+                    {
+                        $startYear = date('Y',strtotime('last year'));
+                    }
+                    else
+                    {
+                        $startYear = date('Y');
+                    }
+
+                    $endMonth = date('m');
+                    $endYear = date('Y');
+
+                    $startDate= strtotime($startMonth.'/26/'.$startYear);
+                    $endDate = strtotime($endMonth.'/25/'.$endYear);
+
+                    $userDate = strtotime($data['date']);
+
+                    //Date is within pay period
+                    if($userDate >= $startDate && $userDate <= $endDate)
+                    {
+                        //Compare in Times and out Times.
+                        if(strtotime($data['inTime']) < strtotime($data['outTime']))
+                        {
+                            //Create a new entry object and set properties
+                            $entry = new timeEntryModel();
+                            $entry->setId($id);
+                            $entry->setDate($data['date']);
+                            $entry->setInTime($data['inTime']);
+                            $entry->setOutTime($data['outTime']);
+                            $entry->setLessTime($data['lessTime']);
+                            $entry->setCodeId($data['code']);
+
+                            //Save entry data to table.
+                            if($entry->save())
+                            {
+                                //Return a new time form with success message
+                                $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
+                                $this->view->form = $form;
+                            }
+                            else
+                            {
+                                //Return the same form with a warning message
+                                $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. If you are updating an already existing entry, remove that entry and submit a new one.";
+                                $form->errorMessage = array($message);
+                                $this->view->form = $form;
+                            }
+                        }
+                        else
+                        {
+                            //Return the same form with error message.
+                            $form->errorMessage = array("<i class='fa fa-warning'></i> <b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
+                            $this->view->form = $form;
+                        }
+                    }
+                    else
+                    {
+                        //Return the same form with error message.
+                        $form->errorMessage = array("<i class='fa fa-warning'></i> You may only submit time for the current date period.");
+                        $this->view->form = $form;
+                    }
+                }
+                else
+                {
+                    //Return form with invalid data.
+                    $this->view->form = $form;
+                }
+            }
+            else
+            {
+                //Return form
+                $this->view->form = $form;
+            }
         }
         else
         {
-            echo "ERROR: Unable to load entry";
-            //header("location: ".$this->_link(array('timesheet'))."");
+            header("location: ".$this->_link(array('timesheet'))."");
         }
     }
 

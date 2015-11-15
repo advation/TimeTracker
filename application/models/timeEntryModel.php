@@ -349,9 +349,8 @@
             $inTime = strtotime($this->getDate()." ".$this->getInTime());
             $outTime = strtotime($this->getDate()." ".$this->getOutTime());
 
-            if($this->getId() == NULL)
+            if($this->id == NULL)
 			{
-                //TODO Check for overlap
                 if($this->_overlap($inTime))
                 {
                     //Insert new item
@@ -366,40 +365,32 @@
                         )";
 
                     $query = $this->db->query($sql);
-                    if($query === true)
+                    if ($query === true)
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
                 }
 			}
 			else
 			{
-                //TODO Check for overlap
-
-				//Update item
-				$sql = "UPDATE timeEntries SET
-					userId='".$this->db->real_escape_string($userId)."',
-					inTime='".$this->db->real_escape_string($inTime)."',
-					outTime='".$this->db->real_escape_string($outTime)."',
-					lessTime='".$this->db->real_escape_string($this->getLessTime())."',
-                    codeId='".$this->db->real_escape_string($this->getCodeId())."',
-                    batchId='".$this->db->real_escape_string($this->getBatchId())."',
-					WHERE id='".$this->db->real_escape_string($batchId)."'
-				";
-
-                $query = $this->db->query($sql);
-
-                if($query === true)
+                if($this->_overlap($inTime,$this->getId()))
                 {
-                    return true;
+                    //Update item
+                    $sql = "UPDATE timeEntries SET
+                        inTime='" . $this->db->real_escape_string($inTime) . "',
+                        outTime='" . $this->db->real_escape_string($outTime) . "',
+                        lessTime='" . $this->db->real_escape_string($this->getLessTime()) . "',
+                        codeId='" . $this->db->real_escape_string($this->getCodeId()) . "',
+                        batchId='" . $this->db->real_escape_string($batchId) . "'
+                        WHERE id='" . $this->db->real_escape_string($this->id) . "'
+                    ";
+
+                    $query = $this->db->query($sql);
+
+                    if ($query === true)
+                    {
+                        return true;
+                    }
                 }
 			}
 		}
@@ -430,7 +421,7 @@
             }
         }
 
-        function _overlap($inTime)
+        function _overlap($inTime,$id = null)
         {
             $this->db = Staple_DB::get();
 
@@ -438,7 +429,7 @@
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
-            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND userId = '".$this->db->real_escape_string($userId)."'";
+            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
 
             if($this->db->query($sql)->num_rows > 0)
             {
