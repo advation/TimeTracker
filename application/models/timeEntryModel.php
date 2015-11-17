@@ -426,13 +426,19 @@
 
         function _overlap($inTime,$outTime,$id = null)
         {
+            //Checks to see if the times entered fit within any other time entry for that user.
             $this->db = Staple_DB::get();
 
             $auth = Staple_Auth::get();
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
-            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($outTime)."' <= outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+            $sql = "
+                SELECT id FROM timeEntries
+                WHERE ('".$this->db->real_escape_string($outTime)."' > inTime AND '".$this->db->real_escape_string($outTime)."' < outTime)
+                OR ('".$this->db->real_escape_string($inTime)."' > inTime AND '".$this->db->real_escape_string($inTime)."' < outTime)
+                AND userId = '".$this->db->real_escape_string($userId)."'
+            ";
 
             if($this->db->query($sql)->num_rows > 0)
             {
