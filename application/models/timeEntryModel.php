@@ -329,11 +329,14 @@
                 $user = new userModel($auth->getAuthId());
                 $userId = $user->getId();
 
-                $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
-
-                if($this->db->query($sql))
+                //Check if validated
+                if($this->_validated($id))
                 {
-                    return true;
+                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+                    if($this->db->query($sql))
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -351,7 +354,7 @@
 
             if($this->id == NULL)
 			{
-                if($this->_overlap($inTime))
+                if($this->_overlap($inTime,$outTime))
                 {
                     //Insert new item
                     $sql = "INSERT INTO timeEntries (userId, inTime, outTime, lessTime, codeId, batchId)
@@ -373,7 +376,7 @@
 			}
 			else
 			{
-                if($this->_overlap($inTime,$this->getId()))
+                if($this->_overlap($inTime,$outTime,$this->getId()))
                 {
                     //Update item
                     $sql = "UPDATE timeEntries SET
@@ -421,7 +424,7 @@
             }
         }
 
-        function _overlap($inTime,$id = null)
+        function _overlap($inTime,$outTime,$id = null)
         {
             $this->db = Staple_DB::get();
 
@@ -429,7 +432,7 @@
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
-            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($inTime)."' < outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($outTime)."' <= outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
 
             if($this->db->query($sql)->num_rows > 0)
             {
@@ -439,6 +442,27 @@
             {
                 return true;
             }
+        }
+
+        function _validated($id)
+        {
+            $auth = Staple_Auth::get();
+            $user = new userModel($auth->getAuthId());
+
+            $userId = $user->getId();
+            $batchId = $user->getBatchId();
+
+            $sql = "SELECT id FROM timeEntries WHERE userId = '".$this->db->real_escape_string($userId)."' AND batchId = '".$this->db->real_escape_string($batchId)."' AND id = '".$this->db->real_escape_string($id)."'";
+
+            if($this->db->query($sql)->num_rows > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 	}
 ?>
