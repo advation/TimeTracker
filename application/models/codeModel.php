@@ -76,8 +76,8 @@
 		function __construct()
 		{
 			$this->db = Staple_DB::get();
-		}	
-	
+		}
+
 		function load($id = NULL)
 		{
 			$sql = "SELECT * FROM timeCodes WHERE id = '" . $this->db->real_escape_string($id) . "'";
@@ -96,7 +96,7 @@
 
 		function allCodes()
 		{
-			$sql = "SELECT id, name FROM timeCodes WHERE 1";
+			$sql = "SELECT id, name FROM timeCodes WHERE 1 ORDER BY name ASC";
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
@@ -119,6 +119,7 @@
 				{
 					$query = $this->db->query($sql);
 					$result = $query->fetch_assoc();
+
 					return $result;
 				}
 			}

@@ -20,6 +20,16 @@
         </div>
     </div><!-- end row -->
 <?php
+    echo "
+        <div class=\"row\">
+            <div class=\"small-12 columns\">
+                <ul class=\"inline-list right\">
+                    <li><a id=\"hideAll\" href=\"#\"><i class=\"fa fa-eye-slash\"></i> Hide All</a></li>
+                    <li><a id=\"showAll\" href=\"#\"><i class=\"fa fa-eye\"></i> Show All</a></li>
+                </ul>
+            </div>
+        </div>
+    ";
 
     if(count($this->timesheet->entries) > 0)
     {
@@ -45,19 +55,33 @@
                 </div>
             </div><!-- end row -->
         ";
+
         $date = 0;
 
         foreach($this->timesheet->entries as $entry)
         {
             if($date != $entry->date)
             {
-                echo "
+                if($this->timesheet->getBatch() != $entry->batchId)
+                {
+                    echo "
                     <div class=\"row marker\" style=\"border-bottom:1px #ccc solid; background-color:#eaeaea; padding-top:15px; padding-bottom:15px;\"> \n
                         <div class=\"small-12 columns timeTitle\" >
                             <b>".$entry->fullDate."</b><i class=\"right fa fa-chevron-up\"></i>\n
                         </div>
                     </div> <!-- end row --> \n
-                ";
+                    ";
+                }
+                else
+                {
+                    echo "
+                    <div class=\"row marker\" style=\"border-bottom:1px #ccc solid; background-color:#FFF4A8; padding-top:15px; padding-bottom:15px;\"> \n
+                        <div class=\"small-12 columns timeTitle\" >
+                            <b>".$entry->fullDate."</b><i class=\"right fa fa-chevron-up\"></i>\n
+                        </div>
+                    </div> <!-- end row --> \n
+                    ";
+                }
             }
 
             echo "
@@ -121,22 +145,25 @@
             <h3 id="modalTitle"><i class="fa fa-calculator"></i> Totals for this month</h3>
         </div>
         <div class="small-2 columns text-right">
-            <a class="button secondary small radius toggleTotals" href="#"><i class="fa fa-chevron-up"></i></a>
+            <a class="button small radius toggleTotals" href="#"><i class="fa fa-chevron-up"></i></a>
         </div>
     </div> <!-- end row -->
     <div class="row">
-        <div class="small-6 medium-4 large-3 columns totals">
-            <b>Normal: </b> <?php echo $this->timesheet->normalWorked ?>
-        </div>
-        <div class="small-6 medium-4 large-3 columns totals">
-            <b>Vacation: </b> <?php echo $this->timesheet->vacationUsed ?>
-        </div>
-        <div class="small-6 medium-4 large-3 columns totals end">
-            <b>Sick: </b> <?php echo $this->timesheet->sickUsed ?>
-        </div>
-        <div class="small-6 medium-4 large-3 columns totals end">
-            <b>Total: </b> <?php echo $this->timesheet->sickUsed ?>
-        </div>
+        <?php
+
+        foreach($this->timesheet->totals as $key=>$value)
+        {
+            if($value != '0')
+            {
+                echo "
+                    <div class=\"small-6 medium-4 columns totals end\">
+                    ".$key.": ".$value."
+                    </div>
+                ";
+            }
+        }
+
+        ?>
     </div>
 </div>
 
@@ -159,6 +186,20 @@
         $(".timeTitle").click(function() {
             $(this).parent().nextUntil(".marker").slideToggle("slow");
             $(this).find("i").toggleClass("fa-chevron-up fa-chevron-down")
+        });
+
+        $("#hideAll").click(function() {
+           $(".marker").nextUntil(".marker").slideUp();
+            $(".marker").find("i").removeClass("fa-chevron-up")
+            $(".marker").find("i").addClass("fa-chevron-down")
+            return false;
+        });
+
+        $("#showAll").click(function() {
+            $(".marker").nextUntil(".marker").slideDown();
+            $(".marker").find("i").removeClass("fa-chevron-down")
+            $(".marker").find("i").addClass("fa-chevron-up")
+            return false;
         });
 
     });

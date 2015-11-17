@@ -24,9 +24,14 @@
 
 		private $entries;
 
+		private $totals;
+
 		private $vacationUsed;
 		private $normalWorked;
 		private $sickUsed;
+		private $holidayUsed;
+		private $holidayWorkedUsed;
+		private $payPeriodTotal;
 
 		/**
 		 * @return string
@@ -316,6 +321,72 @@
 			$this->sickUsed = $sickUsed;
 		}
 
+		/**
+		 * @return float|int
+		 */
+		public function getHolidayUsed()
+		{
+			return $this->holidayUsed;
+		}
+
+		/**
+		 * @param float|int $holidayUsed
+		 */
+		public function setHolidayUsed($holidayUsed)
+		{
+			$this->holidayUsed = $holidayUsed;
+		}
+
+		/**
+		 * @return float|int
+		 */
+		public function getHolidayWorkedUsed()
+		{
+			return $this->holidayWorkedUsed;
+		}
+
+		/**
+		 * @param float|int $holidayWorkedUsed
+		 */
+		public function setHolidayWorkedUsed($holidayWorkedUsed)
+		{
+			$this->holidayWorkedUsed = $holidayWorkedUsed;
+		}
+
+		/**
+		 * @return float|int
+		 */
+		public function getPayPeriodTotal()
+		{
+			return $this->payPeriodTotal;
+		}
+
+		/**
+		 * @param float|int $payPeriodTotal
+		 */
+		public function setPayPeriodTotal($payPeriodTotal)
+		{
+			$this->payPeriodTotal = $payPeriodTotal;
+		}
+
+		/**
+		 * @return mixed
+		 */
+		public function getTotals()
+		{
+			return $this->totals;
+		}
+
+		/**
+		 * @param mixed $totals
+		 */
+		public function setTotals($totals)
+		{
+			$this->totals = $totals;
+		}
+
+
+
 		function __construct($year, $month)
 		{
 			$this->db = Staple_DB::get();
@@ -362,17 +433,16 @@
 
 			$timeCode = new codeModel();
 
-			//Vacation Total
-			$code = $timeCode->getIdFor('vacation');
-			$this->vacationUsed = $this->calculatedTotals($code['id'],$this->startDate, $this->endDate);
+			//Get time code totals
+			$totals = array();
+			foreach ($timeCode->allCodes() as $code)
+			{
+				$codeId = $timeCode->getIdFor($code);
+				$totals[$code] = $this->calculatedTotals($codeId['id'],$this->startDate,$this->endDate);
+			}
+			$totals['Total Time'] = array_sum($totals);
 
-			//Normal Total
-			$code = $timeCode->getIdFor('normal');
-			$this->normalWorked = $this->calculatedTotals($code['id'],$this->startDate, $this->endDate);
-
-			//Sick Total
-			$code = $timeCode->getIdFor('sick');
-			$this->sickUsed = $this->calculatedTotals($code['id'],$this->startDate,$this->endDate);
+			$this->setTotals($totals);
 		}
 
 		function validate($batchId)
@@ -406,6 +476,26 @@
 			else
 			{
 				return array();
+			}
+		}
+
+		function payPeriodCalculatedTotals($startDate, $endDate)
+		{
+			//Get user ID from Auth
+			$user = new userModel();
+			$userId = $user->getId();
+
+			$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 00:00:00') AND userId = $userId";
+
+			if($this->db->query($sql)->num_rows > 0)
+			{
+				$query = $this->db->query($sql);
+				$result = $query->fetch_assoc();
+				return round($result['totalTime'],2);
+			}
+			else
+			{
+				return 0;
 			}
 		}
 

@@ -26,12 +26,16 @@ class insertTimeForm extends Staple_Form
 
         $lessTime = new Staple_Form_FoundationSelectElement('lessTime','Less Time');
         $lessTime->setRequired()
-            ->addOptionsArray(array("0"=>"None","60"=>"1 Hour","30"=>"30 Minutes","15"=>"15 Minutes"));
+            ->addOptionsArray(array("0"=>"None","60"=>"1 Hour","30"=>"30 Minutes","15"=>"15 Minutes"))
+            ->addValidator(new Staple_Form_Validate_InArray(array('0','60','30','15')));
 
         $timeCodes = new codeModel();
         $code = new Staple_Form_FoundationSelectElement('code','Code');
         $code->setRequired()
-            ->addOptionsArray($timeCodes->allCodes());
+            ->addOption("x","Select an option")
+            ->addOptionsArray($timeCodes->allCodes())
+            ->addValidator(new Staple_Form_Validate_InArray(array_keys($timeCodes->allCodes())));
+        $code->setValue($timeCodes->getIdFor('Normal')['id']);
 
         $submit = new Staple_Form_FoundationSubmitElement('submit','Submit');
         $submit->addClass('button expand radius');
