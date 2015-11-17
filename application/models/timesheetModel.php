@@ -534,9 +534,11 @@
 			{
 				//Key already in use
 				return false;
+				echo "this";
 			}
 			else
 			{
+				echo "that";
 				//Set new key in user account
 				$sql = "UPDATE accounts SET batchId='".$this->db->real_escape_string($key)."' WHERE id=$userId";
 

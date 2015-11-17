@@ -150,11 +150,12 @@ class timesheetController extends Staple_Controller
         if($id != null)
         {
             //Confirm entry for user
-            $timesheet = new timesheetModel();
-            if($timesheet->exists($id))
+            $timeEntry = new timeEntryModel($id);
+
+            if($timeEntry->getId() !== NULL)
             {
-                //Delete Item
-                if($timesheet->remove($id))
+                //Remove Entry
+                if($timeEntry->remove($timeEntry->getId()))
                 {
                     $this->view->message = "Entry removed.";
                 }
@@ -165,12 +166,12 @@ class timesheetController extends Staple_Controller
             }
             else
             {
-                header("location: ".$this->_link(array('timesheet'))."");
+                //header("location: ".$this->_link(array('timesheet'))."");
             }
         }
         else
         {
-            header("location: ".$this->_link(array('timesheet'))."");
+            //header("location: ".$this->_link(array('timesheet'))."");
         }
     }
 
@@ -185,6 +186,8 @@ class timesheetController extends Staple_Controller
             $data['date'] = $entry->getDate();
             $data['lessTime'] = $entry->getLessTime();
             $data['code'] = $entry->getCodeId();
+
+            $this->view->id = $entry->getId();
 
             $form = new editTimeForm();
             $form->setAction($this->_link(array('timesheet','edit',$id)));
