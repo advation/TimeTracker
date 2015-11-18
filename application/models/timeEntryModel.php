@@ -433,22 +433,50 @@
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
+            $dateString = strtotime(date("Y-m-d", $inTime));
+            $nextDateString = $dateString + 86400;
+
+            //Find the earliest time for the given date.
             $sql = "
-                SELECT id FROM timeEntries
-                WHERE ('".$this->db->real_escape_string($outTime)."' > inTime AND '".$this->db->real_escape_string($outTime)."' < outTime)
-                OR ('".$this->db->real_escape_string($inTime)."' > inTime AND '".$this->db->real_escape_string($inTime)."' < outTime)
-                AND userId = '".$this->db->real_escape_string($userId)."'
+                SELECT inTime FROM timeEntries WHERE inTime > '".$this->db->real_escape_string($dateString)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY inTime ASC LIMIT 1
             ";
 
-            if($this->db->query($sql)->num_rows > 0)
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+            $firstInTime = $result['inTime'];
+
+            //Find the latest time for the given date.
+            $sql = "
+                SELECT outTime FROM timeEntries WHERE outTime > '".$this->db->real_escape_string($dateString)."' AND outTime < '".$this->db->real_escape_string($nextDateString)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY outTime DESC LIMIT 1
+            ";
+
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+            $lastOutTime = $result['outTime'];
+
+            if($inTime < $firstInTime && $outTime > $lastOutTime)
             {
                 return false;
             }
             else
             {
-                return true;
-            }
+                //Check if inTime and out time fall between already existing dates.
+                $sql = "
+                    SELECT id FROM timeEntries
+                    WHERE ('".$this->db->real_escape_string($outTime)."' > inTime AND '".$this->db->real_escape_string($outTime)."' < outTime)
+                    OR ('".$this->db->real_escape_string($inTime)."' > inTime AND '".$this->db->real_escape_string($inTime)."' < outTime)
+                    AND userId = '".$this->db->real_escape_string($userId)."'
+                ";
 
+                if($this->db->query($sql)->num_rows > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
         }
 
         function _validated($id)

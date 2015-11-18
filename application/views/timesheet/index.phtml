@@ -5,7 +5,7 @@
             <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
         </div>
         <div class="small-12 medium-8 text-right columns">
-            <ul class="button-group radius even-5 stack-for-small">
+            <ul class="button-group round even-5 stack-for-small">
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
                 <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
@@ -186,6 +186,7 @@
         $(".timeTitle").click(function() {
             $(this).parent().nextUntil(".marker").slideToggle("slow");
             $(this).find("i").toggleClass("fa-chevron-up fa-chevron-down")
+            return false;
         });
 
         $("#hideAll").click(function() {

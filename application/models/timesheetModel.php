@@ -405,7 +405,7 @@
 			$this->startDate = $currentDate->modify('-1 month +25 day')->format('Y-m-d');
 			$this->startDateTimeString = strtotime($this->startDate);
 			$currentDate->setDate($year, $month, 1);
-			$this->endDate = $currentDate->modify('+24 day')->format('Y-m-d');
+			$this->endDate = $currentDate->modify('+25 day')->format('Y-m-d');
 			$this->endDateTimeString = strtotime($this->endDate);
 
 			//Previous Dates
