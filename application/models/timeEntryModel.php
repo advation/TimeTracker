@@ -10,9 +10,11 @@
         private $inTime;
         private $inTimeRaw;
         private $roundedInTime;
+        private $inTimeDate;
         private $outTime;
 		private $outTimeRaw;
         private $roundedOutTime;
+        private $outTimeDate;
 		private $lessTime;
 		private $codeId;
         private $codeName;
@@ -54,6 +56,22 @@
         /**
          * @return mixed
          */
+        public function getFullDate()
+        {
+            return $this->fullDate;
+        }
+
+        /**
+         * @param mixed $fullDate
+         */
+        public function setFullDate($fullDate)
+        {
+            $this->fullDate = $fullDate;
+        }
+
+        /**
+         * @return mixed
+         */
         public function getInTime()
         {
             return $this->inTime;
@@ -65,22 +83,6 @@
         public function setInTime($inTime)
         {
             $this->inTime = $inTime;
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getOutTime()
-        {
-            return $this->outTime;
-        }
-
-        /**
-         * @param mixed $outTime
-         */
-        public function setOutTime($outTime)
-        {
-            $this->outTime = $outTime;
         }
 
         /**
@@ -102,6 +104,54 @@
         /**
          * @return mixed
          */
+        public function getRoundedInTime()
+        {
+            return $this->roundedInTime;
+        }
+
+        /**
+         * @param mixed $roundedInTime
+         */
+        public function setRoundedInTime($roundedInTime)
+        {
+            $this->roundedInTime = $roundedInTime;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getInTimeDate()
+        {
+            return $this->inTimeDate;
+        }
+
+        /**
+         * @param mixed $inTimeDate
+         */
+        public function setInTimeDate($inTimeDate)
+        {
+            $this->inTimeDate = $inTimeDate;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getOutTime()
+        {
+            return $this->outTime;
+        }
+
+        /**
+         * @param mixed $outTime
+         */
+        public function setOutTime($outTime)
+        {
+            $this->outTime = $outTime;
+        }
+
+        /**
+         * @return mixed
+         */
         public function getOutTimeRaw()
         {
             return $this->outTimeRaw;
@@ -113,6 +163,38 @@
         public function setOutTimeRaw($outTimeRaw)
         {
             $this->outTimeRaw = $outTimeRaw;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getRoundedOutTime()
+        {
+            return $this->roundedOutTime;
+        }
+
+        /**
+         * @param mixed $roundedOutTime
+         */
+        public function setRoundedOutTime($roundedOutTime)
+        {
+            $this->roundedOutTime = $roundedOutTime;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getOutTimeDate()
+        {
+            return $this->outTimeDate;
+        }
+
+        /**
+         * @param mixed $outTimeDate
+         */
+        public function setOutTimeDate($outTimeDate)
+        {
+            $this->outTimeDate = $outTimeDate;
         }
 
         /**
@@ -182,38 +264,6 @@
         /**
          * @return mixed
          */
-        public function getRoundedInTime()
-        {
-            return $this->roundedInTime;
-        }
-
-        /**
-         * @param mixed $roundedInTime
-         */
-        public function setRoundedInTime($roundedInTime)
-        {
-            $this->roundedInTime = $roundedInTime;
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getRoundedOutTime()
-        {
-            return $this->roundedOutTime;
-        }
-
-        /**
-         * @param mixed $roundedOutTime
-         */
-        public function setRoundedOutTime($roundedOutTime)
-        {
-            $this->roundedOutTime = $roundedOutTime;
-        }
-
-        /**
-         * @return mixed
-         */
         public function getBatchId()
         {
             return $this->batchId;
@@ -225,22 +275,6 @@
         public function setBatchId($batchId)
         {
             $this->batchId = $batchId;
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getFullDate()
-        {
-            return $this->fullDate;
-        }
-
-        /**
-         * @param mixed $fullDate
-         */
-        public function setFullDate($fullDate)
-        {
-            $this->fullDate = $fullDate;
         }
 
 		function __construct($id = null)
@@ -267,6 +301,7 @@
                     $this->setInTime($inTime->format('h:i A'));
                     $this->setInTimeRaw($result['inTime']);
                     $this->setRoundedInTime($this->nearestQuarterHour($result['inTime']));
+                    $this->setInTimeDate(date("Y-m-d", $result['inTime']));
 
                     //Out Time
                     $outTime = new DateTime();
@@ -274,6 +309,7 @@
                     $this->setOutTime($outTime->format('h:i A'));
                     $this->setOutTimeRaw($result['outTime']);
                     $this->setRoundedOutTime($this->nearestQuarterHour($result['outTime']));
+                    $this->setOutTimeDate(date("Y-m-d", $result['outTime']));
 
                     $this->setLessTime($result['lessTime']);
 
@@ -295,7 +331,9 @@
 
                     //Total Worked Time
                     $dateTime1 = new DateTime($this->roundedInTime);
+                    $dateTime1->setDate(date('Y',strtotime($this->inTimeDate)), date('m',strtotime($this->inTimeDate)), date('d',strtotime($this->inTimeDate)));
                     $dateTime2 = new DateTime($this->roundedOutTime);
+                    $dateTime2->setDate(date('Y',strtotime($this->outTimeDate)), date('m',strtotime($this->outTimeDate)), date('d',strtotime($this->outTimeDate)));
                     $interval = $dateTime1->diff($dateTime2);
 
                     $timeWorked = $this->timeToDecimal($interval->h.":".$interval->i)-$lessTime;
@@ -352,8 +390,13 @@
             $inTime = strtotime($this->getDate()." ".$this->getInTime());
             $outTime = strtotime($this->getDate()." ".$this->getOutTime());
 
+            if(strtotime($this->getDate()." ".$this->getInTime()) > strtotime($this->getDate()." ".$this->getOutTime()))
+            {
+                $outTime = strtotime($this->getDate()." 12:00 AM")+86400;
+            }
+
             if($this->id == NULL)
-			{
+            {
                 if($this->_overlap($inTime,$outTime))
                 {
                     //Insert new item
@@ -373,9 +416,9 @@
                         return true;
                     }
                 }
-			}
-			else
-			{
+            }
+            else
+            {
                 if($this->_overlap($inTime,$outTime,$this->getId()))
                 {
                     //Update item
@@ -395,7 +438,7 @@
                         return true;
                     }
                 }
-			}
+            }
 		}
 
         function nearestQuarterHour($time)
@@ -426,15 +469,75 @@
 
         function _overlap($inTime,$outTime,$id = null)
         {
+            //Checks to see if the times entered fit within any other time entry for that user.
             $this->db = Staple_DB::get();
 
             $auth = Staple_Auth::get();
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
-            $sql = "SELECT id FROM timeEntries WHERE '".$this->db->real_escape_string($inTime)."' >= inTime AND '".$this->db->real_escape_string($outTime)."' <= outTime AND id <> '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+            $dateString = strtotime(date("Y-m-d", $inTime));
+            $nextDateString = $dateString + 86400;
 
-            if($this->db->query($sql)->num_rows > 0)
+            //Find the earliest time for the given date.
+            $sql = "
+                SELECT inTime FROM timeEntries WHERE inTime > '".$this->db->real_escape_string($dateString)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY inTime ASC LIMIT 1
+            ";
+
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+            $firstInTime = $result['inTime'];
+
+            //Find the latest time for the given date.
+            $sql = "
+                SELECT outTime FROM timeEntries WHERE outTime > '".$this->db->real_escape_string($dateString)."' AND outTime < '".$this->db->real_escape_string($nextDateString)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY outTime DESC LIMIT 1
+            ";
+
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+            $lastOutTime = $result['outTime'];
+
+            if($id == null)
+            {
+                $sql = "SELECT inTime, outTime FROM timeEntries WHERE inTime > $dateString AND outTime < $nextDateString AND userId = $userId";
+            }
+            else
+            {
+                $sql = "SELECT inTime, outTime FROM timeEntries WHERE inTime > $dateString AND outTime < $nextDateString AND userId = $userId AND id <> $id";
+            }
+
+            $query = $this->db->query($sql);
+            $data = array();
+            while($result = $query->fetch_assoc())
+            {
+                $data[] = $result;
+            }
+
+            $overlap = 0;
+            foreach($data as $entry)
+            {
+                if($inTime == $entry['inTime'] && $outTime == $entry['outTime'])
+                {
+                    $overlap++;
+                }
+
+                if($inTime > $entry['inTime'] && $inTime < $entry['outTime'])
+                {
+                    $overlap++;
+                }
+
+                if($outTime > $entry['inTime'] && $outTime < $entry['outTime'])
+                {
+                    $overlap++;
+                }
+
+                if($inTime < $firstInTime && $outTime > $lastOutTime)
+                {
+                    $overlap++;
+                }
+            }
+
+            if($overlap > 0)
             {
                 return false;
             }

@@ -14,6 +14,11 @@ class changeYearForm extends Staple_Form
             ->addOptionsArray($this->getYears())
             ->addValidator(new Staple_Form_Validate_InArray($this->getYears()));
 
+        if(count($this->getYears()) == 0)
+        {
+            $year->addOption(date('Y'),date('Y'));
+        }
+
         $submit = new Staple_Form_FoundationSubmitElement('submit','Submit');
         $submit->addClass('button expand radius');
 
