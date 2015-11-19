@@ -429,7 +429,7 @@
 			$this->nextYear = $furtureDate->format('Y');
 
 			//Time Entries
-			$this->entries = $this->entries($this->startDate, $this->endDate);
+			$this->entries = $this->timeEntries($this->startDate, $this->endDate);
 
 			$timeCode = new codeModel();
 
@@ -455,7 +455,7 @@
 			}
 		}
 
-		function entries($startDate,$endDate)
+		function timeEntries($startDate,$endDate)
 		{
 			//Get user ID from Auth
 			$user = new userModel();
@@ -479,6 +479,7 @@
 			}
 		}
 
+		/* TODO depricate
 		function payPeriodCalculatedTotals($startDate, $endDate)
 		{
 			//Get user ID from Auth
@@ -498,6 +499,7 @@
 				return 0;
 			}
 		}
+		*/
 
 		function calculatedTotals($code,$startDate,$endDate)
 		{

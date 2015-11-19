@@ -51,8 +51,10 @@ class timesheetController extends Staple_Controller
                 if($userDate >= $startDate && $userDate <= $endDate)
                 {
                     //Compare in Times and out Times.
+                    /*
                     if(strtotime($data['inTime']) < strtotime($data['outTime']))
                     {
+                    */
                         //Create a new entry object and set properties
                         $entry = new timeEntryModel();
                         $entry->setDate($data['date']);
@@ -76,6 +78,7 @@ class timesheetController extends Staple_Controller
                             $form->errorMessage = array($message);
                             $this->view->insertTimeForm = $form;
                         }
+                    /*
                     }
                     else
                     {
@@ -83,6 +86,7 @@ class timesheetController extends Staple_Controller
                         $form->errorMessage = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
                         $this->view->insertTimeForm = $form;
                     }
+                    */
                 }
                 else
                 {
@@ -229,8 +233,8 @@ class timesheetController extends Staple_Controller
                     if($userDate >= $startDate && $userDate <= $endDate)
                     {
                         //Compare in Times and out Times.
-                        if(strtotime($data['inTime']) < strtotime($data['outTime']))
-                        {
+                        //if(strtotime($data['inTime']) < strtotime($data['outTime']))
+                        //{
                             //Create a new entry object and set properties
                             $entry = new timeEntryModel();
                             $entry->setId($id);
@@ -254,13 +258,13 @@ class timesheetController extends Staple_Controller
                                 $form->errorMessage = array($message);
                                 $this->view->form = $form;
                             }
-                        }
-                        else
-                        {
+                        //}
+                        //else
+                        //{
                             //Return the same form with error message.
-                            $form->errorMessage = array("<i class='fa fa-warning'></i> <b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
-                            $this->view->form = $form;
-                        }
+                        //    $form->errorMessage = array("<i class='fa fa-warning'></i> <b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
+                        //    $this->view->form = $form;
+                        //}
                     }
                     else
                     {
