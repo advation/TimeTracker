@@ -149,19 +149,18 @@ class timesheetController extends Staple_Controller
         $this->view->changeYearForm = $changeYearForm;
     }
 
-    public function remove($id)
+    public function remove($id = null)
     {
         if($id != null)
         {
             //Confirm entry for user
             $timeEntry = new timeEntryModel($id);
-
             if($timeEntry->getId() !== NULL)
             {
                 //Remove Entry
                 if($timeEntry->remove($timeEntry->getId()))
                 {
-                    $this->view->message = "Entry removed.";
+                    $this->view->message = "<i class=\"fa fa-check\"></i> Removed successfully.";
                 }
                 else
                 {
@@ -170,12 +169,12 @@ class timesheetController extends Staple_Controller
             }
             else
             {
-                //header("location: ".$this->_link(array('timesheet'))."");
+                header("location: ".$this->_link(array('timesheet'))."");
             }
         }
         else
         {
-            //header("location: ".$this->_link(array('timesheet'))."");
+            header("location: ".$this->_link(array('timesheet'))."");
         }
     }
 

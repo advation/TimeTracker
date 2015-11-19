@@ -1,10 +1,19 @@
 <div class="section">
     <div class="row">
-        <div class="small-12 columns">
+        <div class="small-4 columns">
             <a class="button secondary radius" href="<?php echo $this->link(array('timesheet')) ?>"><i class="fa fa-chevron-left"></i> Back</a>
         </div>
+        <div class="small-4 columns text-center">
+            <h2><i class="fa fa-trash"></i> Remove Entry</h2>
+        </div>
+        <div class="small-4 columns text-right">
+
+        </div>
         <div class="small-12 columns">
-            <?php echo $this->message ?>
+            <div data-alert class="alert-box secondary">
+                <?php echo $this->message ?>
+                <a href="#" class="close">&times;</a>
+            </div>
         </div>
     </div>
 </div>
