@@ -8,8 +8,11 @@
 		private $username;
 		private $firstName;
 		private $lastName;
-		private $accountType;
+		private $type;
+		private $authLevel;
+		private $supervisorId;
 		private $batchId;
+		private $pin;
 
 		/**
 		 * @return mixed
@@ -78,17 +81,49 @@
 		/**
 		 * @return mixed
 		 */
-		public function getAccountType()
+		public function getType()
 		{
-			return $this->accountType;
+			return $this->type;
 		}
 
 		/**
-		 * @param mixed $accountType
+		 * @param mixed $type
 		 */
-		public function setAccountType($accountType)
+		public function setType($type)
 		{
-			$this->accountType = $accountType;
+			$this->type = $type;
+		}
+
+		/**
+		 * @return mixed
+		 */
+		public function getAuthLevel()
+		{
+			return $this->authLevel;
+		}
+
+		/**
+		 * @param mixed $authLevel
+		 */
+		public function setAuthLevel($authLevel)
+		{
+			$this->authLevel = $authLevel;
+		}
+
+		/**
+		 * @return mixed
+		 */
+		public function getSupervisorId()
+		{
+			return $this->supervisorId;
+		}
+
+		/**
+		 * @param mixed $supervisorId
+		 */
+		public function setSupervisorId($supervisorId)
+		{
+			$this->supervisorId = $supervisorId;
 		}
 
 		/**
@@ -107,6 +142,22 @@
 			$this->batchId = $batchId;
 		}
 
+		/**
+		 * @return mixed
+		 */
+		public function getPin()
+		{
+			return $this->pin;
+		}
+
+		/**
+		 * @param mixed $pin
+		 */
+		public function setPin($pin)
+		{
+			$this->pin = $pin;
+		}
+
 		function __construct()
 		{
 			$this->db = Staple_DB::get();
@@ -114,7 +165,7 @@
 			$auth = Staple_Auth::get();
 			$username = $auth->getAuthId();
 
-			$sql = "SELECT id, username, firstName, lastName, accountType, batchId FROM accounts WHERE username = '".$this->db->real_escape_string($username)."'";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId FROM accounts WHERE username = '".$this->db->real_escape_string($username)."'";
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
@@ -124,7 +175,7 @@
 				$this->setUsername($result['username']);
 				$this->setFirstName($result['firstName']);
 				$this->setLastName($result['lastName']);
-				$this->setAccountType($result['accountType']);
+				$this->setAuthLevel($result['authLevel']);
 				$this->setBatchId($result['batchId']);
 			}
 			else

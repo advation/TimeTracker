@@ -163,7 +163,7 @@ WHERE ' . $db->real_escape_string($this->_settings['pinfield']) . ' = ' .
 			}
 
 
-			if (array_key_exists('username', $cred) AND array_key_exists('password', $cred))
+			if (array_key_exists('username', $cred) && array_key_exists('password', $cred))
 			{
 				$db = Staple_DB::get();
 				$this->uid = $cred['username'];
