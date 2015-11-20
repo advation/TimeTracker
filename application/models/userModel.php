@@ -158,21 +158,13 @@
 			$this->pin = $pin;
 		}
 
-		function __construct($user = null)
+		function __construct()
 		{
 			$this->db = Staple_DB::get();
-
-			if($user == null)
-			{
-				$auth = Staple_Auth::get();
-				$username = $auth->getAuthId();
-			}
-			else
-			{
-				$username = $user;
-			}
-
+			$auth = Staple_Auth::get();
+			$username = $auth->getAuthId();
 			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts WHERE username = '".$this->db->real_escape_string($username)."'";
+
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
@@ -190,6 +182,14 @@
 			{
 				return false;
 			}
+		}
+
+		function userInfo($id)
+		{
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+			$query = $this->db->query($sql);
+			$result = $query->fetch_assoc();
+			return $result;
 		}
 	}
 ?>

@@ -26,7 +26,8 @@ class reportsController extends Staple_Controller
             $month = date('m');
         }
 
-        $report = new reportModel($year,$month);
+        $report = new reportModel($year, $month);
+        $this->view->report = $report->getTimesheets();
 
     }
 }

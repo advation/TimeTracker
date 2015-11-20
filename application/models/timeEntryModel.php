@@ -547,13 +547,22 @@
             }
         }
 
-        function _validated($id)
+        function validated($id,$uid = null)
         {
-            $auth = Staple_Auth::get();
-            $user = new userModel($auth->getAuthId());
-
-            $userId = $user->getId();
-            $batchId = $user->getBatchId();
+            if($uid == null)
+            {
+                $auth = Staple_Auth::get();
+                $user = new userModel($auth->getAuthId());
+                $userId = $user->getId();
+                $batchId = $user->getBatchId();
+            }
+            else
+            {
+                $user = new userModel();
+                $info = $user->userInfo($uid);
+                $userId = $info['id'];
+                $batchId = $info['batchId'];
+            }
 
             $sql = "SELECT id FROM timeEntries WHERE userId = '".$this->db->real_escape_string($userId)."' AND batchId = '".$this->db->real_escape_string($batchId)."' AND id = '".$this->db->real_escape_string($id)."'";
 

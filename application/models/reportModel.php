@@ -4,6 +4,22 @@ class reportModel extends Staple_Model
     private $db;
     private $timesheets;
 
+    /**
+     * @return array
+     */
+    public function getTimesheets()
+    {
+        return $this->timesheets;
+    }
+
+    /**
+     * @param array $timesheets
+     */
+    public function setTimesheets($timesheets)
+    {
+        $this->timesheets = $timesheets;
+    }
+
     function __construct($year, $month)
     {
         $this->db = Staple_DB::get();
@@ -15,10 +31,6 @@ class reportModel extends Staple_Model
         {
             $data[$value] = $this->getTimesheet($key, $year, $month);
         }
-
-        echo "<pre>";
-        print_r($data);
-        echo "</pre>";
 
         $this->timesheets = $data;
     }
@@ -91,8 +103,6 @@ class reportModel extends Staple_Model
         $query = $this->db->query($sql);
         $result = $query->fetch_assoc();
 
-        print_r($result);
-
         //Set inTime
         $inTime = new DateTime();
         $inTime->setTimestamp($result['inTime']);
@@ -156,6 +166,18 @@ class reportModel extends Staple_Model
         $data['lessTime'] = $lessTime;
         $data['timeWorked'] = $timeWorked;
         $data['code'] = $codeName;
+
+        //Get the user of the entry.
+        $entry = new timeEntryModel($id);
+
+        if($entry->validated($id,$result['userId']))
+        {
+            $data['validated'] = 0;
+        }
+        else
+        {
+            $data['validated'] = 1;
+        }
 
         return $data;
     }
