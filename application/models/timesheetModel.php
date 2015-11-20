@@ -26,13 +26,6 @@
 
 		private $totals;
 
-		private $vacationUsed;
-		private $normalWorked;
-		private $sickUsed;
-		private $holidayUsed;
-		private $holidayWorkedUsed;
-		private $payPeriodTotal;
-
 		/**
 		 * @return string
 		 */
@@ -274,102 +267,6 @@
 		}
 
 		/**
-		 * @return float|int
-		 */
-		public function getVacationUsed()
-		{
-			return $this->vacationUsed;
-		}
-
-		/**
-		 * @param float|int $vacationUsed
-		 */
-		public function setVacationUsed($vacationUsed)
-		{
-			$this->vacationUsed = $vacationUsed;
-		}
-
-		/**
-		 * @return float|int
-		 */
-		public function getNormalWorked()
-		{
-			return $this->normalWorked;
-		}
-
-		/**
-		 * @param float|int $normalWorked
-		 */
-		public function setNormalWorked($normalWorked)
-		{
-			$this->normalWorked = $normalWorked;
-		}
-
-		/**
-		 * @return float|int
-		 */
-		public function getSickUsed()
-		{
-			return $this->sickUsed;
-		}
-
-		/**
-		 * @param float|int $sickUsed
-		 */
-		public function setSickUsed($sickUsed)
-		{
-			$this->sickUsed = $sickUsed;
-		}
-
-		/**
-		 * @return float|int
-		 */
-		public function getHolidayUsed()
-		{
-			return $this->holidayUsed;
-		}
-
-		/**
-		 * @param float|int $holidayUsed
-		 */
-		public function setHolidayUsed($holidayUsed)
-		{
-			$this->holidayUsed = $holidayUsed;
-		}
-
-		/**
-		 * @return float|int
-		 */
-		public function getHolidayWorkedUsed()
-		{
-			return $this->holidayWorkedUsed;
-		}
-
-		/**
-		 * @param float|int $holidayWorkedUsed
-		 */
-		public function setHolidayWorkedUsed($holidayWorkedUsed)
-		{
-			$this->holidayWorkedUsed = $holidayWorkedUsed;
-		}
-
-		/**
-		 * @return float|int
-		 */
-		public function getPayPeriodTotal()
-		{
-			return $this->payPeriodTotal;
-		}
-
-		/**
-		 * @param float|int $payPeriodTotal
-		 */
-		public function setPayPeriodTotal($payPeriodTotal)
-		{
-			$this->payPeriodTotal = $payPeriodTotal;
-		}
-
-		/**
 		 * @return mixed
 		 */
 		public function getTotals()
@@ -384,8 +281,6 @@
 		{
 			$this->totals = $totals;
 		}
-
-
 
 		function __construct($year, $month)
 		{

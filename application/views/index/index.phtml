@@ -20,36 +20,50 @@
     <div class="row">
         <div class="small-12 columns text-center">
             <h2>Current Pay Period</h2>
-            <h3 class="subheader">November 26th 2015 to December 25th 2015</h3>
+            <h3 class="subheader"><?php echo date('F') ?> <?php echo date('Y') ?></h3>
         </div>
     </div>
     <div class="row">
         <div class="small-12 columns">
             <ul class="small-block-grid-3">
                 <li>
-                    <div class="card alert">
-                        <div class="title">Week Validated</div>
-                        <div class="value">20</div>
+                    <div class="card primary">
+                        <div class="title">Title</div>
+                        <div class="value">Value</div>
                     </div>
                 </li>
                 <li>
                     <div class="card">
-                        <div class="title">Month Validated</div>
-                        <div class="value">20</div>
+                        <div class="title">Title</div>
+                        <div class="value">Value</div>
                     </div>
                 </li>
                 <li>
                     <div class="card">
-                        <div class="title"></div>
-                        <div class="value">20</div>
+                        <div class="title">Title</div>
+                        <div class="value">Value</div>
                     </div>
                 </li>
-                <li>
-                    <div class="card">
-                        <div class="title">Validated Week Hours</div>
-                        <div class="value">20</div>
-                    </div>
-                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns text-center">
+            <ul class="button-group round">
+                <li><a class="button success" href="<?php echo $this->link(array("timesheet")) ?>"><i class="fa fa-plus"></i> New Time Entry</a></li>
+                <?php
+                    //Supervisor Level
+                    if($this->authLevel >= 500)
+                    {
+                        echo "<li><a class=\"button\" href=\"".$this->link(array("reports")) ."\"><i class=\"fa fa-file\"></i> View Reports</a></li>";
+                    }
+
+                    //Administrator Level
+                    if($this->authLevel >= 900)
+                    {
+                        echo "<li><a class=\"button\" href=\"".$this->link(array("timesheet")) ."\"><i class=\"fa fa-users\"></i> Manage Users</a></li>";
+                    }
+                ?>
             </ul>
         </div>
     </div>
