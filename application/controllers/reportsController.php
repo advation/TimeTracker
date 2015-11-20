@@ -8,14 +8,26 @@ class reportsController extends Staple_Controller
     {
         $auth = Staple_Auth::get();
         $this->authLevel = $auth->getAuthLevel();
-        if($this->authLevel < 900)
+        if($this->authLevel < 500)
         {
             header("location:".$this->_link(array('index','index'))."");
         }
     }
 
-    public function index()
+    public function index($year = null, $month = null)
     {
-        echo "Reports";
+        if($year == null)
+        {
+            $year = date('Y');
+        }
+
+        if($month == null)
+        {
+            $month = date('m');
+        }
+
+        $report = new reportModel($year, $month);
+        $this->view->report = $report->getTimesheets();
+
     }
 }

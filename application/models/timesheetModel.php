@@ -282,13 +282,20 @@
 			$this->totals = $totals;
 		}
 
-		function __construct($year, $month)
+		function __construct($year, $month, $user = null)
 		{
 			$this->db = Staple_DB::get();
 
-			//Get batchID
-			$user = new userModel();
-			$this->batch = $user->getBatchId();
+			if($user == null)
+			{
+				//Get batchID
+				$user = new userModel();
+				$this->batch = $user->getBatchId();
+			}
+			else
+			{
+				$user = new userModel($user);
+			}
 
 			//Current Dates
 			$currentDate = new DateTime();
