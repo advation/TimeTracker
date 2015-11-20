@@ -149,20 +149,6 @@ $primary-color: #315476;
   background-color:#fff;
 }
 
-.circular {
-  font-size:3em !important;
-  background-color:$info-color;
-  border-radius:50%;
-  width:125px;
-  height:125px;
-  margin-left:auto;
-  margin-right:auto;
-  padding-top:21px;
-  border:7px solid #fff;
-  box-shadow: 0px 0px 10px #888888;
-  margin-bottom:30px;
-}
-
 .warning {
   background-color:$warning-color !important;
   color:#fff !important;
@@ -221,6 +207,23 @@ $primary-color: #315476;
   left:0px;
   display:none;
   color:$primary-color;
+}
+
+.card {
+  border:1px solid #eaeaea;
+  margin:0px;
+  padding:20px;
+}
+
+.card .title {
+  text-align:center;
+  font-size:1.5em;
+  text-transform: uppercase;
+}
+
+.card .value {
+  text-align:center;
+  font-size:3.0em;
 }
 
 // We use these to control various global styles
