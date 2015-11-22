@@ -368,7 +368,7 @@
                 $userId = $user->getId();
 
                 //Check if validated
-                if($this->_validated($id))
+                if($this->validated($id))
                 {
                     $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
                     if($this->db->query($sql))
