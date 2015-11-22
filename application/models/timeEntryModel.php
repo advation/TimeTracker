@@ -499,12 +499,14 @@
 
             if($id == null)
             {
-                $sql = "SELECT inTime, outTime FROM timeEntries WHERE inTime > $dateString AND outTime < $nextDateString AND userId = $userId";
+                $sql = "SELECT inTime, outTime FROM timeEntries WHERE userId = '".$this->db->real_escape_string($userId)."'";
             }
             else
             {
-                $sql = "SELECT inTime, outTime FROM timeEntries WHERE inTime > $dateString AND outTime < $nextDateString AND userId = $userId AND id <> $id";
+                $sql = "SELECT inTime, outTime FROM timeEntries WHERE userId = '".$this->db->real_escape_string($userId)."' AND id <> '".$this->db->real_escape_string($id)."'";
             }
+
+
 
             $query = $this->db->query($sql);
             $data = array();
