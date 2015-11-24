@@ -14,6 +14,20 @@ class auditController extends Staple_Controller
 
     public function index()
     {
+        if(array_key_exists('items',$_GET))
+        {
+            $_SESSION['items'] = $_GET['items'];
+        }
+
+        if(array_key_exists('items',$_SESSION))
+        {
+            $items = $_SESSION['items'];
+        }
+        else
+        {
+            $items = 20;
+        }
+
         if(array_key_exists('page',$_GET))
         {
             $page = $_GET['page'];
@@ -21,20 +35,6 @@ class auditController extends Staple_Controller
         else
         {
             $page = 1;
-        }
-
-        if(array_key_exists('items',$_GET))
-        {
-            Staple_Registry::set('items',$_GET['items']);
-        }
-
-        if(Staple_Auth::get('items') == null)
-        {
-            $items = 20;
-        }
-        else
-        {
-            $items = Staple_Registry::get('items');
         }
 
         $audit = new auditModel();
