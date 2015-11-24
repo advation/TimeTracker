@@ -118,12 +118,20 @@ class auditModel extends Staple_Model
         }
     }
 
-    function getAll($page,$items)
+    function getAll($uid = null,$page,$items)
     {
         $pager = new Staple_Pager();
 
         //Get total rows
-        $sql = "SELECT COUNT(id) as count FROM audit";
+        if($uid == null)
+        {
+            $sql = "SELECT COUNT(id) as count FROM audit";
+        }
+        else
+        {
+            $sql = "SELECT COUNT(id) as count FROM audit WHERE userId = '".$this->db->real_escape_string($uid)."'";
+        }
+
         $result = $this->db->query($sql)->fetch_assoc();
         $total = $result['count'];
 
@@ -131,9 +139,18 @@ class auditModel extends Staple_Model
         $pager->setItemsPerPage($items);
         $pager->setPage($page);
 
-        $sql = "
-            SELECT * FROM audit WHERE 1 ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
-        ";
+        if($uid == null)
+        {
+            $sql = "
+              SELECT * FROM audit ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
+            ";
+        }
+        else
+        {
+            $sql = "
+                SELECT * FROM audit WHERE userId = '".$this->db->real_escape_string($uid)."' ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
+            ";
+        }
 
         $this->pager = $pager;
 

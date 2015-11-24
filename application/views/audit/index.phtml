@@ -4,9 +4,42 @@
             <h1><i class="fa fa-list-alt"></i> Audit Log</h1>
         </div>
     </div>
-
     <div class="row">
-        <div class="small-12 columns">
+        <div class="small-3 columns">
+            <h3><i class="fa fa-filter"></i> Filter Accounts</h3>
+            <ul class="side-nav">
+                <?php
+
+                    if($this->currentUser == null)
+                    {
+                        echo "<li class='active'><a href=\"".$this->link(array('audit'))."\">List All Logs</a></li>";
+                    }
+                    else
+                    {
+                        echo "<li><a href=\"".$this->link(array('audit'))."\">List All Logs</a></li>";
+                    }
+
+                ?>
+
+
+            <?php
+
+                foreach($this->accounts as $user)
+                {
+                    if($user['id'] == $this->currentUser)
+                    {
+                        echo "<li class='active'><a class='' href='".$this->link(array("audit",$user['id']))."'>".$user['lastName'].", ".$user['firstName']."</a></li>";
+                    }
+                    else
+                    {
+                        echo "<li><a class='' href='".$this->link(array("audit",$user['id']))."'>".$user['lastName'].", ".$user['firstName']."</a></li>";
+                    }
+                }
+
+            ?>
+            </ul>
+        </div>
+        <div class="small-9 columns">
             <?php
 
             if(count($this->audit) > 0)
