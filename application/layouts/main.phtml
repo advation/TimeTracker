@@ -15,10 +15,10 @@
     <body>
     <div class="header">
         <div class="row">
-            <div class="small-8 column">
+            <div class="small-7 column">
                 <h1><i class="fa fa-clock-o"></i> TimeTracker</h1>
             </div>
-            <div class="small-3 column text-right">
+            <div class="small-4 column text-right">
                 <h4>
                     <?php
                     $auth = Staple_Auth::get();
@@ -49,7 +49,7 @@
                     if($user->getAuthLevel() >= 500)
                     {
                         echo "
-                            <li><a href=\"".$this->link(array('reports')) ."\"><i class=\"fa fa-file\"></i> Reports</a></li>
+                            <li><a href=\"".$this->link(array('reports')) ."\"><i class=\"fa fa-file\"></i> Timesheet Reports</a></li>
                         ";
                     }
 
@@ -58,6 +58,7 @@
                     {
                         echo "
                             <li><a href=\"".$this->link(array('accounts')) ."\"><i class=\"fa fa-users\"></i> Accounts</a></li>
+                            <li><a href=\"".$this->link(array('audit')) ."\" ><i class=\"fa fa-list-alt\" ></i > Audit Log</a ></li >
                         ";
                     }
 

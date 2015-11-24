@@ -1,9 +1,7 @@
 <?php
 
-class accountsController extends Staple_Controller
+class auditController extends Staple_Controller
 {
-    private $authLevel;
-
     public function _start()
     {
         $auth = Staple_Auth::get();
@@ -16,10 +14,10 @@ class accountsController extends Staple_Controller
 
     public function index()
     {
-        echo "Accounts";
+        $audit = new auditModel();
+        $auditLog = $audit->getAll();
 
-
-
+        $this->view->audit = $auditLog;
     }
 }
 
