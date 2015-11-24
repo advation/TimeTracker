@@ -12,7 +12,7 @@ class auditController extends Staple_Controller
         }
     }
 
-    public function index()
+    public function index($currentUser = null)
     {
         if(array_key_exists('items',$_GET))
         {
@@ -37,11 +37,13 @@ class auditController extends Staple_Controller
             $page = 1;
         }
 
+        $accounts = new userModel();
+        $this->view->accounts = $accounts->listAll($currentUser);
+        $this->view->currentUser = $currentUser;
+
         $audit = new auditModel();
-
-        $auditLog = $audit->getAll($page,$items);
+        $auditLog = $audit->getAll($currentUser,$page,$items);
         $this->view->audit = $auditLog;
-
         $this->view->pager = $audit->getPager();
     }
 }

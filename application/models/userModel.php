@@ -191,5 +191,20 @@
 			$result = $query->fetch_assoc();
 			return $result;
 		}
+
+		function listAll()
+		{
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts ORDER BY lastName ASC, firstName ASC";
+			if($this->db->query($sql)->num_rows > 0)
+			{
+				$query = $this->db->query($sql);
+				while($result = $query->fetch_assoc())
+				{
+					$data[] = $result;
+				}
+				return $data;
+			}
+
+		}
 	}
 ?>
