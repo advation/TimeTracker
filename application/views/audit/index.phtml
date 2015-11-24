@@ -1,0 +1,55 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns text-center">
+            <h1><i class="fa fa-list-alt"></i> Audit Log</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="small-12 columns">
+            <?php
+
+            if(count($this->audit) > 0)
+            {
+                echo "
+                <table width=\"100%\">
+                <thead>
+                <tr>
+                    <th>Time Stamp</th>
+                    <th>Account</th>
+                    <th>Action</th>
+                    <th>Item</th>
+                </tr>
+                </thead>
+                <tbody>
+                ";
+
+                foreach($this->audit as $log)
+                {
+                    echo "
+                        <tr>
+                               <td>".$log['timestamp']."</td>
+                               <td><span data-tooltip aria-haspopup=\"true\" class=\"has-tip\" title=\"".$log['account']['firstName']." ".$log['account']['lastName']."\">".$log['account']['username']."</span></td>
+                               <td>".$log['action']."</td>
+                               <td>".$log['item']."</td>
+                        </tr>
+                    ";
+                }
+
+                echo "
+                </tbody>
+                </table>";
+            }
+
+            ?>
+        </div>
+        <div class="small-12 columns">
+            <?php
+
+            echo $this->pager;
+
+            ?>
+        </div>
+    </div>
+</div>
+

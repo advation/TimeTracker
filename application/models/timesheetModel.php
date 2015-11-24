@@ -429,6 +429,7 @@
 
 			$user = new userModel();
 			$userId = $user->getId();
+			$oldKey = $user->getBatchId();
 
 			$key = sha1(time().$user->getUsername().rand(999,9999999999));
 
@@ -438,16 +439,21 @@
 			{
 				//Key already in use
 				return false;
-				echo "this";
 			}
 			else
 			{
-				echo "that";
 				//Set new key in user account
 				$sql = "UPDATE accounts SET batchId='".$this->db->real_escape_string($key)."' WHERE id=$userId";
 
 				if($this->db->query($sql))
 				{
+					//Log Audit
+					$audit = new auditModel();
+					$audit->setAction('validate');
+					$audit->setUserId($userId);
+					$audit->setItem($oldKey);
+					$audit->save();
+
 					return true;
 				}
 				else
