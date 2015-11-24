@@ -8,6 +8,7 @@ class auditModel extends Staple_Model
     private $userId;
     private $group;
     private $item;
+    private $pager;
 
     /**
      * @return mixed
@@ -81,6 +82,22 @@ class auditModel extends Staple_Model
         $this->item = $item;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPager()
+    {
+        return $this->pager;
+    }
+
+    /**
+     * @param mixed $pager
+     */
+    public function setPager($pager)
+    {
+        $this->pager = $pager;
+    }
+
     function __construct()
     {
         $this->db = Staple_DB::get();
@@ -101,11 +118,24 @@ class auditModel extends Staple_Model
         }
     }
 
-    function getAll()
+    function getAll($page,$items)
     {
+        $pager = new Staple_Pager();
+
+        //Get total rows
+        $sql = "SELECT COUNT(id) as count FROM audit";
+        $result = $this->db->query($sql)->fetch_assoc();
+        $total = $result['count'];
+
+        $pager->setTotal($total);
+        $pager->setItemsPerPage($items);
+        $pager->setPage($page);
+
         $sql = "
-            SELECT * FROM audit WHERE 1 ORDER BY timestamp ASC;
+            SELECT * FROM audit WHERE 1 ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
         ";
+
+        $this->pager = $pager;
 
         if($this->db->query($sql)->num_rows > 0)
         {

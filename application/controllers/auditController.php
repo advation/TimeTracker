@@ -14,10 +14,35 @@ class auditController extends Staple_Controller
 
     public function index()
     {
-        $audit = new auditModel();
-        $auditLog = $audit->getAll();
+        if(array_key_exists('page',$_GET))
+        {
+            $page = $_GET['page'];
+        }
+        else
+        {
+            $page = 1;
+        }
 
+        if(array_key_exists('items',$_GET))
+        {
+            Staple_Registry::set('items',$_GET['items']);
+        }
+
+        if(Staple_Auth::get('items') == null)
+        {
+            $items = 20;
+        }
+        else
+        {
+            $items = Staple_Registry::get('items');
+        }
+
+        $audit = new auditModel();
+
+        $auditLog = $audit->getAll($page,$items);
         $this->view->audit = $auditLog;
+
+        $this->view->pager = $audit->getPager();
     }
 }
 

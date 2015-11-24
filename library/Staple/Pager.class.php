@@ -401,18 +401,18 @@ class Staple_Pager
 		{
 			$action = Staple_Main::getRoute();
 		}
-		$buffer = "<div class=\"staple_pager\">\n<div class=\"staple_pager_pages\">\nPage: ";
+		$buffer = "<div class=\"staple_pager row\">\n<div class=\"staple_pager_pages small-12 medium-11 columns\">\n";
 		$pages = $this->getPages();
 		if(count($pages) > 1)
 		{
 			if($this->getCurrentPage() == 1)
 			{
-				$buffer .= ' &lt;&lt; - &lt; ';
+				$buffer .= '<a class="button tiny secondary disabled"><i class="fa fa-angle-double-left"></i></a> <a class="button tiny secondary disabled"><i class="fa fa-angle-left"></i></a> ';
 			}
 			elseif($this->getCurrentPage() > 1) 
 			{
-				$buffer .= '<a href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>1))).'">&lt;&lt;</a> - ';
-				$buffer .= '<a href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>($this->getCurrentPage()-1)))).'">&lt;</a> ';
+				$buffer .= '<a class="button tiny" href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>1))).'"><i class="fa fa-angle-double-left"></i></a> ';
+				$buffer .= '<a class="button tiny" href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>($this->getCurrentPage()-1)))).'"><i class="fa fa-angle-left"></i></a> ';
 			}
 			if($pages[0] != 1)
 			{
@@ -422,11 +422,11 @@ class Staple_Pager
 			{
 				if($this->getCurrentPage() == $page)
 				{
-					$buffer .= '<span class="currentpage">'.((int)$page).'</span> ';
+					$buffer .= '<span class="currentpage button tiny disabled">'.((int)$page).'</span> ';
 				}
 				else 
 				{
-					$buffer .= '<a href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>(int)$page))).'">'.((int)$page).'</a> ';
+					$buffer .= '<a class="button tiny secondary" href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>(int)$page))).'">'.((int)$page).'</a> ';
 				}
 			}
 			if($pages[count($pages)-1] != $this->getNumberOfPages())
@@ -435,24 +435,24 @@ class Staple_Pager
 			}
 			if($this->getCurrentPage() == $this->getNumberOfPages())
 			{
-				$buffer .= ' &gt; - &gt;&gt; ';
+				$buffer .= '<a class="button tiny secondary disabled"><i class="fa fa-angle-right"></i></a> <a class="button tiny secondary disabled"><i class="fa fa-angle-double-right"></i></a>';
 			}
 			else
 			{
-				$buffer .= '<a href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>($this->getCurrentPage()+1)))).'">&gt;</a> - '; 
-				$buffer .= '<a href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>$this->getNumberOfPages()))).'">&gt;&gt;</a> ';
+				$buffer .= '<a class="button tiny" href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>($this->getCurrentPage()+1)))).'"><i class="fa fa-angle-right"></i></a> ';
+				$buffer .= '<a class="button tiny" href="'.Staple_Link::get($action,array_merge($linkVars,array('page'=>$this->getNumberOfPages()))).'"><i class="fa fa-angle-double-right"></i></a>';
 			}
 		}
 		else 
 		{
-			$buffer .= '<< - < 1 > - >>';
+			$buffer .= '<a class="button tiny secondary disabled"><i class="fa fa-angle-double-left"></i></a> <a class="button tiny secondary disabled"><i class="fa fa-angle-left"></i></a>  <a class="button tiny disabled">1</a> <a class="button tiny secondary disabled"><i class="fa fa-angle-right"></i></a> <a class="button tiny secondary disabled"><i class="fa fa-angle-double-right"></i></a>';
 		}
 		$buffer .= "</div>\n";
 		if($this->getDisplayItemAmountSelector() === true)
 		{
 			
-			$buffer .= "<div class=\"staple_pager_items\">\n";
-			$buffer .= 'Items Per Page: <select onChange="window.location=\''.Staple_Link::get($action,array_merge($linkVars,array('page'=>1)))."&items='+this.value\">\n";
+			$buffer .= "<div class=\"staple_pager_items small-12 medium-1 columns\">\n";
+			$buffer .= '<select onChange="window.location=\''.Staple_Link::get($action,array_merge($linkVars,array('page'=>1)))."&items='+this.value\">\n";
 			foreach($this->getItemAmountSelections() as $value)
 			{
 				$selected = '';
