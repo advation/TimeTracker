@@ -28,6 +28,38 @@ class reportsController extends Staple_Controller
 
         $report = new reportModel($year, $month);
         $this->view->report = $report->getTimesheets();
+    }
+
+    public function weekly()
+    {
+        //Weekly report form
+        $form = new weeklyReportForm();
+
+        if($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if($form->validate())
+            {
+                $data = $form->exportFormData();
+                $report = new weeklyReportModel();
+                $this->view->report = $report->timeWorked($data['account'],$data['year']);
+
+                $account = new userModel();
+                $this->view->account = $account->userInfo($data['account']);
+
+                $this->view->year = $data['year'];
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+        }
+        else
+        {
+            $this->view->form = $form;
+        }
+
+
 
     }
 }

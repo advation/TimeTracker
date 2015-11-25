@@ -1,12 +1,13 @@
 <div class="section">
     <div class="row">
-        <div class="small-12 columns text-center">
+        <div class="small-12 columns">
             <h1><i class="fa fa-file"></i> Reports</h1>
         </div>
     </div>
     <div class="row">
         <div class="small-12 columns">
             <ul class="button-group round right">
+                <li><a class="button small" href="<?php echo $this->link(array('reports','weekly')) ?>">Weekly Breakdown</a></li>
                 <li><a id="showAll" class="button small secondary" href="#"><i class="fa fa-eye"></i> Show All</a></li>
                 <li><a id="hideAll" class="button small secondary" href="#"><i class="fa fa-eye-slash"></i> Hide All</a></li>
             </ul>
@@ -19,10 +20,7 @@
             $i = 0;
             foreach($this->report as $user=>$timesheet)
             {
-                echo "
-                    <h3 id='user'.$i.'' class='timeTitle'>$user <i class='fa fa-chevron-up right'></i></h3>
-                ";
-
+                echo "<h3 id='user'.$i.'' class='timeTitle'>$user <i class='fa fa-chevron-up right'></i></h3>";
                 echo "
         <div class=\"wrapper\">";
 
@@ -95,10 +93,9 @@
 
                 }
 
-                if(count($timesheet) > 0) {
-                    echo "</table>";
-
-
+                if(count($timesheet) > 0)
+                {
+                echo "</table>";
                 echo "<div class=\"row\">";
                 echo "<div class=\"small-6 medium-4 large-3 columns\">";
                                         echo "<div class=\"card successBg\">
