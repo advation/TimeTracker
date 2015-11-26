@@ -52,7 +52,7 @@ class weeklyReportModel extends Staple_Model
         $ret['start']['year'] = $dto->format('Y');
 
         //Week End
-        $dto->modify('+6 days')->setTime(24,0,0);
+        $dto->modify('+5 days')->setTime(24,0,0);
         $ret['end']['unix'] = $dto->format('U');
         $ret['end']['formatted'] = $dto->format('Y-m-d h:i:s');
         $ret['end']['dayName'] = $dto->format('l');

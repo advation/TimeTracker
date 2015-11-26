@@ -4,7 +4,7 @@ class weeklyReportForm extends Staple_Form
 {
     public function _start()
     {
-        //$this->setLayout('insertFormLayout');
+        $this->setLayout('weeklyReportFormLayout');
 
         $this->setName('weeklyReportForm')
             ->setAction($this->link(array('reports','weekly')));
@@ -17,6 +17,7 @@ class weeklyReportForm extends Staple_Form
 
         $year = new Staple_Form_FoundationTextElement('year','Year');
         $year->setRequired()
+            ->setValue(date('Y'))
             ->addValidator(new Staple_Form_Validate_Length(4,4))
             ->addValidator(new Staple_Form_Validate_Numeric());
 
@@ -28,6 +29,10 @@ class weeklyReportForm extends Staple_Form
 
     public function accounts($ids = null)
     {
+        $user = new userModel();
+        $id = $user->getId();
+        $authLevel = $user->getAuthLevel();
+
         $accounts = new userModel();
         $users = $accounts->listAll();
         $data = array();
@@ -35,7 +40,14 @@ class weeklyReportForm extends Staple_Form
         {
             foreach($users as $user)
             {
-                $data[$user['id']] = $user['lastName'].", ".$user['firstName'];
+                if($user['supervisorId'] == $id)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName'];
+                }
+                elseif($authLevel >= 900)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName'];
+                }
             }
         }
         else
