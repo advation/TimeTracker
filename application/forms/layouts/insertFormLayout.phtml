@@ -69,11 +69,22 @@
 </div>
 
 <script>
-    <?php $timesheet = new timesheetModel(date('Y'),date('m')) ?>
+    <?php
+    $date = new DateTime();
+
+    if($date->format('d') > 25)
+    {
+        $date->modify('+1 month');
+    }
+    $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->format('m/d/Y');
+    $minDate = $date->modify('-1 month +1 day');
+    $minDate = $date->format('m/d/Y');
+    ?>
+
     $(document).ready(function() {
 
         $(function() {
-            $( "#date" ).datepicker({numberOfMonths:2, minDate: "<?php echo date('m',strtotime('last month'))."/26/".date('Y') ?>", maxDate: "<?php echo date('m',strtotime('m'))."/25/".date('Y') ?>" });
+            $( "#date" ).datepicker({numberOfMonths:2, minDate: "<?php echo $minDate ?>", maxDate: "<?php echo $maxDate ?>" });
         });
 
         $('#entryToggle').click(function()

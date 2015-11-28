@@ -207,4 +207,9 @@ class reportModel extends Staple_Model
             return 0;
         }
     }
+
+    function weekly()
+    {
+
+    }
 }

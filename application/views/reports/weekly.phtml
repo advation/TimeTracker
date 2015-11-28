@@ -1,0 +1,72 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns">
+            <h2><i class="fa fa-file"></i> Week Report</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-6 push-3 columns">
+            <?php echo $this->form; ?>
+        </div>
+        <div class="small-12 columns">
+            <?php
+                if(count($this->report) > 0)
+                {
+                    echo "
+                        <div class='row'>
+                            <div class='small-6 columns'>
+                                <h3>".$this->account['firstName']." ".$this->account['lastName']."</h3>
+                            </div>
+                            <div class='small-6 columns'>
+                                <a class='button secondary radius right' href='".$this->link(array('reports','weekly'))."'>Back</a>
+                            </div>
+                        </div>
+
+                    <table width=\"100%\">
+                        <thead>
+                        <tr>
+                            <th width='50%'>Week</th>
+                            <th width='50%'>Hours Worked</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                    ";
+                    $i = 0;
+                    foreach($this->report as $entry)
+                    {
+                        if($entry['hoursWorked'] !== null)
+                        {
+                            echo "
+                            <tr>
+                                <td>
+                                    <b>Week:</b> ".$entry['week']." <br>
+                                    <b>Start:</b> ".$entry['start']['dayName'].", ".$entry['start']['month']." ".$entry['start']['day']." ".$entry['start']['year']." <br>
+                                    <b>End:</b> ".$entry['end']['dayName'].", ".$entry['end']['month']." ".$entry['end']['day']." ".$entry['end']['year']."
+                                </td>
+                                <td>".$entry['hoursWorked']."</td>
+                            </tr>
+                            ";
+                            $i++;
+                        }
+                    }
+
+                    if($i == 0)
+                    {
+                        echo "
+                            <tr>
+                                <td colspan='2'>
+                                    <div class='text-center'>User hasn't submitted any time entries for ".$this->year.".</div>
+                                </td>
+                            </tr>
+                        ";
+                    }
+
+                    echo "
+                        </tbody>
+                    </table>
+                    ";
+                }
+            ?>
+        </div>
+    </div>
+</div>

@@ -28,65 +28,42 @@ class timesheetController extends Staple_Controller
                 $data = $form->exportFormData();
 
                 //Check if dates are within the current pay period.
-                $startMonth = date('m',strtotime('last month'));
+                $date = new DateTime();
 
-                if($startMonth == 1)
+                if($date->format('d') > 25)
                 {
-                    $startYear = date('Y',strtotime('last year'));
+                    $date->modify('+1 month');
                 }
-                else
-                {
-                    $startYear = date('Y');
-                }
-
-                $endMonth = date('m');
-                $endYear = date('Y');
-
-                $startDate= strtotime($startMonth.'/26/'.$startYear);
-                $endDate = strtotime($endMonth.'/25/'.$endYear);
-
+                $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->setTime(23,59,59)->getTimestamp();
+                $minDate = $date->modify('-1 month +1 day')->setTime(0,0,0)->getTimestamp();
                 $userDate = strtotime($data['date']);
 
                 //Date is within pay period
-                if($userDate >= $startDate && $userDate <= $endDate)
+                if($userDate >= $minDate && $userDate <= $maxDate)
                 {
-                    //Compare in Times and out Times.
-                    /*
-                    if(strtotime($data['inTime']) < strtotime($data['outTime']))
-                    {
-                    */
-                        //Create a new entry object and set properties
-                        $entry = new timeEntryModel();
-                        $entry->setDate($data['date']);
-                        $entry->setInTime($data['inTime']);
-                        $entry->setOutTime($data['outTime']);
-                        $entry->setLessTime($data['lessTime']);
-                        $entry->setCodeId($data['code']);
+                    //Create a new entry object and set properties
+                    $entry = new timeEntryModel();
+                    $entry->setDate($data['date']);
+                    $entry->setInTime($data['inTime']);
+                    $entry->setOutTime($data['outTime']);
+                    $entry->setLessTime($data['lessTime']);
+                    $entry->setCodeId($data['code']);
 
-                        //Save entry data to table.
-                        if($entry->save())
-                        {
-                            //Return a new time form with success message
-                            $form = new insertTimeForm();
-                            $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
-                            $this->view->insertTimeForm = $form;
-                        }
-                        else
-                        {
-                            //Return the same form with a warning message
-                            $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. Please add a new entry or edit an already existing one.";
-                            $form->errorMessage = array($message);
-                            $this->view->insertTimeForm = $form;
-                        }
-                    /*
+                    //Save entry data to table.
+                    if($entry->save())
+                    {
+                        //Return a new time form with success message
+                        $form = new insertTimeForm();
+                        $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
+                        $this->view->insertTimeForm = $form;
                     }
                     else
                     {
-                        //Return the same form with error message.
-                        $form->errorMessage = array("<b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
+                        //Return the same form with a warning message
+                        $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. Please add a new entry or edit an already existing one.";
+                        $form->errorMessage = array($message);
                         $this->view->insertTimeForm = $form;
                     }
-                    */
                 }
                 else
                 {
@@ -117,7 +94,14 @@ class timesheetController extends Staple_Controller
         if($month == null)
         {
             $date = new DateTime();
-            $month = $date->format('m');
+            if($date->format("j") >= 26)
+            {
+                $month = $date->modify('+1 month')->format('m');
+            }
+            else
+            {
+                $month = $date->format('m');
+            }
         }
 
         //Load timesheet for user.
