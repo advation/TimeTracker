@@ -24,9 +24,9 @@
             $i = 0;
             foreach($this->report as $user=>$timesheet)
             {
-                echo "<h3 id='user'.$i.'' class='timeTitle'>$user <i class='fa fa-chevron-up right'></i></h3>";
+                echo "<h3 id='user'.$i.'' class='timeTitle'>$user <i class='fa fa-chevron-down right'></i></h3>";
                 echo "
-        <div class=\"wrapper\">";
+        <div class=\"wrapper hide\">";
 
                 if(count($timesheet) > 0)
                 {
@@ -35,11 +35,11 @@
                         <thead>
                         <tr>
                             <th>Date</th>
-                            <th>In Time</th>
-                            <th>Out Time</th>
-                            <th>Less Worked</th>
-                            <th>Total Worked</th>
-                            <th>Time Code</th>
+                            <th>In</th>
+                            <th>Out</th>
+                            <th>Less Time</th>
+                            <th>Hours</th>
+                            <th>Code</th>
                             <th>Validated</th>
                         </tr>
                         </thead>
