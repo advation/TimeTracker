@@ -15,6 +15,7 @@ class weeklyReportModel extends Staple_Model
         for($i=1;$i<53;$i++)
         {
             $weeks[$i] = $this->getStartAndEndDate($i, $year);
+            
             $sql = "
               SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime >= ".$weeks[$i]['start']['unix']." AND outTime <= ".$weeks[$i]['end']['unix']." AND userId = $uid;
             ";

@@ -132,36 +132,38 @@ class Staple_ExtendedDBAuthAdapter implements Staple_AuthAdapter
 		{
 			if (array_key_exists('pin', $cred))
 			{
-				$db = Staple_DB::get();
-				switch ($this->_settings['pwenctype'])
+				if($cred['pin'] != 0000)
 				{
-					case 'MD5':
-						$pass = md5($cred['pin']);
-						break;
-					case 'SHA1':
-						$pass = sha1($cred['pin']);
-						break;
-					default:
-						$pass = $cred['pin'];
-				}
+					$db = Staple_DB::get();
+					switch ($this->_settings['pwenctype'])
+					{
+						case 'MD5':
+							$pass = md5($cred['pin']);
+							break;
+						case 'SHA1':
+							$pass = sha1($cred['pin']);
+							break;
+						default:
+							$pass = $cred['pin'];
+					}
 
-				$sql = 'SELECT ' . $db->real_escape_string($this->_settings['pinfield']) . ',' . $db->real_escape_string($this->_settings['uidfield']) . '
+					$sql = 'SELECT ' . $db->real_escape_string($this->_settings['pinfield']) . ',' . $db->real_escape_string($this->_settings['uidfield']) . '
 FROM ' . $db->real_escape_string($this->_settings['authtable']) . '
 WHERE ' . $db->real_escape_string($this->_settings['pinfield']) . ' = ' .
-					'\'' . $db->real_escape_string($pass) . '\';';
+							'\'' . $db->real_escape_string($pass) . '\';';
 
-				if(($result = $db->query($sql)) !== false)
-				{
-					$myrow = $result->fetch_array();
-					//Secondary check to make sure the results did not differ from MySQL's response.
-					if($myrow[$this->_settings['pinfield']] == $pass)
+					if(($result = $db->query($sql)) !== false)
 					{
-						$this->uid = $myrow[$this->_settings['uidfield']];
-						return true;
+						$myrow = $result->fetch_array();
+						//Secondary check to make sure the results did not differ from MySQL's response.
+						if($myrow[$this->_settings['pinfield']] == $pass)
+						{
+							$this->uid = $myrow[$this->_settings['uidfield']];
+							return true;
+						}
 					}
 				}
 			}
-
 
 			if (array_key_exists('username', $cred) && array_key_exists('password', $cred))
 			{

@@ -42,11 +42,11 @@ class weeklyReportForm extends Staple_Form
             {
                 if($user['supervisorId'] == $id)
                 {
-                    $data[$user['id']] = $user['lastName'].", ".$user['firstName'];
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
                 }
                 elseif($authLevel >= 900)
                 {
-                    $data[$user['id']] = $user['lastName'].", ".$user['firstName'];
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
                 }
             }
         }

@@ -17,9 +17,6 @@ class accountsController extends Staple_Controller
     public function index()
     {
         echo "Accounts";
-
-
-
     }
 }
 

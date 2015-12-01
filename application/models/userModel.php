@@ -163,7 +163,7 @@
 			$this->db = Staple_DB::get();
 			$auth = Staple_Auth::get();
 			$username = $auth->getAuthId();
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts WHERE username = '".$this->db->real_escape_string($username)."'";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts WHERE username = '".$this->db->real_escape_string($username)."'";
 
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
@@ -177,6 +177,7 @@
 				$this->setAuthLevel($result['authLevel']);
 				$this->setBatchId($result['batchId']);
 				$this->setSupervisorId($result['supervisorId']);
+				$this->setType($result['type']);
 			}
 			else
 			{
@@ -186,7 +187,7 @@
 
 		function userInfo($id)
 		{
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
 			$query = $this->db->query($sql);
 			$result = $query->fetch_assoc();
 			return $result;
@@ -194,7 +195,7 @@
 
 		function listAll()
 		{
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId FROM accounts ORDER BY lastName ASC, firstName ASC";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts ORDER BY type DESC, lastName ASC, firstName ASC";
 			if($this->db->query($sql)->num_rows > 0)
 			{
 				$query = $this->db->query($sql);
