@@ -68,7 +68,7 @@ class weeklyReportModel extends Staple_Model
         $ret['year'] = $year;
 
         //Week Start
-        $dto->setTime(24,0,0);
+        $dto->setTime(0,0,0);
         $ret['start']['unix'] = $dto->format('U');
         $ret['start']['formatted'] = $dto->format('Y-m-d');
         $ret['start']['dayName'] = $dto->format('l');

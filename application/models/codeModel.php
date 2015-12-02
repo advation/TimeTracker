@@ -96,7 +96,23 @@
 
 		function allCodes()
 		{
-			$sql = "SELECT id, name FROM timeCodes WHERE 1 ORDER BY name ASC";
+
+			$auth = Staple_Auth::get();
+			$uid = $auth->getAuthId();
+			$user = new userModel();
+			$user->userInfo($uid);
+
+			$type = $user->getType();
+
+			if($type == 'part')
+			{
+				$sql = "SELECT id, name FROM timeCodes WHERE type = 'part' ORDER BY name ASC";
+			}
+			else
+			{
+				$sql = "SELECT id, name FROM timeCodes WHERE 1 ORDER BY name ASC";
+			}
+
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
