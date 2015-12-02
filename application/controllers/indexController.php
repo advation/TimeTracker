@@ -2,12 +2,14 @@
 class indexController extends Staple_Controller
 {
 	private $authLevel;
+	private $userId;
 
 	public function _start()
 	{
 		$auth = Staple_Auth::get();
 		$user = new userModel();
 		$this->authLevel = $user->getAuthLevel();
+		$this->userId = $user->getId();
 	}
 
 	public function index()
@@ -19,6 +21,14 @@ class indexController extends Staple_Controller
 
 		$timesheet = new timesheetModel(date('Y'),date('m'));
 		$this->view->timesheet = $timesheet;
+
+		$date = new DateTime();
+		$week = $date->format('W');
+		$year = $date->format('Y');
+
+		$report = new weeklyReportModel();
+
+		$this->view->week = $report->getWeekWorked($this->userId, $week, $year);
 	}
 }
 ?>

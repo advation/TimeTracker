@@ -58,23 +58,17 @@
 
                                     if($this->account['type'] == "part")
                                     {
-                                        if($entry['hoursWorked'] >= 18 AND $entry['hoursWorked'] <= 20)
+                                        if($entry['hoursWorked'] >= 18 AND $entry['hoursWorked'] < 20)
                                         {
-                                            echo "
-                                                <span class='orange'>
-                                                    <p>WARNING: Approaching weekly limit of 20 hours.</p>
-                                                    <i class='fa fa-warning'></i> ".$entry['hoursWorked']."
-                                                </span>
-                                            ";
+                                            echo "<span class='orange'><i class='fa fa-flag'></i> Approaching weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
+                                        }
+                                        elseif($entry['hoursWorked'] == 20)
+                                        {
+                                            echo "<span class='green'><i class='fa fa-flag'></i> At weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
                                         }
                                         elseif($entry['hoursWorked'] >= 21)
                                         {
-                                            echo "
-                                                <span class='red'>
-                                                    <p>Warning: Exceeded weekly limit of 20 hours.</p>
-                                                    <i class='fa fa-warning'></i> ".$entry['hoursWorked']."
-                                                </span>
-                                            ";
+                                            echo "<span class='red'><i class='fa fa-warning'></i> Exceeded weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
                                         }
                                         else
                                         {

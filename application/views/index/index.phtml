@@ -16,55 +16,49 @@
         ";
     }
 ?>
-<div class="section">
-    <div class="row">
-        <div class="small-12 columns text-center">
-            <h2>Current Pay Period</h2>
-            <h3 class="subheader"><?php echo date('F') ?> <?php echo date('Y') ?></h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-12 columns">
-            <ul class="small-block-grid-3">
-                <li>
-                    <div class="card primary">
-                        <div class="title">Title</div>
-                        <div class="value">Value</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="card">
-                        <div class="title">Title</div>
-                        <div class="value">Value</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="card">
-                        <div class="title">Title</div>
-                        <div class="value">Value</div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-12 columns text-center">
-            <ul class="button-group round">
-                <li><a class="button success" href="<?php echo $this->link(array("timesheet")) ?>"><i class="fa fa-plus"></i> New Time Entry</a></li>
-                <?php
-                    //Supervisor Level
-                    if($this->authLevel >= 500)
-                    {
-                        echo "<li><a class=\"button\" href=\"".$this->link(array("reports")) ."\"><i class=\"fa fa-file\"></i> View Reports</a></li>";
-                    }
+<div class="section info">
+        <?php
+        echo "
+            <div class=\"row\">
+                <div class='small-12 columns text-center'>
+                    <h2>Time submitted this week</h2>
+                    <p>".$this->week['start']['month']." ".$this->week['start']['day']." ".$this->week['year']." to ".$this->week['end']['month']." ".$this->week['end']['day']." ".$this->week['year']."</p>
+                </div>
+                <div class='small-12 columns text-center'>
+                    <h2>".$this->week['total']."</h2>
+                </div>
+            </div>
+        ";
 
-                    //Administrator Level
-                    if($this->authLevel >= 900)
-                    {
-                        echo "<li><a class=\"button\" href=\"".$this->link(array("timesheet")) ."\"><i class=\"fa fa-users\"></i> Manage Users</a></li>";
-                    }
-                ?>
-            </ul>
-        </div>
+        echo "</div>";
+        echo "<div class='section'>";
+
+        if($this->timesheet->totals['Total Time'] > 0)
+        {
+            echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns\">
+                    <h2>".date('F')." ".date('Y')." <small> Hours</small></h2>
+                </div>
+            </div>";
+        }
+
+        foreach($this->timesheet->totals as $key=>$value)
+        {
+            if($value > 0)
+            {
+                echo "
+                    <div class='row'>
+                        <div class='small-6 columns'>
+                            <h4>$key</h4>
+                        </div>
+                        <div class='small-6 columns'>
+                            <h4>$value</>
+                        </div>
+                    </div>
+                ";
+            }
+        }
+        ?>
     </div>
 </div>

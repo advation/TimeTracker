@@ -4,7 +4,7 @@
         <div class="small-12 medium-4 text-left columns">
             <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
         </div>
-        <div class="small-12 medium-8 text-right columns">
+        <div class="small-12 medium-8 text-right columns hide-for-print">
             <ul class="button-group round even-5 stack-for-small">
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
@@ -22,7 +22,7 @@
 <?php
     echo "
         <div class=\"row\">
-            <div class=\"small-12 columns\">
+            <div class=\"small-12 columns hide-for-print\">
                 <ul class=\"inline-list right\">
                     <li><a id=\"hideAll\" href=\"#\"><i class=\"fa fa-eye-slash\"></i> Hide All</a></li>
                     <li><a id=\"showAll\" href=\"#\"><i class=\"fa fa-eye\"></i> Show All</a></li>
@@ -36,7 +36,7 @@
         echo "
             <div class=\"row\" style=\"margin-bottom:10px;\">
                 <div class=\"small-4 medium-2 columns\">
-                    <b>Date</b>
+                   &nbsp;
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     <b>Time In</b> <small>(Adjusted)</small>

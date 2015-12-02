@@ -126,7 +126,13 @@ $primary-color: #315476;
  $info-color: #cde0e8;
 
 //TimeTracker
+.blue {
+  color: $primary-color;
+}
 
+.grey {
+  color: #666;
+}
 .green {
   color:$success-color;
 }
@@ -243,7 +249,6 @@ $primary-color: #315476;
   background-color: #fafafa;
   padding:20px;
 }
-
 
 // We use these to control various global styles
 // $body-bg: $white;

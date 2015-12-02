@@ -476,8 +476,14 @@
             $user = new userModel($auth->getAuthId());
             $userId = $user->getId();
 
+            /*
             $dateString = strtotime(date("Y-m-d", $inTime));
             $nextDateString = $dateString + 86400;
+            */
+            $date = new DateTime();
+            $dateString = $inTime;
+            $nextDateString = $date->setTimestamp($inTime)->setTime(23,59,59);
+            $nextDateString = $nextDateString->format('U');
 
             //Find the earliest time for the given date.
             $sql = "
@@ -493,9 +499,16 @@
                 SELECT outTime FROM timeEntries WHERE outTime > '".$this->db->real_escape_string($dateString)."' AND outTime < '".$this->db->real_escape_string($nextDateString)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY outTime DESC LIMIT 1
             ";
 
-            $query = $this->db->query($sql);
-            $result = $query->fetch_assoc();
-            $lastOutTime = $result['outTime'];
+            if($this->db->query($sql)->num_rows > 0)
+            {
+                $query = $this->db->query($sql);
+                $result = $query->fetch_assoc();
+                $lastOutTime = $result['outTime'];
+            }
+            else
+            {
+                $lastOutTime = null;
+            }
 
             if($id == null)
             {
@@ -505,8 +518,6 @@
             {
                 $sql = "SELECT inTime, outTime FROM timeEntries WHERE userId = '".$this->db->real_escape_string($userId)."' AND id <> '".$this->db->real_escape_string($id)."'";
             }
-
-
 
             $query = $this->db->query($sql);
             $data = array();
@@ -535,7 +546,7 @@
 
                 if($inTime < $firstInTime && $outTime > $lastOutTime)
                 {
-                    $overlap++;
+                    //$overlap++;
                 }
             }
 
