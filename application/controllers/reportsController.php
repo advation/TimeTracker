@@ -58,8 +58,10 @@ class reportsController extends Staple_Controller
         {
             $this->view->form = $form;
         }
+    }
 
-
+    public function unlock()
+    {
 
     }
 }

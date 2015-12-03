@@ -15,6 +15,17 @@
                     echo "
                         <div class='row'>
                             <div class='small-6 columns'>
+
+                            </div>
+                            <div class='small-6 columns'>
+                                <a class='button secondary radius right' href='".$this->link(array('reports','weekly'))."'>Back</a>
+                            </div>
+                        </div>
+
+                    <table width=\"100%\">
+                        <thead>
+                        <tr>
+                            <th colspan='2' class='text-center'>
                                 <h3>".$this->account['firstName']." ".$this->account['lastName']." (";
 
                                     if($this->account['type'] == "part")
@@ -27,14 +38,8 @@
                                     }
 
                                 echo")</h3>
-                            </div>
-                            <div class='small-6 columns'>
-                                <a class='button secondary radius right' href='".$this->link(array('reports','weekly'))."'>Back</a>
-                            </div>
-                        </div>
-
-                    <table width=\"100%\">
-                        <thead>
+                            </th>
+                        </tr>
                         <tr>
                             <th width='50%'>Week</th>
                             <th width='50%'>Hours Worked</th>
