@@ -53,20 +53,22 @@
                         ";
                     }
 
-                    //Administrative Accounts
-                    if($user->getAuthLevel() >= 900)
-                    {
-                        echo "
-                            <li><a href=\"".$this->link(array('accounts')) ."\"><i class=\"fa fa-users\"></i> Accounts</a></li>
-                            <li><a href=\"".$this->link(array('audit')) ."\" ><i class=\"fa fa-list-alt\" ></i > Audit Log</a ></li >
-                        ";
-                    }
-
                     ?>
                 </ul>
 
                 <!-- Right Nav Section -->
                 <ul class="right">
+                    <?php
+                        //Administrative Accounts
+                        if($user->getAuthLevel() >= 900)
+                        {
+                            echo "
+                            <li><a href=\"".$this->link(array('accounts')) ."\"><i class=\"fa fa-users\"></i> Accounts</a></li>
+                            <li><a href=\"".$this->link(array('audit')) ."\" ><i class=\"fa fa-list-alt\" ></i > Audit Log</a ></li >
+                            <li><a href=\"".$this->link(array('reports','unlock'))."\"><i class=\"fa fa-unlock\"></i> Time Unlock</a></li>
+                            ";
+                        }
+                    ?>
                     <li><a href="<?php echo $this->link(array('account','logout')) ?>"><i class="fa fa-close"></i> Logout</a></li>
                 </ul>
             </section>

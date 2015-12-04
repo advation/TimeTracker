@@ -84,7 +84,13 @@
     $(document).ready(function() {
 
         $(function() {
-            $( "#date" ).datepicker({numberOfMonths:2, minDate: "<?php echo $minDate ?>", maxDate: "<?php echo $maxDate ?>" });
+            $( "#date" ).datepicker({
+                numberOfMonths:2,
+                minDate: "<?php echo $minDate ?>",
+                maxDate: "<?php echo $maxDate ?>",
+                showWeek: true,
+                showButtonPanel: true
+            });
         });
 
         $('#entryToggle').click(function()
