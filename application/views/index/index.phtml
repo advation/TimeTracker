@@ -27,10 +27,20 @@
                 <div class='small-12 columns text-center'>
                     <h2>".$this->week['total']."</h2>
                 </div>
-            </div>
-        ";
+                ";
 
-        echo "</div>";
+                if($this->unlockedTimes > 0)
+                {
+                    echo "
+                        <div class='row'>
+                            <div class='small-12 column text-center'>
+                                <a class='button radius success' href=\"".$this->link(array('timesheet','unlocked'))."\"><i class='fa fa-calendar'></i> Submit time for previous pay period</a>
+                            </div>
+                        </div>
+                    ";
+                }
+        echo "</div></div>";
+
         echo "<div class='section'>";
 
         if($this->timesheet->totals['Total Time'] > 0)

@@ -4,12 +4,11 @@ class unlockModel extends Staple_Model
 {
     private $db;
     private $username;
+    private $errors;
 
     private $id;
-    private $startTime;
-    private $endTime;
+    private $date;
     private $userId;
-    private $rangeDates;
 
     /**
      * @return mixed
@@ -30,39 +29,22 @@ class unlockModel extends Staple_Model
     /**
      * @return mixed
      */
-    public function getStartTime()
+    public function getDate()
     {
-        $date = new DateTime();
-        $date->setTimestamp($this->startTime);
-        $startTime = $date->format('m/d/Y');
-        return $startTime;
+        $d = new DateTime();
+        $d->setTimestamp($this->date);
+        return $d->format('Y-m-d');
     }
 
     /**
-     * @param mixed $startTime
+     * @param mixed $date
      */
-    public function setStartTime($startTime)
+    public function setDate($date)
     {
-        $this->startTime = strtotime($startTime);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEndTime()
-    {
-        $date = new DateTime();
-        $date->setTimestamp($this->endTime);
-        $endTime = $date->format('m/d/Y');
-        return $endTime;
-    }
-
-    /**
-     * @param mixed $endTime
-     */
-    public function setEndTime($endTime)
-    {
-        $this->endTime = strtotime($endTime);
+        $date = strtotime($date);
+        $d = new DateTime();
+        $d->setTimestamp($date);
+        $this->date = $d->format('U');
     }
 
     /**
@@ -82,21 +64,22 @@ class unlockModel extends Staple_Model
     }
 
     /**
-    * @return mixed
-    */
-    public function getRangeDates()
+     * @return mixed
+     */
+    public function getErrors()
     {
-        return $this->rangeDates;
+        return $this->errors;
     }
 
     /**
-     * @param mixed $rangeDates
+     * @param mixed $errors
      */
-
-    public function setRangeDates($rangeDates)
+    public function setErrors($errors)
     {
-        $this->rangeDates = $rangeDates;
+        $this->errors = $errors;
     }
+
+
 
     function __construct()
     {
@@ -107,43 +90,92 @@ class unlockModel extends Staple_Model
 
     function load($uid)
     {
-        $sql = "SELECT * type FROM overrideDates WHERE username = '".$this->db->real_escape_string($uid)."'";
+        $sql = "SELECT * FROM overrideDates WHERE userId = '".$this->db->real_escape_string($uid)."' ORDER BY date ASC";
 
         if($this->db->query($sql)->fetch_row() > 0)
         {
             $query = $this->db->query($sql);
-            $result = $query->fetch_assoc();
 
-            $this->setId($result['id']);
-            $this->setStartTime($result['startTime']);
-            $this->setEndTime($result['startTime']);
+            while($result = $query->fetch_assoc())
+            {
+                $data[] = $result;
+            }
+            return $data;
         }
     }
 
     function save()
     {
-        if(isset($this->startTime) && !isset($this->id))
+        if(isset($this->date) && !isset($this->id))
         {
-            $sql = "
-                INSERT INTO overrideDates (startTime, endTime, userId) VALUES ('".$this->db->real_escape_string($this->startTime)."','".$this->db->real_escape_string($this->endTime)."','".$this->db->real_escape_string($this->userId)."')
-            ";
-
-            if($this->db->query($sql))
+            $user = new userModel();
+            if($this->getUserId() != $user->getId())
             {
-                $audit = new auditModel();
-                $audit->setUserId($this->userId);
-                $audit->setAction('Range unlock');
-                $audit->setItem($this->username." unlocked dates from ".$this->getStartTime()." to ".$this->getEndTime());
-                $audit->save();
+                //Check if date is in the currect pay period.
+                $timesheet = new timesheetModel(date('Y'),date('m'));
+                if($this->date < $timesheet->getStartDateTimeString())
+                {
+                    //Check for existing date
+                    $sql = "SELECT id FROM overrideDates WHERE date = '".$this->db->real_escape_string($this->date)."' AND userId = '".$this->db->real_escape_string($this->userId)."'";
+                    if($this->db->query($sql)->num_rows == 0)
+                    {
+                        //Check for already existing time entry
+                        $sql = "SELECT FROM_UNIXTIME(inTime,'%Y-%m-%d') AS date FROM timeEntries WHERE userId = '".$this->db->real_escape_string($this->userId)."'";
 
-                return True;
+                        $query = $this->db->query($sql);
+                        $matchDates = 0;
+                        while($result = $query->fetch_assoc())
+                        {
+                            $date = new DateTime();
+                            $date->setTimestamp($this->date);
+                            $submitDate = $date->format('Y-m-d');
+                            if($result['date'] == $submitDate)
+                            {
+                                $matchDates++;
+                            }
+                        }
+
+                        if($matchDates == 0)
+                        {
+                            $sql = "
+                              INSERT INTO overrideDates (date, userId) VALUES ('".$this->db->real_escape_string($this->date)."','".$this->db->real_escape_string($this->userId)."')
+                            ";
+
+                            if($this->db->query($sql))
+                            {
+                                $audit = new auditModel();
+                                $audit->setUserId($this->userId);
+                                $audit->setAction('Date unlock');
+                                $audit->setItem($this->username." unlocked date ".$this->getDate());
+                                $audit->save();
+
+                                return True;
+                            }
+                        }
+                        else
+                        {
+                            $this->errors[] = 'Time entry already exists for this date.';
+                        }
+                    }
+                    else
+                    {
+                        $this->errors[] = 'Unlock already submitted for this date.';
+                    }
+                }
+                else
+                {
+                    $this->errors[]  = "Date cannot be part of the current pay period.";
+                }
+            }
+            else
+            {
+                $this->errors[] = "Cannot unlock time entires for your own timesheet.";
             }
         }
     }
 
     function unlock($id)
     {
-       //get userid
         $sql = "
             SELECT userId FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."';
         ";
@@ -179,55 +211,6 @@ class unlockModel extends Staple_Model
                 }
             }
 
-        }
-    }
-
-    function rangeDates($uid)
-    {
-        $sql = "
-            SELECT * FROM overrideDates WHERE userId = '".$this->db->real_escape_string($uid)."'
-        ";
-
-        if($this->db->query($sql)->num_rows > 0)
-        {
-            $query = $this->db->query($sql);
-
-            $rangeDays = array();
-            $groups = array();
-            $i=0;
-            while($result = $query->fetch_assoc())
-            {
-                $date = new DateTime();
-                $date->setTimestamp($result['startTime']);
-
-                $date2 = new DateTime();
-                $date2->setTimestamp($result['endTime']);
-
-                $interval = $date->diff($date2);
-                $days = $interval->days;
-                $groups[$i]['days'] = $days;
-                $groups[$i]['startTime'] = $result['startTime'];
-                $groups[$i]['endTime'] = $result['endTime'];
-                $i++;
-            }
-
-            $total=0;
-            foreach($groups as $group)
-            {
-                $total += $group['days'];
-            }
-
-            foreach($groups as $group)
-            {
-                for($i=1;$i<=$total;$i++)
-                {
-                    $rangeDays[$i]['startTime'] = $group['startTime'] + (86400 * $i);
-                    $rangeDays[$i]['endTime'] = $group['startTime'] + (86400 * $i) + 86400;
-                    $rangeDays[$i]['formattedStart'] = date('Y-m-d D', $group['startTime'] + (86400 * $i));
-                    $rangeDays[$i]['formattedEnd'] = date('Y-m-d D', $group['startTime'] + (86400 * $i) + 86400);
-                }
-            }
-            return $rangeDays;
         }
     }
 }

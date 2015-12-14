@@ -33,7 +33,8 @@ class changeYearForm extends Staple_Form
         $user = new userModel();
         $userId = $user->getId();
 
-        $sql = "SELECT YEAR(FROM_UNIXTIME(inTime)) AS 'year' FROM timeEntries WHERE userId = $userId GROUP BY year ORDER by year ASC";
+        //$sql = "SELECT YEAR(FROM_UNIXTIME(inTime)) AS 'year' FROM timeEntries WHERE userId = $userId GROUP BY year ORDER by year ASC";
+        $sql = "SELECT YEAR(FROM_UNIXTIME(inTime)) AS 'year' FROM timeEntries GROUP BY year ORDER by year ASC";
 
         if($db->query($sql)->num_rows > 0)
         {

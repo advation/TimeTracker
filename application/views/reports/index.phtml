@@ -5,16 +5,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="small-6 columns">
+        <div class="small-4 columns">
             <ul class="button-group radius left">
                 <li><a class="button small" href="<?php echo $this->link(array('reports','weekly')) ?>"><i class="fa fa-file"></i> Week Report</a></li>
             </ul>
         </div>
-        <div class="small-6 columns">
-            <ul class="button-group radius right">
+        <div class="small-8 columns">
+            <ul class="button-group round right">
+                <li><a class="button small secondary" href="<?php echo $this->link(array('reports',$this->year, $this->previousMonth))?> "><i class="fa fa-caret-left"></i> Previous</a></li>
+                <li><a class="button small secondary" href="<?php echo $this->link(array('reports',$this->year, $this->nextMonth))?> ">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button small secondary" data-reveal-id="yearForm" href="#"><i class="fa fa-calendar"></i> Change Year</a></li>
                 <li><a id="showAll" class="button small secondary" href="#"><i class="fa fa-eye"></i> Show All</a></li>
                 <li><a id="hideAll" class="button small secondary" href="#"><i class="fa fa-eye-slash"></i> Hide All</a></li>
             </ul>
+
         </div>
     </div>
     <div class="row">
@@ -51,7 +55,7 @@
                 $totalVacation = 0;
                 $totalSick = 0;
 
-                foreach($timesheet as $entry)
+                foreach($timesheet as $key=>$entry)
                 {
                     echo "
                         <tr>
@@ -69,6 +73,11 @@
                     else
                     {
                         echo "<i class=\"fa fa-close red\"></i>";
+                    }
+
+                    if($this->accountLevel >= 900)
+                    {
+                        echo " | <a href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i></a>";
                     }
 
                     echo "</td>
@@ -139,6 +148,11 @@
             ?>
         </div>
     </div>
+</div>
+<div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Select a Year</h2>
+    <?php echo $this->yearForm ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 
 <script>

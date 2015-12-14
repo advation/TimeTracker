@@ -3,11 +3,14 @@
 class reportsController extends Staple_Controller
 {
     private $authLevel;
+    private $uid;
 
     public function _start()
     {
         $auth = Staple_Auth::get();
         $this->authLevel = $auth->getAuthLevel();
+        $user = new userModel();
+        $this->uid = $user->getId();
         if ($this->authLevel < 500) {
             header("location:" . $this->_link(array('index', 'index')) . "");
         }
@@ -25,6 +28,38 @@ class reportsController extends Staple_Controller
 
         $report = new reportModel($year, $month);
         $this->view->report = $report->getTimesheets();
+
+        $timesheet = new timesheetModel($year, $month);
+        $this->view->nextMonth = $timesheet->getNextMonth();
+        $this->view->previousMonth = $timesheet->getPreviousMonth();
+        $this->view->year = $timesheet->getCurrentYear();
+        $yearForm = new changeYearForm();
+        $yearForm->setAction($this->_link(array('reports','changeyear')));
+        $this->view->yearForm = $yearForm;
+
+        $this->view->accountLevel = $this->authLevel;
+    }
+
+    public function changeyear()
+    {
+        $form = new changeYearForm();
+        if($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if($form->validate())
+            {
+                $data = $form->exportFormData();
+                header("location: ".$this->_link(array('reports',$data['year']))."");
+            }
+            else
+            {
+                header("location: ".$this->_link(array('reports'))."");
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link(array('reports'))."");
+        }
     }
 
     public function weekly()
@@ -61,36 +96,6 @@ class reportsController extends Staple_Controller
         }
         else
         {
-            $rangeForm = new rangeUnlockForm();
-
-            if ($rangeForm->wasSubmitted()) {
-                $rangeForm->addData($_POST);
-                if ($rangeForm->validate()) {
-                    $data = $rangeForm->exportFormData();
-                    $unlock = new unlockModel();
-                    $unlock->setStartTime($data['startDate']);
-                    $unlock->setEndTime($data['endDate']);
-                    $unlock->setUserId($data['account']);
-                    $unlock->save();
-                    $this->view->rangeForm = new rangeUnlockForm();
-                } else {
-                    $this->view->rangeForm = $rangeForm;
-                }
-            } else {
-                $this->view->rangeForm = $rangeForm;
-            }
-
-            $singleForm = new singleUnlockForm();
-            if ($singleForm->wasSubmitted()) {
-                $singleForm->addData($_POST);
-                if ($singleForm->validate()) {
-                    $data = $singleForm->exportFormData();
-                } else {
-                    $this->view->singleForm = $singleForm;
-                }
-            } else {
-                $this->view->singleForm = $singleForm;
-            }
 
             $year = date('Y');
             $month = date('m');
@@ -105,6 +110,7 @@ class reportsController extends Staple_Controller
     {
         $auth = Staple_Auth::get();
         $this->authLevel = $auth->getAuthLevel();
+
         if ($this->authLevel < 900)
         {
             header("location:" . $this->_link(array('index', 'index')) . "");
@@ -113,9 +119,12 @@ class reportsController extends Staple_Controller
         {
             $unlock = new unlockModel();
 
-            if ($unlock->unlock($id)) {
+            if ($unlock->unlock($id))
+            {
                 $this->view->message = "<i class='fa fa-check'></i> Time entry unlocked.";
-            } else {
+            }
+            else
+            {
                 $this->view->message = "<i class='fa fa-close'></i> ERROR: Unable to unlock your own time entries.";
             }
         }

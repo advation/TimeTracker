@@ -29,12 +29,8 @@ class indexController extends Staple_Controller
 
 		$this->view->week = $report->getWeekWorked($this->userId, $week, $year);
 
-		$overRide = new unlockModel();
-		$test = $overRide->rangeDates($this->userId);
-
-		echo "<pre>";
-		print_r($test);
-		echo "</pre>";
+		$unlock = new unlockModel();
+		$this->view->unlockedTimes = count($unlock->load($this->userId));
 	}
 }
 ?>

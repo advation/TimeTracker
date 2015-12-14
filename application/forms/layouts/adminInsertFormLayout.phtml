@@ -1,7 +1,7 @@
-<div class="info hide-for-print">
-    <div class="row" id="entryToggle">
+<div class="section">
+    <div class="row">
         <div class="small-12 columns text-center">
-            <p><br><a class="" href="#"><i id="entryToggleIcon" class="fa fa-chevron-circle-up"></i> <span id="entryToggleText">Hide</span></a></p>
+            <h2>Admin Time Insert</h2>
         </div>
     </div>
     <div id="entryForm">
@@ -38,6 +38,11 @@
                    <?php
                     echo $this->formstart();
                    ?>
+                </div>
+                <div class="row">
+                    <div class="small-12 medium-12 columns">
+                        <?php echo $this->fields['account'] ?>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="small-6 medium-4 columns">
@@ -82,10 +87,10 @@
     ?>
 
     $(document).ready(function() {
+
         $(function() {
             $( "#date" ).datepicker({
                 numberOfMonths:2,
-                minDate: "<?php echo $minDate ?>",
                 maxDate: "<?php echo $maxDate ?>",
                 showWeek: true,
                 showButtonPanel: true

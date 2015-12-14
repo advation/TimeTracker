@@ -142,13 +142,13 @@ class auditModel extends Staple_Model
         if($uid == null)
         {
             $sql = "
-              SELECT * FROM audit ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
+              SELECT * FROM audit ORDER BY timestamp DESC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
             ";
         }
         else
         {
             $sql = "
-                SELECT * FROM audit WHERE userId = '".$this->db->real_escape_string($uid)."' ORDER BY timestamp ASC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
+                SELECT * FROM audit WHERE userId = '".$this->db->real_escape_string($uid)."' ORDER BY timestamp DESC LIMIT ".$pager->getStartingItem().", ".$pager->getItemsPerPage()."
             ";
         }
 
