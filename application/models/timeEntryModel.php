@@ -20,6 +20,7 @@
         private $codeName;
         private $timeWorked;
         private $batchId;
+        private $userId;
 
         /**
          * @return mixed
@@ -277,6 +278,22 @@
             $this->batchId = $batchId;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getUserId()
+        {
+            return $this->userId;
+        }
+
+        /**
+         * @param mixed $userId
+         */
+        public function setUserId($userId)
+        {
+            $this->userId = $userId;
+        }
+
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -353,6 +370,8 @@
                     $code->load($result['codeId']);
                     $this->setCodeName($code->getName());
 
+                    $this->setUserId($result['userId']);
+
                     return true;
                 }
             }
@@ -366,14 +385,44 @@
                 $auth = Staple_Auth::get();
                 $user = new userModel($auth->getAuthId());
                 $userId = $user->getId();
+                $accountLevel = $user->getAuthLevel();
 
-                //Check if validated
-                if($this->validated($id))
+                $entry = new timeEntryModel($id);
+                $fullDate = $entry->getFullDate();
+                $inTime = $entry->getInTime();
+                $outTime = $entry->getOutTime();
+                $effectedUserId = $entry->getUserId();
+
+                $effectedUser = new userModel();
+                $account = $effectedUser->userInfo($effectedUserId);
+
+                //Check for admin account delete
+                if($accountLevel >= 900)
                 {
-                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
+
                     if($this->db->query($sql))
                     {
+                        $audit = new auditModel();
+                        $audit->setUserId($account['id']);
+                        $audit->setAction('Admin Entry Remove');
+                        $audit->setItem($user->getUsername()." removed entry for ".$fullDate." In Time: ".$inTime." Out Time: ".$outTime."");
+                        $audit->save();
+
                         return true;
+                    }
+                }
+                else
+                {
+                    //Check if validated
+                    if($this->validated($id))
+                    {
+                        $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($userId)."'";
+
+                        if($this->db->query($sql))
+                        {
+                              return true;
+                        }
                     }
                 }
             }
@@ -588,6 +637,46 @@
                 return false;
             }
 
+        }
+
+        function adminSave()
+        {
+            if(isset($this->userId))
+            {
+                //Check for current account.
+                $currentUser = new userModel();
+                if($this->userId != $currentUser->getId())
+                {
+                    $inTime = strtotime($this->getDate()." ".$this->getInTime());
+                    $outTime = strtotime($this->getDate()." ".$this->getOutTime());
+
+                    $sql = "
+                  INSERT INTO timeEntries
+                  (userId,inTime,outTime,lessTime,codeId,batchId)
+                  VALUES (
+                  '".$this->db->real_escape_string($this->userId)."',
+                  '".$this->db->real_escape_string($inTime)."',
+                  '".$this->db->real_escape_string($outTime)."',
+                  '".$this->db->real_escape_string($this->lessTime)."',
+                  '".$this->db->real_escape_string($this->codeId)."',
+                  '".$this->db->real_escape_string("ADMIN ADD")."'
+                  )
+                ";
+
+                    if($this->db->query($sql))
+                    {
+                        $user = new userModel();
+
+                        $audit = new auditModel();
+                        $audit->setUserId($this->userId);
+                        $audit->setAction('Admin Entry Add');
+                        $audit->setItem($user->getUsername()." added entry for ".$this->getDate().". In Time: ".$this->inTime."/Out Time: ".$this->outTime."");
+                        $audit->save();
+
+                        return true;
+                    }
+                }
+            }
         }
 	}
 ?>

@@ -89,7 +89,7 @@ class reportModel extends Staple_Model
 
         while($result = $query->fetch_assoc())
         {
-            $data[] = $this->calculateEntry($result['id']);
+            $data[$result['id']] = $this->calculateEntry($result['id']);
         }
         return $data;
     }

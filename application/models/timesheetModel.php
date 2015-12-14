@@ -381,7 +381,7 @@
 			}
 		}
 
-		/* TODO depricate
+		/* TODO deprecate
 		function payPeriodCalculatedTotals($startDate, $endDate)
 		{
 			//Get user ID from Auth

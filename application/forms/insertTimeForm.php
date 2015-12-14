@@ -2,8 +2,48 @@
 
 class insertTimeForm extends Staple_Form
 {
+    private $accountLevel;
+    private $adminAction;
+
+    /**
+     * @return mixed
+     */
+    public function getAdminAction()
+    {
+        return $this->adminAction;
+    }
+
+    /**
+     * @param mixed $adminAction
+     */
+    public function setAdminAction($adminAction)
+    {
+        $this->adminAction = $adminAction;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccountLevel()
+    {
+        return $this->accountLevel;
+    }
+
+    /**
+     * @param mixed $accountLevel
+     */
+    public function setAccountLevel($accountLevel)
+    {
+        $this->accountLevel = $accountLevel;
+    }
+
     public function _start()
     {
+        $auth = Staple_Auth::get();
+        $user = new userModel();
+        $user->userInfo($auth->getAuthId());
+        $this->accountLevel = $user->getAuthLevel();
+
         $this->setLayout('insertFormLayout');
 
         $this->setName('insertTimeForm')
@@ -41,6 +81,68 @@ class insertTimeForm extends Staple_Form
         $submit->addClass('button expand radius');
 
         $this->addField($date, $inTime, $outTime, $lessTime, $code, $submit);
+    }
+
+    public function admin($key)
+    {
+        if($key == 1)
+        {
+            $this->setAdminAction(1);
+            if($this->accountLevel >= 900)
+            {
+                if($this->adminAction == 1)
+                {
+                    $this->setAction($this->link(array('timesheet','admininsert')));
+                    $this->setLayout('adminInsertFormLayout');
+                    $account = new Staple_Form_FoundationSelectElement('account','Account');
+
+                    $account->setRequired()
+                        ->addOption('','Select an account')
+                        ->addOptionsArray($this->accounts())
+                        ->addValidator(new Staple_Form_Validate_InArray($this->accounts(1)));
+                    $this->addField($account);
+                }
+            }
+        }
+        else
+        {
+            $this->setAdminAction(0);
+        }
+
+    }
+
+    public function accounts($ids = null)
+    {
+        $user = new userModel();
+        $id = $user->getId();
+        $authLevel = $user->getAuthLevel();
+
+        $accounts = new userModel();
+        $users = $accounts->listAll();
+        $data = array();
+        if($ids == null)
+        {
+            foreach($users as $user)
+            {
+                if($user['supervisorId'] == $id)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                }
+                elseif($authLevel >= 900)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                }
+            }
+        }
+        else
+        {
+            foreach($users as $user)
+            {
+                $data[] = $user['id'];
+            }
+        }
+
+        return $data;
     }
 }
 

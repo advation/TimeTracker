@@ -1,0 +1,99 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns">
+            <h2><i class="fa fa-unlock"></i> Time Unlock</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <hr>
+            <h3>Current Pay Period Entry Unlock</h3>
+            <?php
+                if(count($this->accounts->timesheets) > 0)
+                {
+                    foreach($this->accounts->timesheets as $account=>$timesheet)
+                    {
+                        if(count($timesheet) > 0)
+                        {
+                            $validatedTotal = 0;
+                            foreach($timesheet as $entry)
+                            {
+                                if($entry['validated'] == 1)
+                                {
+                                    $validatedTotal++;
+                                }
+                            }
+
+                            echo "<h4 class='timeTitle'>$account <i class='fa fa-chevron-down right'></i></h4>";
+                            echo "<div class='wrapper hide'>";
+                            if($validatedTotal > 0)
+                            {
+                                echo "
+                                    <table width='100%'>
+                                        <tr>
+                                               <th>Date</th>
+                                               <th>Start Time</th>
+                                               <th>End Time</th>
+                                               <th>Code</th>
+                                               <th>Action</th>
+                                        </tr>
+                                ";
+
+                                foreach($timesheet as $id=>$entry)
+                                {
+                                    if($entry['validated'] == 1)
+                                    {
+                                        echo "
+                                        <tr>
+                                            <td>".$entry['date']."</td>
+                                            <td>".date("g:i A",$entry['inTime'])."</td>
+                                            <td>".date("g:i A",$entry['outTime'])."</td>
+                                            <td>".$entry['code']."</td>
+                                            <td><a href=\"".$this->link(array('reports','unlockid',$id))."\"><i class='fa fa-unlock-alt'></i> Unlock</td>
+                                        </tr>
+                                        ";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                echo "<div class='text-center'>No validated time submitted for this pay period.</div>";
+                            }
+                            echo "</table></div> <!-- end wrapper -->";
+                        }
+                    }
+                }
+            ?>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $( "#date" ).datepicker({
+            numberOfMonths: 2,
+            showWeek: true,
+            showButtonPanel: true
+        });
+
+        $(".timeTitle").click(function() {
+            $(this).next(".wrapper").slideToggle("slow");
+            $(this).find("i").toggleClass("fa-chevron-up fa-chevron-down")
+            return false;
+        });
+
+        $("#hideAll").click(function() {
+            $(".wrapper").slideUp();
+            $(".timeTitle").find("i").removeClass("fa-chevron-up")
+            $(".timeTitle").find("i").addClass("fa-chevron-down")
+            return false;
+        });
+
+        $("#showAll").click(function() {
+            $(".wrapper").slideDown();
+            $(".timeTitle").find("i").removeClass("fa-chevron-down")
+            $(".timeTitle").find("i").addClass("fa-chevron-up")
+            return false;
+        });
+    });
+</script>

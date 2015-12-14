@@ -195,6 +195,7 @@
 
 		function listAll()
 		{
+			$userId = $this->id;
 			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts ORDER BY type DESC, lastName ASC, firstName ASC";
 			if($this->db->query($sql)->num_rows > 0)
 			{

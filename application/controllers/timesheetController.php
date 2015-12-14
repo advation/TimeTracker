@@ -1,9 +1,16 @@
 <?php
 class timesheetController extends Staple_Controller
 {
+    private $userId;
+    private $accountLevel;
+
     public function _start()
     {
-
+        $auth = Staple_Auth::get();
+        $user = new userModel();
+        $user->userInfo($auth->getAuthId());
+        $this->userId = $user->getId();
+        $this->accountLevel = $user->getAuthLevel();
     }
 
     public function index($year = null, $month = null)
@@ -215,39 +222,29 @@ class timesheetController extends Staple_Controller
                     //Date is within pay period
                     if($userDate >= $startDate && $userDate <= $endDate)
                     {
-                        //Compare in Times and out Times.
-                        //if(strtotime($data['inTime']) < strtotime($data['outTime']))
-                        //{
-                            //Create a new entry object and set properties
-                            $entry = new timeEntryModel();
-                            $entry->setId($id);
-                            $entry->setDate($data['date']);
-                            $entry->setInTime($data['inTime']);
-                            $entry->setOutTime($data['outTime']);
-                            $entry->setLessTime($data['lessTime']);
-                            $entry->setCodeId($data['code']);
+                        //Create a new entry object and set properties
+                        $entry = new timeEntryModel();
+                        $entry->setId($id);
+                        $entry->setDate($data['date']);
+                        $entry->setInTime($data['inTime']);
+                        $entry->setOutTime($data['outTime']);
+                        $entry->setLessTime($data['lessTime']);
+                        $entry->setCodeId($data['code']);
 
-                            //Save entry data to table.
-                            if($entry->save())
-                            {
-                                //Return a new time form with success message
-                                $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
-                                $this->view->form = $form;
-                            }
-                            else
-                            {
-                                //Return the same form with a warning message
-                                $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. If you are updating an already existing entry, remove that entry and submit a new one.";
-                                $form->errorMessage = array($message);
-                                $this->view->form = $form;
-                            }
-                        //}
-                        //else
-                        //{
-                            //Return the same form with error message.
-                        //    $form->errorMessage = array("<i class='fa fa-warning'></i> <b>'Time In'</b> entry cannot be before <b>'Time Out'</b> entry.");
-                        //    $this->view->form = $form;
-                        //}
+                        //Save entry data to table.
+                        if($entry->save())
+                        {
+                            //Return a new time form with success message
+                            $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
+                            $this->view->form = $form;
+                        }
+                        else
+                        {
+                            //Return the same form with a warning message
+                            $message = "<i class=\"fa fa-warning\"></i> Cannot insert overlapping time entries. If you are updating an already existing entry, remove that entry and submit a new one.";
+                            $form->errorMessage = array($message);
+                            $this->view->form = $form;
+                        }
                     }
                     else
                     {
@@ -305,13 +302,16 @@ class timesheetController extends Staple_Controller
         $user = new userModel($auth->getAuthId());
         $batchId = $user->getBatchId();
 
-        //Check for unvalidated entries
+        //Check for unvalidated entries within the current pay period.
         $i = 0;
         foreach($timesheet->getEntries() as $entry)
         {
-            if($entry->batchId == $timesheet->getBatch())
+            if($entry->inTimeRaw >= $timesheet->getStartDateTimeString() && $entry->inTimeRaw <= $timesheet->getEndDateTimeString())
             {
-                $i++;
+                if($entry->batchId == $timesheet->getBatch())
+                {
+                    $i++;
+                }
             }
         }
 
@@ -324,8 +324,11 @@ class timesheetController extends Staple_Controller
 
             if($form->wasSubmitted())
             {
-                $timesheet->validate($batchId);
-                header("location:".$this->_link(array('timesheet'))."");
+                if($entry->inTimeRaw >= $timesheet->getStartDateTimeString() && $entry->inTimeRaw <= $timesheet->getEndDateTimeString())
+                {
+                    $timesheet->validate($batchId);
+                    header("location:" . $this->_link(array('timesheet')) . "");
+                }
             }
             else
             {
@@ -339,6 +342,88 @@ class timesheetController extends Staple_Controller
             $this->view->timesheet = array();
         }
 
+    }
+
+    public function unlocked()
+    {
+        $form = new unlockDatesForm();
+
+        if($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if($form->validate())
+            {
+                $data = $form->exportFormData();
+                echo "<pre>";
+                print_r($data);
+                echo "</pre>";
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+        }
+        else
+        {
+            $this->view->form = $form;
+        }
+
+    }
+
+    public function admininsert()
+    {
+        if($this->accountLevel >= 900)
+        {
+            $form = new insertTimeForm();
+            $form->admin(1);
+
+            if($form->wasSubmitted())
+            {
+                $form->addData($_POST);
+                if($form->validate())
+                {
+                    $data = $form->exportFormData();
+
+                    //Create a new entry object and set properties
+                    $entry = new timeEntryModel();
+                    $entry->setDate($data['date']);
+                    $entry->setInTime($data['inTime']);
+                    $entry->setOutTime($data['outTime']);
+                    $entry->setLessTime($data['lessTime']);
+                    $entry->setCodeId($data['code']);
+                    $entry->setUserId($data['account']);
+
+                    //Save entry data to table.
+                    if($entry->adminSave())
+                    {
+                        //Return a new time form with success message
+                        $form = new insertTimeForm();
+                        $form->admin(1);
+                        $form->successMessage = array("<i class=\"fa fa-check\"></i> Entry saved for ".$data['date']."");
+                        $this->view->form = $form;
+                    }
+                    else
+                    {
+                        //Return the same form with a warning message
+                        $message = "<i class=\"fa fa-warning\"></i> Administrative action not allowed on your own timesheet.";
+                        $form->errorMessage = array($message);
+                        $this->view->form = $form;
+                    }
+                }
+                else
+                {
+                    $this->view->form = $form;
+                }
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link(array('index'))."");
+        }
     }
 }
 ?>
