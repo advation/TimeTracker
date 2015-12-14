@@ -87,14 +87,20 @@
             echo "
             <div class=\"row\" style=\"border-bottom:1px #ccc solid; padding:10px;\"> \n
                <div class=\"small-4 medium-2 columns\"> \n";
-
-               if($this->timesheet->getBatch() == $entry->batchId)
+               if($entry->batchId == "ADMIN ADD")
                {
-                    echo "<a class=\"button radius tiny\" style=\"margin:0px; width:100%; left:-15px;\" href=\"".$this->link(array('timesheet','edit',$entry->id))."\"><i class=\"fa fa-edit\"></i> Edit</a> \n";
+                   echo "<i class=\"fa fa-warning\"></i> Admin. Add";
                }
                else
                {
-                   echo "<i class=\"fa fa-lock\"></i> Validated \n";
+                   if($this->timesheet->getBatch() == $entry->batchId)
+                   {
+                       echo "<a class=\"button radius tiny\" style=\"margin:0px; width:100%; left:-15px;\" href=\"".$this->link(array('timesheet','edit',$entry->id))."\"><i class=\"fa fa-edit\"></i> Edit</a> \n";
+                   }
+                   else
+                   {
+                       echo "<i class=\"fa fa-lock\"></i> Validated \n";
+                   }
                }
 
             echo "
