@@ -22,6 +22,7 @@
         private $batchId;
         private $userId;
         private $timestamp;
+        private $note;
 
         /**
          * @return mixed
@@ -311,6 +312,24 @@
             $this->timestamp = $timestamp;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getNote()
+        {
+            return $this->note;
+        }
+
+        /**
+         * @param mixed $note
+         */
+        public function setNote($note)
+        {
+            $this->note = $note;
+        }
+
+
+
 
 		function __construct($id = null)
 		{
@@ -333,7 +352,7 @@
                     //Set inTime
                     $inTime = new DateTime();
                     $inTime->setTimestamp($result['inTime']);
-                    $this->setInTime($inTime->format('h:i A'));
+                    $this->setInTime($inTime->format('g:i A'));
                     $this->setInTimeRaw($result['inTime']);
                     $this->setRoundedInTime($this->nearestQuarterHour($result['inTime']));
                     $this->setInTimeDate(date("Y-m-d", $result['inTime']));
@@ -341,7 +360,7 @@
                     //Out Time
                     $outTime = new DateTime();
                     $outTime->setTimestamp($result['outTime']);
-                    $this->setOutTime($outTime->format('h:i A'));
+                    $this->setOutTime($outTime->format('g:i A'));
                     $this->setOutTimeRaw($result['outTime']);
                     $this->setRoundedOutTime($this->nearestQuarterHour($result['outTime']));
                     $this->setOutTimeDate(date("Y-m-d", $result['outTime']));
@@ -390,6 +409,7 @@
 
                     $this->setUserId($result['userId']);
                     $this->setTimestamp($result['timestamp']);
+                    $this->setNote($result['note']);
 
                     return true;
                 }
@@ -418,17 +438,21 @@
                 //Check for admin account delete
                 if($accountLevel >= 900)
                 {
-                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
-
-                    if($this->db->query($sql))
+                    //Check for active admin account
+                    if($account['id'] != $user->getId())
                     {
-                        $audit = new auditModel();
-                        $audit->setUserId($account['id']);
-                        $audit->setAction('Admin Entry Remove');
-                        $audit->setItem($user->getUsername()." removed entry for ".$fullDate." In Time: ".$inTime." Out Time: ".$outTime."");
-                        $audit->save();
+                        $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
 
-                        return true;
+                        if($this->db->query($sql))
+                        {
+                            $audit = new auditModel();
+                            $audit->setUserId($account['id']);
+                            $audit->setAction('Admin Entry Remove');
+                            $audit->setItem($user->getUsername()." removed entry for ".$fullDate." In Time: ".$inTime." Out Time: ".$outTime."");
+                            $audit->save();
+
+                            return true;
+                        }
                     }
                 }
                 else
@@ -671,13 +695,14 @@
 
                     $sql = "
                   INSERT INTO timeEntries
-                  (userId,inTime,outTime,lessTime,codeId,batchId)
+                  (userId,inTime,outTime,lessTime,codeId,note,batchId)
                   VALUES (
                   '".$this->db->real_escape_string($this->userId)."',
                   '".$this->db->real_escape_string($inTime)."',
                   '".$this->db->real_escape_string($outTime)."',
                   '".$this->db->real_escape_string($this->lessTime)."',
                   '".$this->db->real_escape_string($this->codeId)."',
+                  '".$this->db->real_escape_string($this->note)."',
                   '".$this->db->real_escape_string("ADMIN ADD")."'
                   )
                 ";

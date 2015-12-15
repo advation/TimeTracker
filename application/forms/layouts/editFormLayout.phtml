@@ -49,3 +49,28 @@
     </div>
     <?php echo $this->formend(); ?>
 </div>
+<script>
+    <?php
+    $date = new DateTime();
+
+    if($date->format('d') > 25)
+    {
+        $date->modify('+1 month');
+    }
+    $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->format('m/d/Y');
+    $minDate = $date->modify('-1 month +1 day');
+    $minDate = $date->format('m/d/Y');
+    ?>
+
+    $(document).ready(function() {
+        $(function() {
+            $( "#date" ).datepicker({
+                numberOfMonths:2,
+                minDate: "<?php echo $minDate ?>",
+                maxDate: "<?php echo $maxDate ?>",
+                showWeek: true,
+                showButtonPanel: true
+            });
+        });
+    });
+</script>

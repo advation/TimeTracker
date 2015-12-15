@@ -41,30 +41,31 @@
             <section class="top-bar-section">
                 <!-- Right Nav Section -->
                 <ul class="left">
-                    <li><a href="<?php echo $this->link(array('index')) ?>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                    <li><a href="<?php echo $this->link(array('timesheet')) ?>"><i class="fa fa-clock-o"></i> Timesheet</a></li>
+                    <li><a href="<?php echo $this->link(array('index')) ?>"><i class="fa fa-dashboard"></i> Your Dashboard</a></li>
+                    <li><a href="<?php echo $this->link(array('timesheet')) ?>"><i class="fa fa-clock-o"></i> Your Timesheet</a></li>
+                </ul>
+
+                <!-- Right Nav Section -->
+                <ul class="right">
                     <?php
 
                     //Supervisor Accounts
                     if($user->getAuthLevel() >= 500)
                     {
                         echo "
-                            <li><a href=\"".$this->link(array('reports')) ."\"><i class=\"fa fa-file\"></i> Timesheet Reports</a></li>
+                            <li><a href=\"".$this->link(array('reports')) ."\"><i class=\"fa fa-file\"></i> Staff Timesheet Reports</a></li>
                         ";
                     }
 
                     ?>
-                </ul>
 
-                <!-- Right Nav Section -->
-                <ul class="right">
                     <?php
                         //Administrative Accounts
                         if($user->getAuthLevel() >= 900)
                         {
                             echo "
                             <li class=\"has-dropdown\">
-                                <a href=\"#\">Admin Tools</a>
+                                <a href=\"#\"><i class='fa fa-gear'></i> Admin Tools</a>
                                 <ul class=\"dropdown\">
                                     <li><a href=\"".$this->link(array('accounts')) ."\"><i class=\"fa fa-users\"></i> Accounts</a></li>
                                     <li><a href=\"".$this->link(array('timesheet','admininsert'))."\" ><i class=\"fa fa-plus\" ></i > Admin Time Insert </a ></li >

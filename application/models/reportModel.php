@@ -119,8 +119,8 @@ class reportModel extends Staple_Model
         $outTimeDate = date("Y-m-d", $result['outTime']);
 
         $lessTime = $result['lessTime'];
-
         $timestamp = $result['timestamp'];
+        $note = $result['note'];
 
         //Calculate Time Worked
         switch($result['lessTime'])
@@ -169,6 +169,7 @@ class reportModel extends Staple_Model
         $data['timeWorked'] = $timeWorked;
         $data['code'] = $codeName;
         $data['timestamp'] = $timestamp;
+        $data['note'] = $note;
 
         //Get the user of the entry.
         $entry = new timeEntryModel($id);

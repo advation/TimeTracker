@@ -38,6 +38,10 @@ class reportsController extends Staple_Controller
         $this->view->yearForm = $yearForm;
 
         $this->view->accountLevel = $this->authLevel;
+
+        $date = new DateTime();
+        $date->setDate($year, $month, 1);
+        $this->view->month = $date->format('F');
     }
 
     public function changeyear()

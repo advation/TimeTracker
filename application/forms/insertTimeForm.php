@@ -94,13 +94,19 @@ class insertTimeForm extends Staple_Form
                 {
                     $this->setAction($this->link(array('timesheet','admininsert')));
                     $this->setLayout('adminInsertFormLayout');
-                    $account = new Staple_Form_FoundationSelectElement('account','Account');
 
+                    $account = new Staple_Form_FoundationSelectElement('account','Account');
                     $account->setRequired()
                         ->addOption('','Select an account')
                         ->addOptionsArray($this->accounts())
                         ->addValidator(new Staple_Form_Validate_InArray($this->accounts(1)));
-                    $this->addField($account);
+
+                    $note = new Staple_Form_FoundationTextElement('note','Note');
+                    $note->setRequired()
+                        ->addValidator(new Staple_Form_Validate_Length(1,5000))
+                        ->addFilter(new Staple_Form_Filter_Trim());
+
+                    $this->addField($account, $note);
                 }
             }
         }

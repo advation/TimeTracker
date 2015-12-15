@@ -1,7 +1,10 @@
 <div class="section">
     <div class="row">
-        <div class="small-12 columns">
+        <div class="small-6 columns">
             <h1><i class="fa fa-file"></i> Reports</h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <h1 class="subheader"><?php echo $this->month ?> <?php echo $this->year?></h1>
         </div>
     </div>
     <div class="row">
@@ -45,8 +48,12 @@
                             <th>Hours</th>
                             <th>Code</th>
                             <th>Date Stamp</th>
-                            <th>Validated</th>
-                        </tr>
+                            <th>Validated</th>";
+                            if($this->accountLevel >= 900)
+                            {
+                                echo "<th>Action</th>";
+                            }
+                        echo"</tr>
                         </thead>
                     ";
                 }
@@ -60,13 +67,13 @@
                 {
                     echo "
                         <tr>
-                               <td>".$entry['date']."</td>
+                               <td>".date("l, F jS Y",strtotime($entry['date']))."</td>
                                <td>".date("g:i A",$entry['inTime'])."</td>
                                <td>".date("g:i A",$entry['outTime'])."</td>
                                <td>".$entry['lessTime']." <small>Hours</small></td>
                                <td>".$entry['timeWorked']."</td>
                                <td>".$entry['code']."</td>
-                               <td>".$entry['timestamp']."</td>
+                               <td>".date("M. jS Y @ G:i A",strtotime($entry['timestamp']))."</td>
                                <td><div class='text-center'>";
 
                     if($entry['validated'] == 1)
@@ -78,14 +85,25 @@
                         echo "<i class=\"fa fa-close red\"></i>";
                     }
 
+                    echo "</td>";
+
                     if($this->accountLevel >= 900)
                     {
-                        echo " | <a href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i></a>";
+                        echo "<td><a class='button tiny radius warning' href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i> Delete</a></td>";
                     }
 
-                    echo "</td>
-                        </tr>
-                    ";
+                    echo "</tr>";
+
+                    if(strlen($entry['note']) > 0)
+                    {
+                        echo "
+                            <tr>
+                                <td colspan='9'>
+                                    <b>Note:</b> ".$entry['note']."
+                                </td>
+                            </tr>
+                        ";
+                    }
 
                     if($entry['validated'] == 1)
                     {

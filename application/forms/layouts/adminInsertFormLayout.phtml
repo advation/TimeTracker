@@ -40,29 +40,32 @@
                    ?>
                 </div>
                 <div class="row">
-                    <div class="small-12 medium-12 columns">
+                    <div class="small-6 medium-4 columns">
                         <?php echo $this->fields['account'] ?>
                     </div>
-                </div>
-                <div class="row">
                     <div class="small-6 medium-4 columns">
                         <?php echo $this->fields['date'] ?>
                     </div>
-                    <div class="small-6 medium-4 columns">
+                    <div class="small-6 medium-4 columns end">
                         <?php echo $this->fields['inTime'] ?>
-                    </div>
-                    <div class="small-6 medium-4 columns">
-                        <?php echo $this->fields['outTime'] ?>
                     </div>
                 </div>
                 <div class="row">
                     <div class="small-6 medium-4 columns">
+                        <?php echo $this->fields['outTime'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns">
                         <?php echo $this->fields['lessTime'] ?>
                     </div>
-                    <div class="small-6 medium-4 columns">
+                    <div class="small-6 medium-4 columns end">
                         <?php echo $this->fields['code'] ?>
                     </div>
-                    <div class="small-6 medium-4 columns">
+                </div>
+                <div class="row">
+                    <div class="small-6 medium-8 columns">
+                        <?php echo $this->fields['note'] ?>
+                    </div>
+                    <div class="small-6 medium-4 columns end">
                         <br>
                         <?php echo $this->fields['submit'] ?>
                     </div>

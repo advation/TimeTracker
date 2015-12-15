@@ -85,7 +85,7 @@
             }
 
             echo "
-            <div class=\"row\" style=\"border-bottom:1px #ccc solid; padding:10px;\"> \n
+            <div class=\"row\" style=\"padding-top:5px;\"> \n
                <div class=\"small-4 medium-2 columns\"> \n";
                if($entry->batchId == "ADMIN ADD")
                {
@@ -119,6 +119,11 @@
                 </div> \n
                 <div class=\"small-4 medium-2 columns\"> \n
                     ".$entry->codeName." \n
+                </div> \n
+            </div>
+            <div class=\"row\" style='border-bottom:1px #a7a7a7 solid; '>
+                <div class=\"small-12 medium-10 medium-push-2 columns\"> \n
+                   ".$entry->note."
                 </div> \n
             </div> <!-- end row --> \n
             ";

@@ -155,7 +155,7 @@ class timesheetController extends Staple_Controller
                 }
                 else
                 {
-                    $this->view->message = "ERROR: Could not remove entry.";
+                    $this->view->message = "ERROR: Cannot remove entry.";
                 }
             }
             else
@@ -344,6 +344,7 @@ class timesheetController extends Staple_Controller
 
     }
 
+    /* TODO REMOVE
     public function unlocked()
     {
         $form = new unlockDatesForm();
@@ -354,9 +355,6 @@ class timesheetController extends Staple_Controller
             if($form->validate())
             {
                 $data = $form->exportFormData();
-                echo "<pre>";
-                print_r($data);
-                echo "</pre>";
             }
             else
             {
@@ -369,6 +367,7 @@ class timesheetController extends Staple_Controller
         }
 
     }
+    */
 
     public function admininsert()
     {
@@ -392,6 +391,7 @@ class timesheetController extends Staple_Controller
                     $entry->setLessTime($data['lessTime']);
                     $entry->setCodeId($data['code']);
                     $entry->setUserId($data['account']);
+                    $entry->setNote($data['note']);
 
                     //Save entry data to table.
                     if($entry->adminSave())
