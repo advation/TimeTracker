@@ -44,6 +44,7 @@
                             <th>Less Time</th>
                             <th>Hours</th>
                             <th>Code</th>
+                            <th>Date Stamp</th>
                             <th>Validated</th>
                         </tr>
                         </thead>
@@ -64,7 +65,9 @@
                                <td>".date("g:i A",$entry['outTime'])."</td>
                                <td>".$entry['lessTime']." <small>Hours</small></td>
                                <td>".$entry['timeWorked']."</td>
-                               <td>".$entry['code']."</td><td><div class='text-center'>";
+                               <td>".$entry['code']."</td>
+                               <td>".$entry['timestamp']."</td>
+                               <td><div class='text-center'>";
 
                     if($entry['validated'] == 1)
                     {

@@ -29,6 +29,10 @@ class reportsController extends Staple_Controller
         $report = new reportModel($year, $month);
         $this->view->report = $report->getTimesheets();
 
+        echo "<pre>";
+        print_r($this->view->report);
+        echo "</pre>";
+
         $timesheet = new timesheetModel($year, $month);
         $this->view->nextMonth = $timesheet->getNextMonth();
         $this->view->previousMonth = $timesheet->getPreviousMonth();

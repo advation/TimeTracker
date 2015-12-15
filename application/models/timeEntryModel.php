@@ -21,6 +21,7 @@
         private $timeWorked;
         private $batchId;
         private $userId;
+        private $timestamp;
 
         /**
          * @return mixed
@@ -294,6 +295,23 @@
             $this->userId = $userId;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getTimestamp()
+        {
+            return $this->timestamp;
+        }
+
+        /**
+         * @param mixed $timestamp
+         */
+        public function setTimestamp($timestamp)
+        {
+            $this->timestamp = $timestamp;
+        }
+
+
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -371,6 +389,7 @@
                     $this->setCodeName($code->getName());
 
                     $this->setUserId($result['userId']);
+                    $this->setTimestamp($result['timestamp']);
 
                     return true;
                 }

@@ -66,7 +66,6 @@ class reportModel extends Staple_Model
 
     function getTimesheet($userId, $year, $month)
     {
-
         $currentDate = new DateTime();
         $currentDate->setDate($year, $month, 1);
 
@@ -91,6 +90,7 @@ class reportModel extends Staple_Model
         {
             $data[$result['id']] = $this->calculateEntry($result['id']);
         }
+
         return $data;
     }
 
@@ -119,6 +119,8 @@ class reportModel extends Staple_Model
         $outTimeDate = date("Y-m-d", $result['outTime']);
 
         $lessTime = $result['lessTime'];
+
+        $timestamp = $result['timestamp'];
 
         //Calculate Time Worked
         switch($result['lessTime'])
@@ -166,6 +168,7 @@ class reportModel extends Staple_Model
         $data['lessTime'] = $lessTime;
         $data['timeWorked'] = $timeWorked;
         $data['code'] = $codeName;
+        $data['timestamp'] = $timestamp;
 
         //Get the user of the entry.
         $entry = new timeEntryModel($id);
