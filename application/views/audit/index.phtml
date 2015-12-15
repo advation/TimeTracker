@@ -1,12 +1,12 @@
 <div class="section">
     <div class="row">
-        <div class="small-12 columns text-center">
+        <div class="small-12 columns">
             <h1><i class="fa fa-list-alt"></i> Audit Log</h1>
         </div>
     </div>
     <div class="row">
         <div class="small-3 columns">
-            <h3><i class="fa fa-filter"></i> Filter Accounts</h3>
+            <h3><i class="fa fa-users"></i> Account</h3>
             <ul class="side-nav">
                 <?php
 
@@ -28,11 +28,11 @@
                 {
                     if($user['id'] == $this->currentUser)
                     {
-                        echo "<li class='active'><a class='' href='".$this->link(array("audit",$user['id']))."'>".$user['lastName'].", ".$user['firstName']."</a></li>";
+                        echo "<li class='active'><a class='' href='".$this->link(array("audit",$user['id']))."'><i class=\"fa fa-user\"></i> ".$user['lastName'].", ".$user['firstName']."</a></li>";
                     }
                     else
                     {
-                        echo "<li><a class='' href='".$this->link(array("audit",$user['id']))."'>".$user['lastName'].", ".$user['firstName']."</a></li>";
+                        echo "<li><a class='' href='".$this->link(array("audit",$user['id']))."'><i class=\"fa fa-user\"></i> ".$user['lastName'].", ".$user['firstName']."</a></li>";
                     }
                 }
 

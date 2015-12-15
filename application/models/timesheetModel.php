@@ -449,9 +449,9 @@
 				{
 					//Log Audit
 					$audit = new auditModel();
-					$audit->setAction('validate');
+					$audit->setAction('Timesheet Validation');
 					$audit->setUserId($userId);
-					$audit->setItem($oldKey);
+					$audit->setItem('Batch: '.$oldKey);
 					$audit->save();
 
 					return true;

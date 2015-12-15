@@ -203,7 +203,7 @@ class unlockModel extends Staple_Model
                 {
                     $audit = new auditModel();
                     $audit->setUserId($userId);
-                    $audit->setAction('Single unlock');
+                    $audit->setAction('Single Entry Unlock');
                     $audit->setItem($this->username." unlocked time entry ". $id);
                     $audit->save();
 
