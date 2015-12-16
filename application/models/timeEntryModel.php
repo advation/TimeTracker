@@ -533,18 +533,26 @@
             }
 		}
 
-        function nearestQuarterHour($time)
+        function nearestQuarterHour($time,$string = null)
         {
             //$time = strtotime($time);
             $round = 15*60;
             $rounded = round($time/$round)*$round;
 
-            return date("g:i A", $rounded);
+            if($string == 1)
+            {
+                return $rounded;
+            }
+            else
+            {
+                return date("g:i A", $rounded);
+            }
         }
 
         function timeToDecimal($time)
         {
             $timeArr = explode(':', $time);
+
             $hours = $timeArr[0]*1;
             $minutes = $timeArr[1]/60;
             $dec = $hours + $minutes;

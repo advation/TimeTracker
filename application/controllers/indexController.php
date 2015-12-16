@@ -28,9 +28,6 @@ class indexController extends Staple_Controller
 		$report = new weeklyReportModel();
 
 		$this->view->week = $report->getWeekWorked($this->userId, $week, $year);
-
-		$unlock = new unlockModel();
-		$this->view->unlockedTimes = count($unlock->load($this->userId));
 	}
 }
 ?>

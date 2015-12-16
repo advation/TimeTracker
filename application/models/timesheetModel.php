@@ -431,16 +431,73 @@
 			$userId = $user->getId();
 
 			//$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
-			$sql = "SELECT ROUND((SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
 
-			$sql = "SELECT SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)) as 'totalTime' FROM timeEntires WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
-			echo $sql."<br><br>";
-
-			if($this->db->query($sql)->num_rows > 0)
+			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
-				$result = $query->fetch_assoc();
-				return round($result['totalTime'],2);
+
+				$total = 0;
+				while($result = $query->fetch_assoc())
+				{
+
+					$inTime = $result['inTime'];
+					$outTime = $result['outTime'];
+
+					switch($result['lessTime'])
+					{
+						case 60:
+							$lessTime = 1;
+							break;
+						case 30:
+							$lessTime = 0.5;
+							break;
+						case 15:
+							$lessTime = 0.25;
+							break;
+						default:
+							$lessTime = 0;
+					}
+
+					$roundedInTime = $this->nearestQuarterHour($inTime);
+					$roundedOutTime = $this->nearestQuarterHour($outTime);
+
+					$lapse = $roundedOutTime - $roundedInTime;
+					$lapseHours = gmdate ('H:i', $lapse);
+
+					$decimalHours = $this->timeToDecimal($lapseHours);
+					$total = $total + $decimalHours;
+					$total = $total - $lessTime;
+				}
+
+				return $total;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		function nearestQuarterHour($time)
+		{
+			//$time = strtotime($time);
+			$round = 15*60;
+			$rounded = round($time/$round)*$round;
+
+			return $rounded;
+		}
+
+		function timeToDecimal($time)
+		{
+			$timeArr = explode(':', $time);
+
+			$hours = $timeArr[0]*1;
+			$minutes = $timeArr[1]/60;
+			$dec = $hours + $minutes;
+
+			if($dec > 0)
+			{
+				return round($dec,2);
 			}
 			else
 			{
