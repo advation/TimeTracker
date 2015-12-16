@@ -20,6 +20,8 @@
 		private $previousMonthText;
 		private $previousYear;
 
+		private $userId;
+
 		private $batch;
 
 		private $entries;
@@ -282,6 +284,24 @@
 			$this->totals = $totals;
 		}
 
+		/**
+		 * @return mixed
+		 */
+		public function getUserId()
+		{
+			return $this->userId;
+		}
+
+		/**
+		 * @param mixed $userId
+		 */
+		public function setUserId($userId)
+		{
+			$this->userId = $userId;
+		}
+
+
+
 		function __construct($year, $month, $user = null)
 		{
 			$this->db = Staple_DB::get();
@@ -307,7 +327,7 @@
 			$this->startDate = $currentDate->modify('-1 month +25 day')->format('Y-m-d');
 			$this->startDateTimeString = strtotime($this->startDate);
 			$currentDate->setDate($year, $month, 1);
-			$this->endDate = $currentDate->modify('+25 day')->format('Y-m-d');
+			$this->endDate = $currentDate->modify('+24 day')->format('Y-m-d');
 			$this->endDateTimeString = strtotime($this->endDate);
 
 			//Previous Dates
@@ -345,6 +365,7 @@
 			$totals['Total Time'] = array_sum($totals);
 
 			$this->setTotals($totals);
+			$this->userId = $user->getId();
 		}
 
 		function validate($batchId)
@@ -409,7 +430,11 @@
 			$user = new userModel();
 			$userId = $user->getId();
 
-			$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 00:00:00') AND userId = $userId AND codeId = $code;";
+			//$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT ROUND((SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+
+			$sql = "SELECT SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)) as 'totalTime' FROM timeEntires WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			echo $sql."<br><br>";
 
 			if($this->db->query($sql)->num_rows > 0)
 			{

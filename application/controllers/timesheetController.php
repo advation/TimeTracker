@@ -6,6 +6,7 @@ class timesheetController extends Staple_Controller
 
     public function _start()
     {
+        $this->_setLayout('main');
         $auth = Staple_Auth::get();
         $user = new userModel();
         $user->userInfo($auth->getAuthId());
@@ -138,6 +139,51 @@ class timesheetController extends Staple_Controller
 
         $changeYearForm = new changeYearForm();
         $this->view->changeYearForm = $changeYearForm;
+    }
+
+    public function printpreview($id = null, $year = null, $month = null)
+    {
+        $this->_setLayout('print');
+
+        //Set year and month variables if undefined.
+        if($year == null)
+        {
+            $date = new DateTime();
+            $year = $date->format('Y');
+        }
+
+        if($month == null)
+        {
+            $date = new DateTime();
+            if($date->format("j") >= 26)
+            {
+                $month = $date->modify('+1 month')->format('m');
+            }
+            else
+            {
+                $month = $date->format('m');
+            }
+        }
+
+        //Load timesheet for user.
+        $timesheet = new timesheetModel($year,$month);
+
+        $user = new userModel();
+        $user->userInfo($this->userId);
+
+        $this->view->firstName = $user->getFirstName();
+        $this->view->lastName = $user->getLastName();
+        $this->view->batchId = $user->getBatchId();
+
+        //Pass timesheet object to view
+        if($id == $this->userId)
+        {
+            $this->view->timesheet = $timesheet;
+        }
+        else
+        {
+            header("location: ".$this->_link(array('timesheet'))."");
+        }
     }
 
     public function remove($id = null)
