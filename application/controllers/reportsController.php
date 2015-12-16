@@ -42,6 +42,25 @@ class reportsController extends Staple_Controller
         $date = new DateTime();
         $date->setDate($year, $month, 1);
         $this->view->month = $date->format('F');
+
+        $printTimeSheetForm = new printTimeSheetForm();
+        if($printTimeSheetForm->wasSubmitted())
+        {
+            $printTimeSheetForm->addData($_POST);
+            if($printTimeSheetForm->validate())
+            {
+                $data = $printTimeSheetForm->exportFormData();
+                header("location: ".$this->_link(array('reports','printpreview',$year,$month,$data['account']))."");
+            }
+            else
+            {
+                $this->view->printTimeSheetForm = $printTimeSheetForm;
+            }
+        }
+        else
+        {
+            $this->view->printTimeSheetForm = $printTimeSheetForm;
+        }
     }
 
     public function changeyear()
@@ -132,5 +151,62 @@ class reportsController extends Staple_Controller
                 $this->view->message = "<i class='fa fa-close'></i> ERROR: Unable to unlock your own time entries.";
             }
         }
+    }
+
+    public function printpreview($year,$month,$uid)
+    {
+        $report = new reportModel($year,$month);
+
+        $user = new userModel();
+        $account = $user->userInfo($uid);
+        $userName = $account['lastName'].", ".$account['firstName'];
+
+        $data = array();
+        foreach($report->timesheets as $account => $entry)
+        {
+            if($userName == $account)
+            {
+                foreach($entry as $key=>$value)
+                {
+
+                    if($value['code'] == 'Normal')
+                    {
+                        if(array_key_exists($value['date'],$data))
+                        {
+                            $data[$value['date']]['normal'] = $data[$value['date']]['normal'] + $value['timeWorked'];
+                        }
+                        else
+                        {
+                            $data[$value['date']]['normal'] = $value['timeWorked'];
+                        }
+                    }
+
+                    if($value['code'] == 'Sick')
+                    {
+                        if(array_key_exists($value['date'],$data))
+                        {
+                            $data[$value['date']]['sick'] = $data[$value['date']]['sick'] + $value['timeWorked'];
+                        }
+                        else
+                        {
+                            $data[$value['date']]['sick'] = $value['timeWorked'];
+                        }
+                    }
+
+                    if($value['code'] == 'Vacation')
+                    {
+                        if(array_key_exists($value['date'],$data))
+                        {
+                            $data[$value['date']]['vacation'] = $data[$value['date']]['vacation'] + $value['timeWorked'];
+                        }
+                        else
+                        {
+                            $data[$value['date']]['vacation'] = $value['timeWorked'];
+                        }
+                    }
+                }
+            }
+        }
+        $this->view->data = $data;
     }
 }
