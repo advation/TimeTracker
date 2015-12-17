@@ -9,7 +9,7 @@ class printTimeSheetForm extends Staple_Form
         $this->setName('printTimeSheet')
             ->setAction($this->link(array('reports')));
 
-        $account = new Staple_Form_FoundationSelectElement('account','Account');
+        $account = new Staple_Form_FoundationSelectElement('account','Select an account');
         $account->setRequired()
             ->addOption('','Select an account')
             ->addOptionsArray($this->accounts())
@@ -34,13 +34,24 @@ class printTimeSheetForm extends Staple_Form
         {
             foreach($users as $user)
             {
+
+                if($user['type'] == 'part')
+                {
+                    $type = 'Part Time';
+                }
+
+                if($user['type'] == 'full')
+                {
+                    $type = 'Full Time';
+                }
+
                 if($user['supervisorId'] == $id)
                 {
-                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." ($type)";
                 }
                 elseif($authLevel >= 900)
                 {
-                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." ($type)";
                 }
             }
         }

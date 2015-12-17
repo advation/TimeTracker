@@ -3,8 +3,11 @@
         <h1><?php echo $this->firstName ?> <?php echo $this->lastName ?> <small><?php echo $this->timesheet->currentMonthText ?> <?php echo $this->timesheet->currentYear ?></small></h1>
     </div>
     <div class="small-12 columns text-center">
-        <p><b>Date Range:</b> <?php echo date("l, F jS Y",$this->timesheet->startDateTimeString) ?> to <?php echo date("l, F jS Y",$this->timesheet->endDateTimeString) ?></p>
-        <p><b>Report Generated:</b> <?php echo date('l, F jS Y g:i A') ?></p>
+        <p>
+            <b>Date Range:</b> <?php echo date("l, F jS Y",$this->timesheet->startDateTimeString) ?> to <?php echo date("l, F jS Y",$this->timesheet->endDateTimeString) ?>
+            <br>
+            <b>Report Generated:</b> <?php echo date('l, F jS Y g:i A') ?>
+        </p>
     </div>
 </div>
 
@@ -43,7 +46,7 @@
 <div class="row">
     <div class="small-12 columns">
         <h3>Time Sheet</h3>
-        <p><i>Adjusted</i> time calculated to the nearest quarter hour. <br> Example: <b>9:07 AM</b> will be adjusted to <b>9:00 AM</b> and <b>10:08 AM</b> will be adjusted to <b>10:15 AM</b>.</p>
+        <p><i>Adjusted</i> time calculated to the nearest quarter hour. Example: <b>9:07 AM</b> will be adjusted to <b>9:00 AM</b> and <b>10:08 AM</b> will be adjusted to <b>10:15 AM</b>.</p>
         <table width="100%">
             <thead>
             <tr>
@@ -62,66 +65,66 @@
     </div>
 </div>
 
-        <?php
+<?php
 
-            $currentBatch = $this->batchId;
+$currentBatch = $this->batchId;
 
-            foreach($this->timesheet->entries as $entry)
-            {
-                echo "
+foreach($this->timesheet->entries as $entry)
+{
+    echo "
                 <tr>
                     <td>".$entry->date."</td>
                     <td>".$entry->inTime."</td>
                     <td>".$entry->outTime."</td>
                 ";
 
-                if($entry->inTime != $entry->roundedInTime)
-                {
-                    echo "<td>".$entry->roundedInTime."</td>";
-                }
-                else
-                {
-                    echo "<td> N/A </td>";
-                }
+    if($entry->inTime != $entry->roundedInTime)
+    {
+        echo "<td>".$entry->roundedInTime."</td>";
+    }
+    else
+    {
+        echo "<td> N/A </td>";
+    }
 
-                if($entry->outTime != $entry->roundedOutTime)
-                {
-                    echo "<td>".$entry->roundedOutTime."</td>";
-                }
-                else
-                {
-                    echo "<td> N/A </td>";
-                }
+    if($entry->outTime != $entry->roundedOutTime)
+    {
+        echo "<td>".$entry->roundedOutTime."</td>";
+    }
+    else
+    {
+        echo "<td> N/A </td>";
+    }
 
-                echo "
+    echo "
                     <td>".$entry->lessTime."</td>
                     <td>".$entry->codeName."</td>
                     <td>".$entry->timeWorked."</td>
                 ";
 
-                if($currentBatch != $entry->batchId)
-                {
-                    echo "<td>Yes <i class='fa fa-check'></i></td>";
-                }
-                else
-                {
-                    echo "<td>No <i class='fa fa-close'></i></td>";
-                }
+    if($currentBatch != $entry->batchId)
+    {
+        echo "<td>Yes <i class='fa fa-check'></i></td>";
+    }
+    else
+    {
+        echo "<td>No <i class='fa fa-close'></i></td>";
+    }
 
-                echo "</tr>";
+    echo "</tr>";
 
-                if(strlen($entry->note) > 0)
-                {
-                    echo "
-                    <tr>
-                        <td class='text-right'><i class='fa fa-edit'></i> Note:</td>
-                        <td colspan='7'>".$entry->note."</td>
-                    </tr>
-                    ";
-                }
-            }
-        ?>
-            </tbody>
-        </table>
-    </div>
+    if(strlen($entry->note) > 0)
+    {
+        echo "
+            <tr>
+                <td class='text-right'><i class='fa fa-edit'></i> Note:</td>
+                <td colspan='7'>".$entry->note."</td>
+            </tr>
+        ";
+    }
+}
+?>
+</tbody>
+</table>
+</div>
 </div>

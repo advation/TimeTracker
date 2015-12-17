@@ -14,11 +14,8 @@
                 {
                     echo "
                         <div class='row'>
-                            <div class='small-6 columns'>
-
-                            </div>
-                            <div class='small-6 columns'>
-                                <a class='button secondary radius right' href='".$this->link(array('reports','weekly'))."'>Back</a>
+                            <div class='small-12 columns text-right hide-for-print'>
+                                <a class='button secondary radius' href='".$this->link(array('reports','weekly'))."'>Back</a>
                             </div>
                         </div>
 
@@ -30,7 +27,7 @@
 
                                     if($this->account['type'] == "part")
                                     {
-                                        echo "Part time";
+                                        echo "Part Time";
                                     }
                                     else
                                     {
@@ -65,15 +62,15 @@
                                     {
                                         if($entry['hoursWorked'] >= 18 AND $entry['hoursWorked'] < 20)
                                         {
-                                            echo "<span class='orange'><i class='fa fa-flag'></i> Approaching weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
+                                            echo "<span class='orange'><i class='fa fa-flag'></i> Approaching weekly limit of 20 hours.</span><br>".$entry['hoursWorked'];
                                         }
                                         elseif($entry['hoursWorked'] == 20)
                                         {
-                                            echo "<span class='green'><i class='fa fa-flag'></i> At weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
+                                            echo "<span class='green'><i class='fa fa-flag'></i> At weekly limit of 20 hours.</span><br>".$entry['hoursWorked'];
                                         }
                                         elseif($entry['hoursWorked'] >= 21)
                                         {
-                                            echo "<span class='red'><i class='fa fa-warning'></i> Exceeded weekly limit of 20 hours.</span> <b>".$entry['hoursWorked']."</b>";
+                                            echo "<span class='red'><i class='fa fa-warning'></i> Exceeded weekly limit of 20 hours.</span><br>".$entry['hoursWorked'];
                                         }
                                         else
                                         {

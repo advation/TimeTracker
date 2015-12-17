@@ -51,7 +51,11 @@ class reportsController extends Staple_Controller
             if($printTimeSheetForm->validate())
             {
                 $data = $printTimeSheetForm->exportFormData();
-                header("location: ".$this->_link(array('reports','printpreview',$year,$month,$data['account']))."");
+
+                $this->layout->addScriptBlock("
+                    window.open('".$this->_link(array("reports","printpreview",$year,$month,$data['account']))."');
+                    ");
+                $this->view->printTimeSheetForm = $printTimeSheetForm;
             }
             else
             {
@@ -166,6 +170,10 @@ class reportsController extends Staple_Controller
         $this->view->batchId = $account['batchId'];
         $this->view->year = $year;
         $this->view->month = date('F',$month);
+
+
+        $timesheet = new timesheetModel($year, $month,$uid);
+        $this->view->timesheet = $timesheet;
 
     }
 }

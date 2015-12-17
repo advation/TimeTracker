@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="small-12 columns text-center">
+        <h1><?php echo $this->firstName ?> <?php echo $this->lastName ?> <small><?php echo $this->timesheet->currentMonthText ?> <?php echo $this->timesheet->currentYear ?></small></h1>
+    </div>
+    <div class="small-12 columns text-center">
+        <p>
+            <b>Date Range:</b> <?php echo date("l, F jS Y",$this->timesheet->startDateTimeString) ?> to <?php echo date("l, F jS Y",$this->timesheet->endDateTimeString) ?>
+            <br>
+            <b>Report Generated:</b> <?php echo date('l, F jS Y g:i A') ?>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <h3>Totals <small>Calculated with <i>Adjusted</i> time</small></h3>
+        <table width="100%">
+            <thead>
+            <tr>
+                <?php
+                foreach($this->timesheet->totals as $title => $value)
+                {
+                    if($value > 0)
+                    {
+                        echo "<th>$title</th>";
+                    }
+                }
+                ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach($this->timesheet->totals as $title => $value)
+            {
+                if($value > 0)
+                {
+                    echo "<td>$value</td>";
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+        <h3>Time Sheet</h3>
+        <p><i>Adjusted</i> time calculated to the nearest quarter hour. Example: <b>9:07 AM</b> will be adjusted to <b>9:00 AM</b> and <b>10:08 AM</b> will be adjusted to <b>10:15 AM</b>.</p>
+        <table width="100%">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>In Time <small>(Actual)</small></th>
+                <th>Out Time <small>(Actual)</small></th>
+                <th>In Time <small>(Adjusted)</small></th>
+                <th>Out Time <small>(Adjusted)</small></th>
+                <th>Less Time <small>(Minutes)</small></th>
+                <th>Code</th>
+                <th>Total <small>(Hours)</small></th>
+                <th>Validated</th>
+            </tr>
+            </thead>
+            <tbody>
+    </div>
+</div>
+
+<?php
+
+$currentBatch = $this->batchId;
+
+foreach($this->timesheet->entries as $entry)
+{
+    echo "
+                <tr>
+                    <td>".$entry->date."</td>
+                    <td>".$entry->inTime."</td>
+                    <td>".$entry->outTime."</td>
+                ";
+
+    if($entry->inTime != $entry->roundedInTime)
+    {
+        echo "<td>".$entry->roundedInTime."</td>";
+    }
+    else
+    {
+        echo "<td> N/A </td>";
+    }
+
+    if($entry->outTime != $entry->roundedOutTime)
+    {
+        echo "<td>".$entry->roundedOutTime."</td>";
+    }
+    else
+    {
+        echo "<td> N/A </td>";
+    }
+
+    echo "
+                    <td>".$entry->lessTime."</td>
+                    <td>".$entry->codeName."</td>
+                    <td>".$entry->timeWorked."</td>
+                ";
+
+    if($currentBatch != $entry->batchId)
+    {
+        echo "<td>Yes <i class='fa fa-check'></i></td>";
+    }
+    else
+    {
+        echo "<td>No <i class='fa fa-close'></i></td>";
+    }
+
+    echo "</tr>";
+
+    if(strlen($entry->note) > 0)
+    {
+        echo "
+            <tr>
+                <td class='text-right'><i class='fa fa-edit'></i> Note:</td>
+                <td colspan='7'>".$entry->note."</td>
+            </tr>
+        ";
+    }
+}
+?>
+</tbody>
+</table>
+</div>
+</div>
