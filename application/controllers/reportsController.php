@@ -7,6 +7,7 @@ class reportsController extends Staple_Controller
 
     public function _start()
     {
+        $this->_setLayout('main');
         $auth = Staple_Auth::get();
         $this->authLevel = $auth->getAuthLevel();
         $user = new userModel();
@@ -155,58 +156,16 @@ class reportsController extends Staple_Controller
 
     public function printpreview($year,$month,$uid)
     {
-        $report = new reportModel($year,$month);
+        $this->_setLayout('print');
 
         $user = new userModel();
         $account = $user->userInfo($uid);
-        $userName = $account['lastName'].", ".$account['firstName'];
 
-        $data = array();
-        foreach($report->timesheets as $account => $entry)
-        {
-            if($userName == $account)
-            {
-                foreach($entry as $key=>$value)
-                {
+        $this->view->firstName = $account['firstName'];
+        $this->view->lastName = $account['lastName'];
+        $this->view->batchId = $account['batchId'];
+        $this->view->year = $year;
+        $this->view->month = date('F',$month);
 
-                    if($value['code'] == 'Normal')
-                    {
-                        if(array_key_exists($value['date'],$data))
-                        {
-                            $data[$value['date']]['normal'] = $data[$value['date']]['normal'] + $value['timeWorked'];
-                        }
-                        else
-                        {
-                            $data[$value['date']]['normal'] = $value['timeWorked'];
-                        }
-                    }
-
-                    if($value['code'] == 'Sick')
-                    {
-                        if(array_key_exists($value['date'],$data))
-                        {
-                            $data[$value['date']]['sick'] = $data[$value['date']]['sick'] + $value['timeWorked'];
-                        }
-                        else
-                        {
-                            $data[$value['date']]['sick'] = $value['timeWorked'];
-                        }
-                    }
-
-                    if($value['code'] == 'Vacation')
-                    {
-                        if(array_key_exists($value['date'],$data))
-                        {
-                            $data[$value['date']]['vacation'] = $data[$value['date']]['vacation'] + $value['timeWorked'];
-                        }
-                        else
-                        {
-                            $data[$value['date']]['vacation'] = $value['timeWorked'];
-                        }
-                    }
-                }
-            }
-        }
-        $this->view->data = $data;
     }
 }
