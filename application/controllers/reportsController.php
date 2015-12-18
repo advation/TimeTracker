@@ -176,4 +176,38 @@ class reportsController extends Staple_Controller
         $this->view->timesheet = $timesheet;
 
     }
+
+    public function payperiod($year = null, $month = null)
+    {
+        if ($year == null) {
+            $year = date('Y');
+        }
+
+        if ($month == null) {
+            $month = date('m');
+        }
+
+        $this->view->year = $year;
+
+        $date = new DateTime();
+        $date->setDate($year,$month,26);
+        $date->setTime(0,0,0);
+        $date->modify('-1 month');
+        $this->view->previousMonth = $date->format('m');
+
+        $date2 = new DateTime();
+        $date2->setDate($year,$month,25);
+        $date2->setTime(24,0,0);
+
+        $interval = date_diff($date,$date2);
+
+        $this->view->span = $interval->days;
+
+        echo $date->format('Y-m-d');
+
+
+        $reports = new reportModel($year, $month);
+        $this->view->report = $reports->payPeriodTotals($year, $month);
+
+    }
 }

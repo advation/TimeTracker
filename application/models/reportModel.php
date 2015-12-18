@@ -216,4 +216,58 @@ class reportModel extends Staple_Model
     {
 
     }
+
+    function payPeriodTotals($year, $month)
+    {
+        //Get all users
+        $users = new userModel();
+        $accounts = $users->listAll();
+
+        $data = array();
+
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+        $date->setDate($year,$month,26);
+        $date->modify('-1 month');
+        $startDate = $date->format('U');
+        $date->modify('+1 month -1 day');
+        $date->setTime(23,59,59);
+        $endDate = $date->format('U');
+
+        foreach($accounts as $account)
+        {
+            $userId = $account['id'];
+            $userName = $account['lastName'].", ".$account['firstName'];
+            $sql = "
+                SELECT * FROM timeEntries WHERE inTime >= '".$this->db->real_escape_string($startDate)."' AND inTime <= '".$this->db->real_escape_string($endDate)."' AND userId = '".$this->db->real_escape_string($userId)."';
+            ";
+
+            $query = $this->db->query($sql);
+            $data2 = array();
+
+            $setDate = 0;
+            $timeWorked = 0;
+            while($result = $query->fetch_assoc())
+            {
+                $day = new DateTime();
+                $day->setTimestamp($result['inTime']);
+                $date = $day->format('Y-m-d');
+                $entry = $this->calculateEntry($result['id']);
+
+                if($date == $setDate)
+                {
+                    $timeWorked = $timeWorked + $entry['timeWorked'];
+                }
+                else
+                {
+                    $timeWorked = $entry['timeWorked'];
+                }
+
+                $data2[$date] = $timeWorked;
+                $setDate = $date;
+            }
+            $data[$userName] = $data2;
+        }
+        return $data;
+    }
 }
