@@ -53,8 +53,9 @@
 
                     foreach($this->report as $user=>$dates)
                     {
+                        $totalTime = array_sum($dates);
                         echo "<tr>";
-                        echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b></td>";
+                        echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
 
                         $date = new DateTime();
                         $date->setDate($this->year,$this->previousMonth,26);
@@ -70,8 +71,7 @@
                                     $j++;
                                 }
                             }
-
-                            echo "<td class='text-center'> - </td>";
+                            echo "<td class='text-center'>-</td>";
                             $date->modify('+1 day');
                         }
                         echo "</tr>";

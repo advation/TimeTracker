@@ -239,7 +239,7 @@ class reportModel extends Staple_Model
             $userId = $account['id'];
             $userName = $account['lastName'].", ".$account['firstName'];
             $sql = "
-                SELECT * FROM timeEntries WHERE inTime >= '".$this->db->real_escape_string($startDate)."' AND inTime <= '".$this->db->real_escape_string($endDate)."' AND userId = '".$this->db->real_escape_string($userId)."';
+                SELECT * FROM timeEntries WHERE inTime >= '".$this->db->real_escape_string($startDate)."' AND inTime <= '".$this->db->real_escape_string($endDate)."' AND userId = '".$this->db->real_escape_string($userId)."' ORDER BY inTime ASC;
             ";
 
             $query = $this->db->query($sql);
