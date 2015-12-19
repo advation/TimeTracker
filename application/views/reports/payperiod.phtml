@@ -5,12 +5,13 @@
         </div>
     </div>
     <?php echo $this->spanDays ?>
-    <div class="row full">
+    <div class="row">
         <div class="small-12 columns full">
             <style>
                 table {
                     border:1px solid #ccc;
                 }
+
                 th {
                     border:1px solid #ccc;
                     padding:0px;
@@ -24,71 +25,73 @@
                     margin:0px;
                 }
 
+                .scroll {
+                    overflow-x:scroll;
+                    overflow-y:visible;
+                }
+
             </style>
-            <table>
-                <thead>
-                <tr>
-                    <th style="width:150px;"></th>
+            <div class="scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width:150px;"></th>
+                        <?php
+
+                            $date = new DateTime();
+                            $date->setDate($this->year,$this->previousMonth,26);
+
+                            for($i=1;$i<=$this->span;$i++)
+                            {
+                                if($date->format('d') >= 26)
+                                {
+                                    echo "<th style='background-color:#fff;border-bottom:1px solid #ccc; '>".$date->format('D')."<br>".$date->format('n')."/".$date->format('j')."</th>";
+                                }
+                                else
+                                {
+                                    echo "<th style='border-bottom:1px solid #ccc;'>".$date->format('D')."<br>".$date->format('n')."/".$date->format('j')."</th>";
+                                }
+                                $date->modify('+1 day');
+                            }
+                        ?>
+                    </tr>
+                    </thead>
+                    <tbody>
                     <?php
 
-                        $date3 = new DateTime();
-                        $date3->setDate($this->year,$this->previousMonth,26);
-                        for($i=1;$i<=$this->span;$i++)
+                        foreach($this->report as $user=>$dates)
                         {
-                            if($date3->format('d') >= 26)
+                            $totalTime = array_sum($dates);
+                            echo "<tr>";
+                            echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
+
+                            $date = new DateTime();
+                            $date->setDate($this->year,$this->previousMonth,26);
+                            for($j=1;$j<=$this->span;$j++)
                             {
-                                echo "<th style='background-color:#fff;border-bottom:1px solid #ccc; '>".$date3->format('D')."<br>".$date3->format('n')."/".$date3->format('j')."</th>";
+                                echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
+                                $value = "-";
+                                foreach ($dates as $entryDate => $total)
+                                {
+                                    $newDate = explode("-", $entryDate);
+                                    $dayOfMonth = $newDate[2];
+
+                                    if($dayOfMonth == $date->format('d'))
+                                    {
+                                        $value = $total;
+                                    }
+                                }
+                                echo $value;
+                                echo "</td>";
+
+                                $date->modify('+1 day');
                             }
-                            else
-                            {
-                                echo "<th style='border-bottom:1px solid #ccc;'>".$date3->format('D')."<br>".$date3->format('n')."/".$date3->format('j')."</th>";
-                            }
-                            $date3->modify('+1 day');
+                            echo "</tr>";
                         }
                     ?>
-                </tr>
-                </thead>
-                <tbody>
-                <?php
-
-                    foreach($this->report as $user=>$dates)
-                    {
-                        $totalTime = array_sum($dates);
-                        echo "<tr>";
-                        echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
-
-                        $date = new DateTime();
-                        $date->setDate($this->year,$this->previousMonth,26);
-                        for($j=1;$j<=$this->span;$j++)
-                        {
-                            foreach ($dates as $entryDate => $total)
-                            {
-                                $newDate = explode("-", $entryDate);
-                                $dayOfMonth = $newDate[2];
-                                if($dayOfMonth == $date->format('d'))
-                                {
-                                    echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>$total</td>";
-                                    $j++;
-                                }
-                            }
-                            echo "<td class='text-center'>-</td>";
-                            $date->modify('+1 day');
-                        }
-                        echo "</tr>";
-                    }
-
-
-                ?>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
 </div>
-<pre>
-
-    <?php
-        print_r($this->report);
-    ?>
-
-</pre>

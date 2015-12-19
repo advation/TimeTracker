@@ -203,11 +203,7 @@ class reportsController extends Staple_Controller
 
         $this->view->span = $interval->days;
 
-        echo $date->format('Y-m-d');
-
-
         $reports = new reportModel($year, $month);
         $this->view->report = $reports->payPeriodTotals($year, $month);
-
     }
 }
