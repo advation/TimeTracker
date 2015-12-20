@@ -186,12 +186,12 @@ class reportsController extends Staple_Controller
         if ($month == null) {
             $month = date('m');
         }
-
         $this->view->year = $year;
 
         $date = new DateTime();
         $date->setDate($year,$month,26);
         $date->setTime(0,0,0);
+        $this->view->month = $date->format('m');
         $date->modify('-1 month');
         $this->view->previousMonth = $date->format('m');
 
@@ -205,5 +205,40 @@ class reportsController extends Staple_Controller
 
         $reports = new reportModel($year, $month);
         $this->view->report = $reports->payPeriodTotals($year, $month);
+    }
+
+    public function payperiodprint($year, $month)
+    {
+        if($year != null || $month != null)
+        {
+            $this->_setLayout('print');
+            $this->view->year = $year;
+
+            $date = new DateTime();
+            $date->setDate($year,$month,26);
+            $date->setTime(0,0,0);
+            $this->view->month = $date->format('m');
+            $date->modify('-1 month');
+            $this->view->previousMonth = $date->format('m');
+
+            $date2 = new DateTime();
+            $date2->setDate($year,$month,25);
+            $date2->setTime(24,0,0);
+
+            $interval = date_diff($date,$date2);
+
+            $this->view->span = $interval->days;
+
+            $reports = new reportModel($year, $month);
+            $this->view->report = $reports->payPeriodTotals($year, $month);
+            $this->view->startDate = $date->format("F jS Y");
+            $days = $interval->days - 1;
+            $date->modify("+$days days");
+            $this->view->endDate = $date->format("F jS Y");
+        }
+        else
+        {
+            header("location:".$this->_link(array('reports','payperiod'))."");
+        }
     }
 }
