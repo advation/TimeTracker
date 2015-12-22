@@ -438,21 +438,16 @@
                 //Check for admin account delete
                 if($accountLevel >= 900)
                 {
-                    //Check for active admin account
-                    if($account['id'] != $user->getId())
+                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
+                    if($this->db->query($sql))
                     {
-                        $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
+                        $audit = new auditModel();
+                        $audit->setUserId($account['id']);
+                        $audit->setAction('Admin Entry Remove');
+                        $audit->setItem($user->getUsername()." removed entry for ".$fullDate." In Time: ".$inTime." Out Time: ".$outTime."");
+                        $audit->save();
 
-                        if($this->db->query($sql))
-                        {
-                            $audit = new auditModel();
-                            $audit->setUserId($account['id']);
-                            $audit->setAction('Admin Entry Remove');
-                            $audit->setItem($user->getUsername()." removed entry for ".$fullDate." In Time: ".$inTime." Out Time: ".$outTime."");
-                            $audit->save();
-
-                            return true;
-                        }
+                        return true;
                     }
                 }
                 else
