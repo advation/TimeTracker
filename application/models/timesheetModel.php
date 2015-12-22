@@ -321,12 +321,20 @@
 			$currentDate = new DateTime();
 			$currentDate->setDate($year, $month, 1);
 
+			//Just added for test. Might need to keep. Fixed the wrong
+			$currentDate->setTime(0,0,0);
+
+
 			$this->currentYear = $currentDate->format('Y');
 			$this->currentMonth = $currentDate->format('m');
 			$this->currentMonthText = $currentDate->format('F');
+
+
 			$this->startDate = $currentDate->modify('-1 month +25 day')->format('Y-m-d');
 			$this->startDateTimeString = strtotime($this->startDate);
+
 			$currentDate->setDate($year, $month, 1);
+
 			$this->endDate = $currentDate->modify('+25 day')->format('Y-m-d');
 			$this->endDateTimeString = strtotime($this->endDate);
 
