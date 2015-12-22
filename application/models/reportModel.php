@@ -270,4 +270,12 @@ class reportModel extends Staple_Model
         }
         return $data;
     }
+
+    function payroll($year, $month)
+    {
+        $users = new userModel();
+        $accounts = $users->listAll();
+
+
+    }
 }
