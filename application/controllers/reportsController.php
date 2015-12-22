@@ -191,9 +191,20 @@ class reportsController extends Staple_Controller
         $date = new DateTime();
         $date->setDate($year,$month,26);
         $date->setTime(0,0,0);
+
+        $this->view->date = $date->format("F Y");
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
         $this->view->month = $date->format('m');
         $date->modify('-1 month');
         $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
 
         $date2 = new DateTime();
         $date2->setDate($year,$month,25);
@@ -259,9 +270,20 @@ class reportsController extends Staple_Controller
         $date = new DateTime();
         $date->setDate($year,$month,26);
         $date->setTime(0,0,0);
+
+        $this->view->date = $date->format("F Y");
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
         $this->view->month = $date->format('m');
         $date->modify('-1 month');
         $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
 
         $date2 = new DateTime();
         $date2->setDate($year,$month,25);
@@ -280,6 +302,7 @@ class reportsController extends Staple_Controller
 
         $codes = new codeModel();
         $this->view->codes = $codes->allCodes();
+
     }
 
     public function payrollprint($year = null, $month =  null)
