@@ -1,0 +1,98 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h2><i class="fa fa-file"></i> Payroll Report</h2>
+        </div>
+        <div class="small-6 columns text-right">
+            <a class="button radius" target="_blank" href="<?php echo $this->link(array('reports','payrollprint',$this->year,$this->month)) ?>"><i class='fa fa-print'></i> Print</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <style>
+                table {
+                    border:1px solid #ccc;
+                }
+
+                th {
+                    border:1px solid #ccc;
+                    padding:0px;
+                    margin:0px;
+                    background-color: #eaeaea;
+                }
+
+                td {
+                    border:1px solid #ccc;
+                    padding:0px;
+                    margin:0px;
+                }
+
+                .scroll {
+                    overflow-x:scroll;
+                    overflow-y:visible;
+                }
+
+            </style>
+            <div class="">
+                <table>
+                    <thead>
+                    <tr>
+                       <th style="width:150px;"></th>
+                       <?php
+
+                           foreach($this->codes as $code)
+                           {
+                               if($code == 'Normal')
+                               {
+                                   echo "<th style='background-color:#d8ffd3;'>$code</th>";
+                               }
+                               else
+                               {
+                                   echo "<th>$code</th>";
+                               }
+
+                           }
+
+                       ?>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+
+                    foreach($this->report as $user=>$codes)
+                    {
+
+                        echo "<tr>";
+                        echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b></td>";
+
+                        //for($j=1;$j<=count($this->codes);$j++)
+                        foreach($this->codes as $id=>$timeCode)
+                        {
+                            if($timeCode == 'Normal')
+                            {
+                                echo "<td class='text-center' style='background-color:#d8ffd3; border-bottom:1px solid #ccc;'>";
+                            }
+                            else
+                            {
+                                echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
+                            }
+                            $value = "-";
+                            foreach ($codes as $code => $total)
+                            {
+                                if($timeCode == $code)
+                                {
+                                    $value = $total;
+                                }
+                            }
+                            echo $value;
+                            echo "</td>";
+                        }
+                        echo "</tr>";
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
