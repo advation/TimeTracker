@@ -96,7 +96,6 @@
 
 		function allCodes()
 		{
-
 			$auth = Staple_Auth::get();
 			$uid = $auth->getAuthId();
 			$user = new userModel();

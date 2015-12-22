@@ -1,0 +1,99 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h2><i class="fa fa-file"></i> Pay Period Report</h2>
+        </div>
+        <div class="small-6 columns text-right">
+            <a class="button radius" target="_blank" href="<?php echo $this->link(array('reports','payperiodprint',$this->year,$this->month)) ?>"><i class='fa fa-print'></i> Print</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <style>
+                table {
+                    border:1px solid #ccc;
+                }
+
+                th {
+                    border:1px solid #ccc;
+                    padding:0px;
+                    margin:0px;
+                    background-color: #eaeaea;
+                }
+
+                td {
+                    border:1px solid #ccc;
+                    padding:0px;
+                    margin:0px;
+                }
+
+                .scroll {
+                    overflow-x:scroll;
+                    overflow-y:visible;
+                }
+
+            </style>
+            <div class="scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width:150px;"></th>
+                        <?php
+
+                            $date = new DateTime();
+                            $date->setDate($this->year,$this->previousMonth,26);
+
+                            for($i=1;$i<=$this->span;$i++)
+                            {
+                                if($date->format('d') >= 26)
+                                {
+                                    echo "<th style='background-color:#fff;border-bottom:1px solid #ccc; '>".$date->format('D')."<br>".$date->format('n')."/".$date->format('j')."</th>";
+                                }
+                                else
+                                {
+                                    echo "<th style='border-bottom:1px solid #ccc;'>".$date->format('D')."<br>".$date->format('n')."/".$date->format('j')."</th>";
+                                }
+                                $date->modify('+1 day');
+                            }
+                        ?>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+
+                        foreach($this->report as $user=>$dates)
+                        {
+                            $totalTime = array_sum($dates);
+                            echo "<tr>";
+                            echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
+
+                            $date = new DateTime();
+                            $date->setDate($this->year,$this->previousMonth,26);
+                            for($j=1;$j<=$this->span;$j++)
+                            {
+                                echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
+                                $value = "-";
+                                foreach ($dates as $entryDate => $total)
+                                {
+                                    $newDate = explode("-", $entryDate);
+                                    $dayOfMonth = $newDate[2];
+
+                                    if($dayOfMonth == $date->format('d'))
+                                    {
+                                        $value = $total;
+                                    }
+                                }
+                                echo $value;
+                                echo "</td>";
+
+                                $date->modify('+1 day');
+                            }
+                            echo "</tr>";
+                        }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

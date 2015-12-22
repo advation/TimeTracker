@@ -20,6 +20,8 @@
 		private $previousMonthText;
 		private $previousYear;
 
+		private $userId;
+
 		private $batch;
 
 		private $entries;
@@ -282,11 +284,29 @@
 			$this->totals = $totals;
 		}
 
-		function __construct($year, $month, $user = null)
+		/**
+		 * @return mixed
+		 */
+		public function getUserId()
+		{
+			return $this->userId;
+		}
+
+		/**
+		 * @param mixed $userId
+		 */
+		public function setUserId($userId)
+		{
+			$this->userId = $userId;
+		}
+
+
+
+		function __construct($year, $month, $uid = null)
 		{
 			$this->db = Staple_DB::get();
 
-			if($user == null)
+			if($uid == null)
 			{
 				//Get batchID
 				$user = new userModel();
@@ -294,7 +314,7 @@
 			}
 			else
 			{
-				$user = new userModel($user);
+				$user = new userModel($uid);
 			}
 
 			//Current Dates
@@ -331,7 +351,7 @@
 			$this->nextYear = $furtureDate->format('Y');
 
 			//Time Entries
-			$this->entries = $this->timeEntries($this->startDate, $this->endDate);
+			$this->entries = $this->timeEntries($uid);
 
 			$timeCode = new codeModel();
 
@@ -340,11 +360,12 @@
 			foreach ($timeCode->allCodes() as $code)
 			{
 				$codeId = $timeCode->getIdFor($code);
-				$totals[$code] = $this->calculatedTotals($codeId['id'],$this->startDate,$this->endDate);
+				$totals[$code] = $this->calculatedTotals($codeId['id'],$this->startDate,$this->endDate,$uid);
 			}
 			$totals['Total Time'] = array_sum($totals);
 
 			$this->setTotals($totals);
+			$this->userId = $user->getId();
 		}
 
 		function validate($batchId)
@@ -357,11 +378,19 @@
 			}
 		}
 
-		function timeEntries($startDate,$endDate)
+		function timeEntries($uid = null)
 		{
-			//Get user ID from Auth
 			$user = new userModel();
-			$userId = $user->getId();
+			if($uid != null)
+			{
+				$account = $user->userInfo($uid);
+				$userId = $account['id'];
+			}
+			else
+			{
+				//Get user ID from Auth
+				$userId = $user->getId();
+			}
 
 			$sql = "SELECT id FROM timeEntries WHERE inTime BETWEEN $this->startDateTimeString AND $this->endDateTimeString AND userId = $userId ORDER BY inTime ASC";
 			if($this->db->query($sql)->num_rows > 0)
@@ -403,19 +432,88 @@
 		}
 		*/
 
-		function calculatedTotals($code,$startDate,$endDate)
+		function calculatedTotals($code,$startDate,$endDate,$uid=null)
 		{
 			//Get user ID from Auth
 			$user = new userModel();
-			$userId = $user->getId();
+			if($uid == null)
+			{
+				$userId = $user->getId();
+			}
+			else
+			{
+				$account = $user->userInfo($uid);
+				$userId = $account['id'];
+			}
 
-			$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 00:00:00') AND userId = $userId AND codeId = $code;";
+			//$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
 
-			if($this->db->query($sql)->num_rows > 0)
+			if($this->db->query($sql)->fetch_row() > 0)
 			{
 				$query = $this->db->query($sql);
-				$result = $query->fetch_assoc();
-				return round($result['totalTime'],2);
+
+				$total = 0;
+				while($result = $query->fetch_assoc())
+				{
+
+					$inTime = $result['inTime'];
+					$outTime = $result['outTime'];
+
+					switch($result['lessTime'])
+					{
+						case 60:
+							$lessTime = 1;
+							break;
+						case 30:
+							$lessTime = 0.5;
+							break;
+						case 15:
+							$lessTime = 0.25;
+							break;
+						default:
+							$lessTime = 0;
+					}
+
+					$roundedInTime = $this->nearestQuarterHour($inTime);
+					$roundedOutTime = $this->nearestQuarterHour($outTime);
+
+					$lapse = $roundedOutTime - $roundedInTime;
+					$lapseHours = gmdate ('H:i', $lapse);
+
+					$decimalHours = $this->timeToDecimal($lapseHours);
+					$total = $total + $decimalHours;
+					$total = $total - $lessTime;
+				}
+
+				return $total;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		function nearestQuarterHour($time)
+		{
+			//$time = strtotime($time);
+			$round = 15*60;
+			$rounded = round($time/$round)*$round;
+
+			return $rounded;
+		}
+
+		function timeToDecimal($time)
+		{
+			$timeArr = explode(':', $time);
+
+			$hours = $timeArr[0]*1;
+			$minutes = $timeArr[1]/60;
+			$dec = $hours + $minutes;
+
+			if($dec > 0)
+			{
+				return round($dec,2);
 			}
 			else
 			{

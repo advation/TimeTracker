@@ -9,7 +9,7 @@
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
                 <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
                 <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
-                <li><a class="button small" href="#"><i class="fa fa-print"></i> Print</a></li>
+                <li><a class="button small" target="_blank" href="<?php echo $this->link(array('timesheet','printpreview',$this->timesheet->userId,$this->timesheet->currentYear,$this->timesheet->currentMonth)) ?>"><i class="fa fa-print"></i> Print</a></li>
                 <?php
                     if($this->needsValidation)
                     {

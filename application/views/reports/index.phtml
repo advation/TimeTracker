@@ -11,6 +11,7 @@
         <div class="small-4 columns">
             <ul class="button-group radius left">
                 <li><a class="button small" href="<?php echo $this->link(array('reports','weekly')) ?>"><i class="fa fa-file"></i> Week Report</a></li>
+                <li><a class="button small" data-reveal-id="print"  href="#"><i class="fa fa-print"></i> Print</a></li>
             </ul>
         </div>
         <div class="small-8 columns">
@@ -173,6 +174,12 @@
 <div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Select a Year</h2>
     <?php echo $this->yearForm ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="print" class="reveal-modal small" data-reveal aria-labelledby="Print Report" aria-hidden="true" role="dialog">
+    <h2>Print Individual Time Sheet</h2>
+    <?php echo $this->printTimeSheetForm ?>
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 
