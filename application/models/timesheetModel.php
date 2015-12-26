@@ -319,10 +319,11 @@
 
 			//Current Dates
 			$currentDate = new DateTime();
+			$currentDate->setTime(0,0,0);
 			$currentDate->setDate($year, $month, 1);
 
 			//Just added for test. Might need to keep. Fixed the wrong
-			$currentDate->setTime(0,0,0);
+			//$currentDate->setTime(0,0,0);
 
 
 			$this->currentYear = $currentDate->format('Y');
@@ -335,11 +336,12 @@
 
 			$currentDate->setDate($year, $month, 1);
 
-			$this->endDate = $currentDate->modify('+25 day')->format('Y-m-d');
+			$this->endDate = $currentDate->setTime(23,59.59)->modify('+25 day')->format('Y-m-d');
 			$this->endDateTimeString = strtotime($this->endDate);
 
 			//Previous Dates
 			$previousDate = new DateTime();
+			$previousDate->setTime(0,0,0);
 			$previousDate->setDate($year, $month, 1);
 			$previousDate->modify('-1 month');
 			$this->previousMonth = $previousDate->format('m');
@@ -350,6 +352,7 @@
 
 			//Future Dates
 			$furtureDate = new DateTime();
+			$furtureDate->setTime(23,59,59);
 			$furtureDate->setDate($year, $month, 1);
 			$furtureDate->modify('+1 month');
 			$this->nextMonth = $furtureDate->format('m');
@@ -455,7 +458,7 @@
 			}
 
 			//$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
-			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 0:0:0') AND userId = $userId AND codeId = $code;";
 
 			if($this->db->query($sql)->fetch_row() > 0)
 			{

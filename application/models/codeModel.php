@@ -105,11 +105,11 @@
 
 			if($type == 'part')
 			{
-				$sql = "SELECT id, name FROM timeCodes WHERE type = 'part' ORDER BY name ASC";
+				$sql = "SELECT id, name FROM timeCodes WHERE type = 'part' ORDER BY listOrder ASC";
 			}
 			else
 			{
-				$sql = "SELECT id, name FROM timeCodes WHERE 1 ORDER BY name ASC";
+				$sql = "SELECT id, name FROM timeCodes WHERE 1 ORDER BY listOrder ASC";
 			}
 
 			if($this->db->query($sql)->fetch_row() > 0)

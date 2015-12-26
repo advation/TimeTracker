@@ -96,12 +96,14 @@ class timesheetController extends Staple_Controller
         if($year == null)
         {
             $date = new DateTime();
+            $date->setTime(0,0,0);
             $year = $date->format('Y');
         }
 
         if($month == null)
         {
             $date = new DateTime();
+            $date->setTime(0,0,0);
             if($date->format("j") >= 26)
             {
                 $month = $date->modify('+1 month')->format('m');
