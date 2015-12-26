@@ -1,10 +1,36 @@
 <div class="section">
     <div class="row">
         <div class="small-6 columns">
-            <h2><i class="fa fa-file"></i> Payroll Report</h2>
+            <h2><i class="fa fa-file"></i> Month Totals <small><?php echo $this->date ?></small></h2>
         </div>
         <div class="small-6 columns text-right">
-            <a class="button radius" target="_blank" href="<?php echo $this->link(array('reports','payrollprint',$this->year,$this->month)) ?>"><i class='fa fa-print'></i> Print</a>
+            <ul class="button-group round">
+                <li><a class="button small secondary" href="
+                    <?php
+                        switch ($this->month)
+                        {
+                            case 01:
+                                echo $this->link(array('reports','payroll',$this->previousYear, $this->previousMonth));
+                                break;
+                            default:
+                                echo $this->link(array('reports','payroll',$this->year, $this->previousMonth));
+                        }
+                    ?>
+                    "><i class="fa fa-caret-left"></i> Previous</a></li>
+                <li><a class="button small secondary" href="
+                    <?php
+                        switch ($this->month)
+                        {
+                            case 12:
+                                echo $this->link(array('reports','payroll',$this->nextYear, $this->nextMonth));
+                                break;
+                            default:
+                                echo $this->link(array('reports','payroll',$this->year, $this->nextMonth));
+                        }
+                    ?>
+                    ">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button small" target="_blank" href="<?php echo $this->link(array('reports','payrollprint',$this->year,$this->month)) ?>"><i class='fa fa-print'></i> Print</a></li>
+            </ul>
         </div>
     </div>
     <div class="row">
@@ -39,24 +65,16 @@
                     <tr>
                        <th style="width:150px;"></th>
                        <?php
-
                            foreach($this->codes as $code)
                            {
-                               if($code == 'Normal')
-                               {
-                                   echo "<th style='background-color:#d8ffd3;'>$code</th>";
-                               }
-                               else
-                               {
-                                   echo "<th>$code</th>";
-                               }
-
+                                echo "<th>$code</th>";
                            }
-
                        ?>
+                       <th>Total</th>
                     </tr>
                     </thead>
                     <tbody>
+
                     <?php
 
                     foreach($this->report as $user=>$codes)
@@ -65,28 +83,23 @@
                         echo "<tr>";
                         echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b></td>";
 
-                        //for($j=1;$j<=count($this->codes);$j++)
+                        $totals=0;
                         foreach($this->codes as $id=>$timeCode)
                         {
-                            if($timeCode == 'Normal')
-                            {
-                                echo "<td class='text-center' style='background-color:#d8ffd3; border-bottom:1px solid #ccc;'>";
-                            }
-                            else
-                            {
-                                echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
-                            }
+                            echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
                             $value = "-";
                             foreach ($codes as $code => $total)
                             {
                                 if($timeCode == $code)
                                 {
                                     $value = $total;
+                                    $totals = $totals + $total;
                                 }
                             }
                             echo $value;
                             echo "</td>";
                         }
+                        echo "<td class='text-center'><b>$totals</b></td>";
                         echo "</tr>";
                     }
                     ?>
@@ -95,4 +108,9 @@
             </div>
         </div>
     </div>
+</div>
+<div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Select a Year</h2>
+    <?php echo $this->yearForm ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>

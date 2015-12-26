@@ -27,24 +27,41 @@ class reportsController extends Staple_Controller
             $month = date('m');
         }
 
+        $date = new DateTime();
+        $date->setDate($year,$month,26);
+        $date->setTime(0,0,0);
+
+        $this->view->year = $date->format('Y');
+
+        $this->view->date = $date->format("F Y");
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
+        $date->modify('+1 year');
+
+        $month = $date->format('m');
+        $this->view->month = $month;
+
+        $date->modify('-1 month');
+        $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
+
         $report = new reportModel($year, $month);
         $this->view->report = $report->getTimesheets();
-
-        $timesheet = new timesheetModel($year, $month);
-        $this->view->nextMonth = $timesheet->getNextMonth();
-        $this->view->previousMonth = $timesheet->getPreviousMonth();
-        $this->view->year = $timesheet->getCurrentYear();
-        $yearForm = new changeYearForm();
-        $yearForm->setAction($this->_link(array('reports','changeyear')));
-        $this->view->yearForm = $yearForm;
 
         $this->view->accountLevel = $this->authLevel;
 
         $date = new DateTime();
         $date->setDate($year, $month, 1);
-        $this->view->month = $date->format('F');
+        $this->view->monthName = $date->format('F');
 
         $printTimeSheetForm = new printTimeSheetForm();
+        $printTimeSheetForm->setAction($this->_link(array("reports",$year,$month)));
         if($printTimeSheetForm->wasSubmitted())
         {
             $printTimeSheetForm->addData($_POST);
@@ -171,10 +188,8 @@ class reportsController extends Staple_Controller
         $this->view->year = $year;
         $this->view->month = date('F',$month);
 
-
         $timesheet = new timesheetModel($year, $month,$uid);
         $this->view->timesheet = $timesheet;
-
     }
 
     public function payperiod($year = null, $month = null)
@@ -186,22 +201,54 @@ class reportsController extends Staple_Controller
         if ($month == null) {
             $month = date('m');
         }
-        $this->view->year = $year;
 
         $date = new DateTime();
         $date->setDate($year,$month,26);
         $date->setTime(0,0,0);
-        $this->view->month = $date->format('m');
-        $date->modify('-1 month');
-        $this->view->previousMonth = $date->format('m');
+
+        $year = $date->format('Y');
+        $this->view->year = $year;
+
+        $nextYear = $date->modify('+1 year')->format('Y');
+        $this->view->nextYear = $nextYear;
+
+        $previousYear = $date->modify('-2 year')->format('Y');
+        $this->view->previousYear = $previousYear;
+
+        $month = $date->format('m');
+        $this->view->month = $month;
+
+        $nextMonth = $date->modify('+1 month')->format('m');
+        $this->view->nextMonth = $nextMonth;
+
+        $previousMonth = $date->modify('-2 month')->format('m');
+        $this->view->previousMonth = $previousMonth;
+
+        $date->setDate($year,$month,26);
+        $date->setTime(0,0,0);
+
+        $newDate = new DateTime();
+
+        switch($month)
+        {
+            case 1:
+                $newDate->setDate($previousYear,$previousMonth,26);
+                break;
+            default:
+                $newDate->setDate($year,$previousMonth,26);
+        }
+
+        $newDate->setTime(0,0,0);
 
         $date2 = new DateTime();
         $date2->setDate($year,$month,25);
-        $date2->setTime(24,0,0);
+        $date2->setTime(24,00,00);
+        $interval = date_diff($newDate,$date2);
 
-        $interval = date_diff($date,$date2);
+        $span = $interval->days;
+        $this->view->span = $span;
 
-        $this->view->span = $interval->days;
+        $this->view->date = $date->format("F Y");
 
         $reports = new reportModel($year, $month);
         $this->view->report = $reports->payPeriodTotals($year, $month);
@@ -259,9 +306,20 @@ class reportsController extends Staple_Controller
         $date = new DateTime();
         $date->setDate($year,$month,26);
         $date->setTime(0,0,0);
+
+        $this->view->date = $date->format("F Y");
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
         $this->view->month = $date->format('m');
         $date->modify('-1 month');
         $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
 
         $date2 = new DateTime();
         $date2->setDate($year,$month,25);
@@ -280,6 +338,7 @@ class reportsController extends Staple_Controller
 
         $codes = new codeModel();
         $this->view->codes = $codes->allCodes();
+
     }
 
     public function payrollprint($year = null, $month =  null)
