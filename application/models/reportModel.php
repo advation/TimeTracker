@@ -45,13 +45,13 @@ class reportModel extends Staple_Model
         if($authLevel >= 900)
         {
             $sql = "
-            SELECT id, firstName, lastName FROM accounts WHERE 1 ORDER BY lastName ASC
+            SELECT id, firstName, lastName FROM accounts WHERE status = 1 ORDER BY lastName ASC
             ";
         }
         else
         {
             $sql = "
-            SELECT id, firstName, lastName FROM accounts WHERE supervisorId = '".$this->db->real_escape_string($userId)."' ORDER BY lastName ASC
+            SELECT id, firstName, lastName FROM accounts WHERE status = 1 AND supervisorId = '".$this->db->real_escape_string($userId)."' ORDER BY lastName ASC
             ";
         }
 

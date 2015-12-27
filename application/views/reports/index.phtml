@@ -1,9 +1,9 @@
 <div class="section">
     <div class="row">
-        <div class="small-6 columns">
-            <h1><i class="fa fa-file"></i> Reports</h1>
+        <div class="small-7 columns">
+            <h1><i class="fa fa-file"></i>Time Sheets <small>Active</small></h1>
         </div>
-        <div class="small-6 columns text-right">
+        <div class="small-5 columns text-right">
             <h1 class="subheader"><?php echo $this->monthName ?> <?php echo $this->year?></h1>
         </div>
     </div>
@@ -129,7 +129,7 @@
 
                     if($this->accountLevel >= 900)
                     {
-                        echo "<td><a class='button tiny radius warning' href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i> Delete</a></td>";
+                        echo "<td><a href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i> Remove</a></td>";
                     }
 
                     echo "</tr>";
