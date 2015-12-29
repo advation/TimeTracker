@@ -147,10 +147,18 @@ class Staple_ExtendedDBAuthAdapter implements Staple_AuthAdapter
 							$pass = $cred['pin'];
 					}
 
-					$sql = 'SELECT ' . $db->real_escape_string($this->_settings['pinfield']) . ',' . $db->real_escape_string($this->_settings['uidfield']) . '
-FROM ' . $db->real_escape_string($this->_settings['authtable']) . '
-WHERE ' . $db->real_escape_string($this->_settings['pinfield']) . ' = ' .
-							'\'' . $db->real_escape_string($pass) . '\';';
+					$sql = "
+						SELECT
+						".$db->real_escape_string($this->_settings['pinfield']).",
+						".$db->real_escape_string($this->_settings['uidfield'])."
+						FROM
+						".$db->real_escape_string($this->_settings['authtable'])."
+						WHERE
+						".$db->real_escape_string($this->_settings['pinfield'])." =
+						'".$db->real_escape_string($pass)."'
+						AND
+						status = '1';
+					";
 
 					if(($result = $db->query($sql)) !== false)
 					{
@@ -181,12 +189,21 @@ WHERE ' . $db->real_escape_string($this->_settings['pinfield']) . ' = ' .
 						$pass = $cred['password'];
 				}
 
-				$sql = 'SELECT ' . $db->real_escape_string($this->_settings['uidfield']) . ',' . $db->real_escape_string($this->_settings['pwfield']) . '
-FROM ' . $db->real_escape_string($this->_settings['authtable']) . '
-WHERE ' . $db->real_escape_string($this->_settings['uidfield']) . ' = ' .
-					'\'' . $db->real_escape_string($cred['username']) . '\'
-AND ' . $db->real_escape_string($this->_settings['pwfield']) . ' = ' .
-					'\'' . $db->real_escape_string($pass) . '\';';
+				$sql = "
+						SELECT
+						".$db->real_escape_string($this->_settings['uidfield']).",
+						".$db->real_escape_string($this->_settings['pwfield'])."
+						FROM
+						".$db->real_escape_string($this->_settings['authtable'])."
+						WHERE
+						".$db->real_escape_string($this->_settings['uidfield'])." =
+						'".$db->real_escape_string($cred['username'])."'
+						AND
+						".$db->real_escape_string($this->_settings['pwfield'])." =
+						'".$db->real_escape_string($pass)."'
+						AND
+						status = '1';
+					";
 
 				if (($result = $db->query($sql)) !== false)
 				{

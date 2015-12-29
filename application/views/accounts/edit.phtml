@@ -1,0 +1,61 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h1><i class="fa fa-users"></i> Edit Account <small></small></h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <ul class="button-group round">
+                <li><a class="button secondary" href="<?php echo $this->link(array('accounts')) ?>">Back</a></li>
+                <li><a class="button" data-reveal-id="resetPin" href="#"><i class="fa fa-refresh"></i> Reset PIN</a></li>
+                <li><a class="button" data-reveal-id="resetPassword" href="#"><i class="fa fa-refresh"></i> Reset Password</a></li>
+            </ul>
+        </div>
+    </div>
+    <?php
+
+    if(count($this->successMessage) > 0)
+    {
+        echo "
+            <div class='row'>
+                <div class='small-12 columns text-center'>
+                    <div data-alert class='alert-box success radius'><i class='fa fa-check'></i> ";
+                    foreach($this->successMessage as $message)
+                    {
+                        echo "$message<br>";
+                    }
+        echo "
+                        <a href=\"#\" class=\"close\">&times;</a>
+                    </div>
+                </div>
+            </div>
+        ";
+    }
+
+    ?>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $this->form ?>
+        </div>
+    </div>
+</div>
+
+<div id="resetPin" class="reveal-modal small text-center" data-reveal aria-labelledby="Reset PIN" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">PIN Reset</h2>
+    <p class="lead">Confirm to reset users PIN</p>
+    <ul class="button-group round">
+        <a class="button warning" href="<?php echo $this->link(array('accounts','resetpin',$this->id)) ?>"><i class="fa fa-check"></i> Confirm PIN Reset</a>
+    </ul>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="resetPassword" class="reveal-modal small text-center" data-reveal aria-labelledby="Reset Password" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Password Reset</h2>
+    <p class="lead">Confirm to reset users password</p>
+    <p class="lead">**Incomplete Feature**</p>
+    <div class="hide">
+    <ul class="button-group round">
+        <a class="button warning hide" href=""><i class="fa fa-check"></i> Confirm Password Reset</a>
+    </ul>
+    </div>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

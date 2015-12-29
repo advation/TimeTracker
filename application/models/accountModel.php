@@ -18,11 +18,27 @@ class accountModel extends Staple_Model
     private $status;
 
     /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * @param mixed $id
      */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUsername()
+    {
+        return $this->username;
     }
 
     /**
@@ -34,11 +50,27 @@ class accountModel extends Staple_Model
     }
 
     /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
      * @param mixed $password
      */
     public function setPassword($password)
     {
         $this->password = $password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPin()
+    {
+        return $this->pin;
     }
 
     /**
@@ -50,67 +82,19 @@ class accountModel extends Staple_Model
     }
 
     /**
-     * @param mixed $firstName
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-    }
-
-    /**
-     * @param mixed $lastName
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-    }
-
-    /**
-     * @param mixed $authLevel
-     */
-    public function setAuthLevel($authLevel)
-    {
-        $this->authLevel = $authLevel;
-    }
-
-    /**
-     * @param mixed $batchId
-     */
-    public function setBatchId($batchId)
-    {
-        $this->batchId = $batchId;
-    }
-
-    /**
-     * @param mixed $supervisorId
-     */
-    public function setSupervisorId($supervisorId)
-    {
-        $this->supervisorId = $supervisorId;
-    }
-
-    /**
-     * @param mixed $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
-
-    /**
      * @return mixed
      */
     public function getTempPin()
     {
         return $this->tempPin;
+    }
+
+    /**
+     * @param mixed $tempPin
+     */
+    public function setTempPin($tempPin)
+    {
+        $this->tempPin = $tempPin;
     }
 
     /**
@@ -122,11 +106,107 @@ class accountModel extends Staple_Model
     }
 
     /**
+     * @param mixed $firstName
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
      * @return mixed
      */
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * @param mixed $lastName
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthLevel()
+    {
+        return $this->authLevel;
+    }
+
+    /**
+     * @param mixed $authLevel
+     */
+    public function setAuthLevel($authLevel)
+    {
+        $this->authLevel = $authLevel;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBatchId()
+    {
+        return $this->batchId;
+    }
+
+    /**
+     * @param mixed $batchId
+     */
+    public function setBatchId($batchId)
+    {
+        $this->batchId = $batchId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSupervisorId()
+    {
+        return $this->supervisorId;
+    }
+
+    /**
+     * @param mixed $supervisorId
+     */
+    public function setSupervisorId($supervisorId)
+    {
+        $this->supervisorId = $supervisorId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 
     function __construct()
@@ -135,12 +215,52 @@ class accountModel extends Staple_Model
 
     }
 
+    function load($id)
+    {
+        $sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+        $query = $this->db->query($sql);
+        $result = $query->fetch_assoc();
+
+        $data = array();
+
+        $data['id'] = $result['id'];
+        $data['username'] = $result['username'];
+        $data['firstName'] = $result['firstName'];
+        $data['lastName'] = $result['lastName'];
+        $data['level'] = $result['authLevel'];
+        $data['supervisor'] = $result['supervisorId'];
+        $data['type'] = $result['type'];
+        $data['status'] = $result['status'];
+
+        return $data;
+    }
+
     function save()
     {
         if(isset($this->id))
         {
-            //Edit user
+            //Check if username already exists
+            $sql = "SELECT username FROM accounts WHERE username = '".$this->db->real_escape_string($this->username)."' AND id <> '".$this->db->real_escape_string($this->id)."'";
+            $query = $this->db->query($sql);
+            if($query->num_rows == 0)
+            {
+                $sql = "
+                    UPDATE accounts SET
+                    username = '".$this->db->real_escape_string($this->username)."',
+                    firstName = '".$this->db->real_escape_string($this->firstName)."',
+                    lastName = '".$this->db->real_escape_string($this->lastName)."',
+                    authLevel = '".$this->db->real_escape_string($this->authLevel)."',
+                    supervisorId = '".$this->db->real_escape_string($this->supervisorId)."',
+                    type = '".$this->db->real_escape_string($this->type)."',
+                    status = '".$this->db->real_escape_string($this->status)."'
+                    WHERE id = '".$this->db->real_escape_string($this->id)."'
+                ";
 
+                if($this->db->query($sql))
+                {
+                    return true;
+                }
+            }
         }
         else
         {
@@ -184,7 +304,19 @@ class accountModel extends Staple_Model
 
                 if($this->db->query($sql))
                 {
+                    $id = $this->db->insert_id;
+
                     $this->tempPin = $pin;
+
+                    $account = new userModel();
+                    $userInfo = $account->userInfo($id);
+
+                    $audit = new auditModel();
+                    $audit->setUserId($userInfo['id']);
+                    $audit->setAction('New Account Created');
+                    $audit->setItem($account->getUsername()." created account.");
+                    $audit->save();
+
                     return true;
                 }
             }
@@ -212,6 +344,28 @@ class accountModel extends Staple_Model
         else
         {
             $this->generatePin();
+        }
+    }
+
+    function resetPin($id)
+    {
+        $pin = $this->generatePin();
+        $this->tempPin = $pin;
+
+        $sql = "UPDATE accounts SET pin='".$this->db->real_escape_string(sha1($pin))."' WHERE id = '".$this->db->real_escape_string($id)."'";
+
+        if($this->db->query($sql))
+        {
+            $account = new userModel();
+            $userInfo = $account->userInfo($id);
+
+            $audit = new auditModel();
+            $audit->setUserId($userInfo['id']);
+            $audit->setAction('PIN Reset');
+            $audit->setItem($account->getUsername()." reset users PIN.");
+            $audit->save();
+
+            return true;
         }
     }
 }

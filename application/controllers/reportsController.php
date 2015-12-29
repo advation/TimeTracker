@@ -60,28 +60,28 @@ class reportsController extends Staple_Controller
         $date->setDate($year, $month, 1);
         $this->view->monthName = $date->format('F');
 
-        $printTimeSheetForm = new printTimeSheetForm();
-        $printTimeSheetForm->setAction($this->_link(array("reports",$year,$month)));
-        if($printTimeSheetForm->wasSubmitted())
+        $printActiveTimeSheetForm = new printActiveTimeSheetForm();
+        $printActiveTimeSheetForm->setAction($this->_link(array("reports",$year,$month)));
+        if($printActiveTimeSheetForm->wasSubmitted())
         {
-            $printTimeSheetForm->addData($_POST);
-            if($printTimeSheetForm->validate())
+            $printActiveTimeSheetForm->addData($_POST);
+            if($printActiveTimeSheetForm->validate())
             {
-                $data = $printTimeSheetForm->exportFormData();
+                $data = $printActiveTimeSheetForm->exportFormData();
 
                 $this->layout->addScriptBlock("
                     window.open('".$this->_link(array("reports","printpreview",$year,$month,$data['account']))."');
                     ");
-                $this->view->printTimeSheetForm = $printTimeSheetForm;
+                $this->view->printTimeSheetForm = $printActiveTimeSheetForm;
             }
             else
             {
-                $this->view->printTimeSheetForm = $printTimeSheetForm;
+                $this->view->printTimeSheetForm = $printActiveTimeSheetForm;
             }
         }
         else
         {
-            $this->view->printTimeSheetForm = $printTimeSheetForm;
+            $this->view->printTimeSheetForm = $printActiveTimeSheetForm;
         }
     }
 
@@ -388,6 +388,74 @@ class reportsController extends Staple_Controller
         else
         {
             header("location:".$this->_link(array('reports','payroll'))."");
+        }
+    }
+
+    public function inactive($year = null, $month = null)
+    {
+        if ($year == null) {
+            $year = date('Y');
+        }
+
+        if ($month == null) {
+            $month = date('m');
+        }
+
+        $date = new DateTime();
+        $date->setDate($year,$month,26);
+        $date->setTime(0,0,0);
+
+        $this->view->year = $date->format('Y');
+
+        $this->view->date = $date->format("F Y");
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
+        $date->modify('+1 year');
+
+        $month = $date->format('m');
+        $this->view->month = $month;
+
+        $date->modify('-1 month');
+        $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
+
+        $report = new reportModel($year, $month,1);
+        $this->view->report = $report->getTimesheets();
+
+        $this->view->accountLevel = $this->authLevel;
+
+        $date = new DateTime();
+        $date->setDate($year, $month, 1);
+        $this->view->monthName = $date->format('F');
+
+        $printInactiveTimeSheetForm = new printInactiveTimeSheetForm();
+        $printInactiveTimeSheetForm->setAction($this->_link(array("reports","inactive",$year,$month)));
+        if($printInactiveTimeSheetForm->wasSubmitted())
+        {
+            $printInactiveTimeSheetForm->addData($_POST);
+            if($printInactiveTimeSheetForm->validate())
+            {
+                $data = $printInactiveTimeSheetForm->exportFormData();
+
+                $this->layout->addScriptBlock("
+                    window.open('".$this->_link(array("reports","printpreview",$year,$month,$data['account']))."');
+                    ");
+                $this->view->printTimeSheetForm = $printInactiveTimeSheetForm;
+            }
+            else
+            {
+                $this->view->printTimeSheetForm = $printInactiveTimeSheetForm;
+            }
+        }
+        else
+        {
+            $this->view->printTimeSheetForm = $printInactiveTimeSheetForm;
         }
     }
 }

@@ -294,8 +294,9 @@ class timesheetController extends Staple_Controller
                         $startYear = date('Y');
                     }
 
-                    $endMonth = date('m');
-                    $endYear = date('Y');
+                    $date = new DateTime();
+                    $endMonth = $date->modify('+1 month')->format('m');
+                    $endYear = $date->format('Y');
 
                     $startDate= strtotime($startMonth.'/26/'.$startYear);
                     $endDate = strtotime($endMonth.'/25/'.$endYear);

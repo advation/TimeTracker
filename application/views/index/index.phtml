@@ -16,48 +16,39 @@
         ";
     }
 ?>
-<div class="section info">
-        <?php
-        echo "
-            <div class=\"row\">
-                <div class='small-12 columns text-center'>
-                    <h2>Time submitted this week</h2>
-                    <p>".$this->week['start']['month']." ".$this->week['start']['day']." ".$this->week['year']." to ".$this->week['end']['month']." ".$this->week['end']['day']." ".$this->week['year']."</p>
-                </div>
-                <div class='small-12 columns text-center'>
-                    <h2>".$this->week['total']."</h2>
-                </div>
-                ";
 
-                if($this->unlockedTimes > 0)
-                {
-                    echo "
-                        <div class='row'>
-                            <div class='small-12 column text-center'>
-                                <a class='button radius success' href=\"".$this->link(array('timesheet','unlocked'))."\"><i class='fa fa-calendar'></i> Submit time for previous pay period</a>
-                            </div>
-                        </div>
-                    ";
-                }
-        echo "</div></div>";
-
-        echo "<div class='section'>";
-
-        if($this->timesheet->totals['Total Time'] > 0)
-        {
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <div class="panel info">
+            <?php
             echo "
-            <div class=\"row\">
-                <div class=\"small-12 columns\">
-                    <h2>".date('F')." ".date('Y')." <small> Hours</small></h2>
-                </div>
-            </div>";
-        }
+                <div class=\"row\">
+                    <div class='small-12 columns'>
+                        <h2>Time submitted this week</h2>
+                    </div>
+                    <div class='small-12 columns text-center'>
+                        <p>".$this->week['start']['month']." ".$this->week['start']['day']." ".$this->week['year']." to ".$this->week['end']['month']." ".$this->week['end']['day']." ".$this->week['year']."</p>
+                    </div>
+                    <div class='small-12 columns text-center'>
+                        <h2>".$this->week['total']."</h2>
+                    </div>
+                    ";
+            echo "</div>";
+            ?>
+            </div>
+        </div>
+        <div class="small-6 columns">
+            <div class="panel">
+            <h2><?php echo $this->month." ".$this->year ?> <small> Hours Breakout</small></h2>
 
-        foreach($this->timesheet->totals as $key=>$value)
-        {
-            if($value > 0)
-            {
-                echo "
+            <?php
+
+             foreach($this->timesheet->totals as $key=>$value)
+             {
+                 if($value > 0)
+                 {
+                     echo "
                     <div class='row'>
                         <div class='small-6 columns'>
                             <h4>$key</h4>
@@ -67,8 +58,24 @@
                         </div>
                     </div>
                 ";
-            }
-        }
-        ?>
+                 }
+             }
+
+             if($this->timesheet->totals['Total Time'] == 0)
+             {
+                 echo "
+                    <div class=\"row\">
+                        <div class=\"small-12 columns text-center\">
+                            <h4 class='subheader'>No time submitted</h4>
+                        </div>
+                    </div>
+                ";
+             }
+             ?>
+            </div>
+        </div>
+        <div class='small-12 columns text-center'>
+            <a class='button round' href="<?php echo $this->link(array('timesheet')) ?>"><i class='fa fa-clock-o'></i> Your Time Sheet</a>
+        </div>
     </div>
 </div>

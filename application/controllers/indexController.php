@@ -15,11 +15,24 @@ class indexController extends Staple_Controller
 	{
 		$this->view->authLevel = $this->authLevel;
 
-		$messages = array("The library will be closed on Monday for whatever reason. Just remember to not come in!");
-		//$this->view->messages = $messages;
+		$messages = array();
+		$this->view->messages = $messages;
 
-		$timesheet = new timesheetModel(date('Y'),date('m'));
+		$date = new DateTime();
+		$date->setTime(0,0,0);
+
+		if($date->format('d') >= 26)
+		{
+			$date->modify('+1 month');
+		}
+
+		$date->setDate($date->format('Y'),$date->format('m'),1);
+
+		$timesheet = new timesheetModel($date->format('Y'),$date->format('m'));
 		$this->view->timesheet = $timesheet;
+
+		$this->view->year = $date->format('Y');
+		$this->view->month = $date->format('F');
 
 		$date = new DateTime();
 		$week = $date->format('W');

@@ -322,22 +322,19 @@
 			$currentDate->setTime(0,0,0);
 			$currentDate->setDate($year, $month, 1);
 
-			//Just added for test. Might need to keep. Fixed the wrong
-			//$currentDate->setTime(0,0,0);
-
-
 			$this->currentYear = $currentDate->format('Y');
 			$this->currentMonth = $currentDate->format('m');
 			$this->currentMonthText = $currentDate->format('F');
 
-
 			$this->startDate = $currentDate->modify('-1 month +25 day')->format('Y-m-d');
-			$this->startDateTimeString = strtotime($this->startDate);
+			$this->startDateTimeString = $currentDate->format('U');
 
 			$currentDate->setDate($year, $month, 1);
+			$currentDate->modify('+24 day');
+			$currentDate->setTime(23,59,59);
 
-			$this->endDate = $currentDate->setTime(23,59.59)->modify('+25 day')->format('Y-m-d');
-			$this->endDateTimeString = strtotime($this->endDate);
+			$this->endDate = $currentDate->format('Y-m-d');
+			$this->endDateTimeString = $currentDate->format('U');
 
 			//Previous Dates
 			$previousDate = new DateTime();
@@ -457,8 +454,7 @@
 				$userId = $account['id'];
 			}
 
-			//$sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
-			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 0:0:0') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
 
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
@@ -507,7 +503,6 @@
 
 		function nearestQuarterHour($time)
 		{
-			//$time = strtotime($time);
 			$round = 15*60;
 			$rounded = round($time/$round)*$round;
 

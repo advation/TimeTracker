@@ -195,7 +195,7 @@
 
 		function listAll()
 		{
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts ORDER BY type DESC, lastName ASC, firstName ASC";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 ORDER BY lastName ASC, firstName ASC";
 			if($this->db->query($sql)->num_rows > 0)
 			{
 				$query = $this->db->query($sql);
@@ -211,7 +211,7 @@
 
 		function listActive()
 		{
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 ORDER BY type DESC, lastName ASC, firstName ASC";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 ORDER BY lastName ASC, firstName ASC";
 			if($this->db->query($sql)->num_rows > 0)
 			{
 				$query = $this->db->query($sql);

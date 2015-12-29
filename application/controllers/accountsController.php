@@ -73,7 +73,85 @@ class accountsController extends Staple_Controller
         {
             $this->view->form = $form;
         }
+    }
 
+    public function edit($id = null)
+    {
+        if($id != null)
+        {
+            $this->view->id = $id;
+            $user = new accountModel();
+
+            $form = new editAccountForm();
+            $form->setAction($this->_link(array('accounts','edit',$id)));
+            $form->addData($user->load($id));
+
+            if($form->wasSubmitted())
+            {
+                $form->addData($_POST);
+                if($form->validate())
+                {
+                    $data = $form->exportFormData();
+
+                    $user = new accountModel();
+                    $user->setId($id);
+                    $user->setFirstName($data['firstName']);
+                    $user->setLastName($data['lastName']);
+                    $user->setUsername($data['username']);
+                    $user->setSupervisorId($data['supervisor']);
+                    $user->setType($data['type']);
+                    $user->setAuthLevel($data['level']);
+                    $user->setStatus($data['status']);
+
+                    if($user->save())
+                    {
+                        $this->view->successMessage = array("Changes saved");
+                        $form = new editAccountForm();
+                        $form->addData($user->load($id));
+                        $this->view->form = $form;
+                    }
+                    else
+                    {
+                        $this->view->errorMessage = array("User Name already being used. Please try a different User Name");
+                        $form->view->form = $form;
+                    }
+
+                }
+                else
+                {
+                    $this->view->form = $form;
+                }
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+
+        }
+        else
+        {
+            header("location: ".$this->_link(array('accounts'))."");
+        }
+    }
+
+    public function resetpin($id = null)
+    {
+        if($id != null)
+        {
+            $user = new accountModel();
+            if($user->resetpin($id))
+            {
+                $this->view->tempPin = $user->getTempPin();
+            }
+            else
+            {
+                echo "Unable to reset PIN.";
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link("accounts")."");
+        }
     }
 
     public function inactive()
