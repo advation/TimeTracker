@@ -1,42 +1,73 @@
 <?php echo $this->insertTimeForm ?>
 <div class="section">
     <div class="row">
-        <div class="small-12 medium-4 text-left columns">
-            <h3><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <a href="#" data-reveal-id="yearForm"><?php echo $this->timesheet->currentYear ?></a></h3>
+        <div class="small-6 text-left columns">
+            <h2><i class="fa fa-calendar"></i> <?php echo $this->timesheet->currentMonthText ?> <?php echo $this->timesheet->currentYear ?></h2>
         </div>
-        <div class="small-12 medium-8 text-right columns hide-for-print">
-            <ul class="button-group round even-5 stack-for-small">
-                <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->previousMonth)) ?>"><i class="fa fa-caret-left"></i> Prev.</a></li>
-                <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->timesheet->currentYear,$this->timesheet->nextMonth)) ?>">Next <i class="fa fa-caret-right"></i></a></li>
+        <div class="small-6 text-right columns">
+            <?php
+            if($this->needsValidation)
+            {
+                echo "<a class=\"button round success\" href=\"".$this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))."\"><i class=\"fa fa-check\"></i> Validate</a>";
+            }
+            ?>
+        </div>
+        <div class="small-12 text-center columns hide-for-print">
+            <ul class="button-group radius even-7">
+                <?php
+
+                $year = $this->year;
+
+                if($this->month == 12)
+                {
+                    $year = $this->nextYear;
+                }
+
+                if($this->momth == 1)
+                {
+                    $year = $this->previousYear;
+                }
+                ?>
+
+                <li><a class="button small secondary" href="
+                    <?php
+                    switch ($this->month)
+                    {
+                        case 01:
+                            echo $this->link(array('timesheet',$this->previousYear, $this->previousMonth));
+                            break;
+                        default:
+                            echo $this->link(array('timesheet',$this->year, $this->previousMonth));
+                    }
+                    ?>
+                    "><i class="fa fa-caret-left"></i> Previous</a></li>
+                <li><a class="button small secondary" href="<?php echo $this->link(array('timesheet',$this->currentYear,$this->currentMonth))?>"><i class="fa fa-flag"></i> Current</a></li>
+                <li><a class="button small secondary" href="
+                    <?php
+                    switch ($this->month)
+                    {
+                        case 12:
+                            echo $this->link(array('timesheet',$this->nextYear, $this->nextMonth));
+                            break;
+                        default:
+                            echo $this->link(array('timesheet',$this->year, $this->nextMonth));
+                    }
+                    ?>
+                    ">Next <i class="fa fa-caret-right"></i></a></li>
+                <li><a class="button small secondary" id="hideAll" href="#"><i class="fa fa-eye-slash"></i> Hide All</a></li>
+                <li><a class="button small secondary" id="showAll" href="#"><i class="fa fa-eye"></i> Show All</a></li>
                 <li><a class="button small toggleTotals" href="#"><i class="fa fa-calculator"></i> Totals</a></li>
                 <li><a class="button small" target="_blank" href="<?php echo $this->link(array('timesheet','printpreview',$this->timesheet->userId,$this->timesheet->currentYear,$this->timesheet->currentMonth)) ?>"><i class="fa fa-print"></i> Print</a></li>
-                <?php
-                    if($this->needsValidation)
-                    {
-                        echo "<li><a class=\"button small success\" href=\"".$this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))."\"><i class=\"fa fa-check\"></i> Validate</a></li>";
-                    }
-                ?>
             </ul>
         </div>
     </div><!-- end row -->
 <?php
-    echo "
-        <div class=\"row\">
-            <div class=\"small-12 columns hide-for-print\">
-                <ul class=\"inline-list right\">
-                    <li><a id=\"hideAll\" href=\"#\"><i class=\"fa fa-eye-slash\"></i> Hide All</a></li>
-                    <li><a id=\"showAll\" href=\"#\"><i class=\"fa fa-eye\"></i> Show All</a></li>
-                </ul>
-            </div>
-        </div>
-    ";
-
     if(count($this->timesheet->entries) > 0)
     {
         echo "
-            <div class=\"row\" style=\"margin-bottom:10px;\">
+            <div class=\"row\" style=\"padding-top:20px; padding-bottom:10px; background-color:#ccc;\">
                 <div class=\"small-4 medium-2 columns\">
-                   &nbsp;
+                    <b>Status</b>
                 </div>
                 <div class=\"small-4 medium-2 columns\">
                     <b>Time In</b> <small>(Adjusted)</small>
@@ -143,12 +174,6 @@
     }
 ?>
 </div><!-- end section -->
-
-<div id="yearForm" class="reveal-modal small" data-reveal aria-labelledby="Change Year" aria-hidden="true" role="dialog">
-    <h2 id="modalTitle">Select a Year</h2>
-    <?php echo $this->changeYearForm ?>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-</div>
 
 <div id="totals" class="totalsPanel">
     <div class="row">

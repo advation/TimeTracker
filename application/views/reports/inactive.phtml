@@ -1,7 +1,7 @@
 <div class="section">
     <div class="row">
         <div class="small-7 columns">
-            <h1><i class="fa fa-file"></i>Time Sheets <small>Active</small></h1>
+            <h1><i class="fa fa-file"></i>Time Sheets <small>Inactive</small></h1>
         </div>
         <div class="small-5 columns text-right">
             <h1 class="subheader"><?php echo $this->monthName ?> <?php echo $this->year?></h1>
@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="small-12 columns">
-            <ul class="button-group radius even-6">
+            <ul class="button-group radius even-5">
                 <?php
 
                 $year = $this->year;
@@ -26,15 +26,16 @@
 
 
                 ?>
+
                 <li><a class="button small secondary" href="
                     <?php
                     switch ($this->month)
                     {
                         case 01:
-                            echo $this->link(array('reports',$this->previousYear, $this->previousMonth));
+                            echo $this->link(array('reports','inactive',$this->previousYear, $this->previousMonth));
                             break;
                         default:
-                            echo $this->link(array('reports',$this->year, $this->previousMonth));
+                            echo $this->link(array('reports','inactive',$this->year, $this->previousMonth));
                     }
                     ?>
                     "><i class="fa fa-caret-left"></i> Previous</a></li>
@@ -43,10 +44,10 @@
                     switch ($this->month)
                     {
                         case 12:
-                            echo $this->link(array('reports',$this->nextYear, $this->nextMonth));
+                            echo $this->link(array('reports','inactive',$this->nextYear, $this->nextMonth));
                             break;
                         default:
-                            echo $this->link(array('reports',$this->year, $this->nextMonth));
+                            echo $this->link(array('reports','inactive',$this->year, $this->nextMonth));
                     }
                     ?>
                     ">Next <i class="fa fa-caret-right"></i></a></li>
@@ -54,7 +55,6 @@
 
                 <li><a id="showAll" class="button small secondary" href="#"><i class="fa fa-eye"></i> Show All</a></li>
                 <li><a id="hideAll" class="button small secondary" href="#"><i class="fa fa-eye-slash"></i> Hide All</a></li>
-                <li><a class="button small" href="<?php echo $this->link(array('reports','weekly')) ?>"><i class="fa fa-file"></i> Week Report</a></li>
                 <li><a class="button small" data-reveal-id="print"  href="#"><i class="fa fa-print"></i> Print</a></li>
             </ul>
         </div>

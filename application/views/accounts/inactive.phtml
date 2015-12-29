@@ -1,0 +1,76 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h1><i class="fa fa-users"></i> Accounts <small>Inactive</small></h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <ul class="button-group round">
+                <li><a class="button secondary" href="<?php echo $this->link(array('accounts')) ?>"><i class="fa fa-user"></i> Show Active</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="small-12 columns">
+            <table width="100%">
+                <tr>
+                    <th>Account</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Supervisor</th>
+                    <th>Action</th>
+                </tr>
+                <?php
+                if(count($this->accounts) > 0)
+                {
+                    foreach($this->accounts as $account)
+                    {
+                        switch($account['type'])
+                        {
+                            case "part":
+                                $type = "Part Time";
+                                break;
+                            case "full":
+                                $type = "Full Time";
+                                break;
+                            default:
+                                $type = " - ";
+                        }
+
+                        switch($account['status'])
+                        {
+                            case 0:
+                                $status = "Inactive";
+                                break;
+                            case 1:
+                                $status = "Active";
+                                break;
+                            default:
+                                $status = " - ";
+                        }
+
+                        foreach($this->allAccounts as $allAccount)
+                        {
+                            if($allAccount['id'] == $account['supervisorId'])
+                            {
+                                $supervisor = $allAccount['lastName'].", ".$allAccount['firstName'];
+                            }
+                        }
+
+                        echo "
+                            <tr>
+                                <td>".$account['lastName'].", ".$account['firstName']."</td>
+                                <td>$type</td>
+                                <td>$status</td>
+                                <td>$supervisor</td>
+                                <td><a href=\"".$this->link(array('accounts','edit',$account['id']))."\">Edit</a></td>
+                            </tr>
+                        ";
+                    }
+                }
+                ?>
+
+            </table>
+        </div>
+    </div>
+</div>

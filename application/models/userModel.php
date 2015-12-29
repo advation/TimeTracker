@@ -187,7 +187,7 @@
 
 		function userInfo($id)
 		{
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
 			$query = $this->db->query($sql);
 			$result = $query->fetch_assoc();
 			return $result;
@@ -195,8 +195,7 @@
 
 		function listAll()
 		{
-			$userId = $this->id;
-			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type FROM accounts ORDER BY type DESC, lastName ASC, firstName ASC";
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 ORDER BY lastName ASC, firstName ASC";
 			if($this->db->query($sql)->num_rows > 0)
 			{
 				$query = $this->db->query($sql);
@@ -208,7 +207,36 @@
 
 
 			}
+		}
 
+		function listActive()
+		{
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 ORDER BY lastName ASC, firstName ASC";
+			if($this->db->query($sql)->num_rows > 0)
+			{
+				$query = $this->db->query($sql);
+				while($result = $query->fetch_assoc())
+				{
+					$data[] = $result;
+				}
+				return $data;
+			}
+		}
+
+		function listInactive()
+		{
+			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts  WHERE status = 0 ORDER BY type DESC, lastName ASC, firstName ASC";
+			if($this->db->query($sql)->num_rows > 0)
+			{
+				$query = $this->db->query($sql);
+				while($result = $query->fetch_assoc())
+				{
+					$data[] = $result;
+				}
+				return $data;
+
+
+			}
 		}
 	}
 ?>

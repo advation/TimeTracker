@@ -20,39 +20,70 @@ class reportModel extends Staple_Model
         $this->timesheets = $timesheets;
     }
 
-    function __construct($year, $month)
+    function __construct($year, $month, $inactive = null)
     {
         $this->db = Staple_DB::get();
-        $staffIds = $this->getStaffIds();
+
+        if($inactive != null)
+        {
+            $staffIds = $this->getStaffIds(1);
+        }
+        else
+        {
+            $staffIds = $this->getStaffIds();
+        }
 
         $data = array();
 
-        foreach($staffIds as $key => $value)
+        if(count($staffIds) > 0)
         {
-            $data[$value] = $this->getTimesheet($key, $year, $month);
+            foreach($staffIds as $key => $value)
+            {
+                $data[$value] = $this->getTimesheet($key, $year, $month);
+            }
         }
 
         $this->timesheets = $data;
     }
 
-    function getStaffIds()
+    function getStaffIds($inactive = null)
     {
         $auth = Staple_Auth::get();
         $user = new userModel($auth->getAuthId());
         $userId = $user->getId();
         $authLevel = $user->getAuthLevel();
 
+        $data = array();
+
         if($authLevel >= 900)
         {
-            $sql = "
-            SELECT id, firstName, lastName FROM accounts WHERE 1 ORDER BY lastName ASC
-            ";
+            if($inactive == 1)
+            {
+                $sql = "
+                SELECT id, firstName, lastName FROM accounts WHERE status = 0 ORDER BY lastName ASC
+                ";
+            }
+            else
+            {
+                $sql = "
+                SELECT id, firstName, lastName FROM accounts WHERE status = 1 ORDER BY lastName ASC
+                ";
+            }
         }
         else
         {
-            $sql = "
-            SELECT id, firstName, lastName FROM accounts WHERE supervisorId = '".$this->db->real_escape_string($userId)."' ORDER BY lastName ASC
-            ";
+            if($inactive == 1)
+            {
+                $sql = "
+                SELECT id, firstName, lastName FROM accounts WHERE status = 0 AND supervisorId = '" . $this->db->real_escape_string($userId) . "' ORDER BY lastName ASC
+                ";
+            }
+            else
+            {
+                $sql = "
+                SELECT id, firstName, lastName FROM accounts WHERE status = 1 AND supervisorId = '" . $this->db->real_escape_string($userId) . "' ORDER BY lastName ASC
+                ";
+            }
         }
 
         $query = $this->db->query($sql);

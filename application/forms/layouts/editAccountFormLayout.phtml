@@ -1,0 +1,60 @@
+<div class="row">
+    <?php
+    if(count($this->errorMessage) > 0)
+    {
+
+        echo "<div data-alert class=\"alert-box warning\">";
+        foreach($this->errorMessage as $message)
+        {
+            echo $message;
+        }
+        echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+
+    }
+
+    if(count($this->successMessage) > 0)
+    {
+
+        echo "<div data-alert class=\"alert-box success\">";
+        foreach($this->successMessage as $message)
+        {
+            echo $message;
+        }
+        echo "<a href=\"#\" class=\"close\">&times;</a></div>";
+
+    }
+    ?>
+</div>
+<?php echo $this->formstart(); ?>
+<div class="row">
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['firstName'] ?>
+    </div>
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['lastName'] ?>
+    </div>
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['username'] ?>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['supervisor'] ?>
+    </div>
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['type'] ?>
+    </div>
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['level'] ?>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 medium-4 columns">
+        <?php echo $this->fields['status'] ?>
+    </div>
+    <div class="small-12 medium-4 columns end text-center">
+        <br>
+        <?php echo $this->fields['submit'] ?>
+    </div>
+</div>
+<?php echo $this->formend(); ?>

@@ -1,0 +1,97 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h1><i class="fa fa-users"></i> Accounts <small>Active</small></h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <ul class="button-group round">
+                <li><a class="button secondary" href="<?php echo $this->link(array('accounts','inactive')) ?>"><i class="fa fa-user-times"></i> Show Inactive</a></li>
+                <li><a class="button success" data-reveal-id="new" href="#"><i class="fa fa-plus"></i> New Account</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <?php
+    if($this->newUser == true)
+    {
+        echo "
+        <div class=\"row\">
+            <div class=\"small-12 columns text-center\">
+            <div data-alert class=\"alert-box success radius\">
+            <h3><i class='fa fa-check'></i> Created account for <b>
+        ";
+        echo $this->firstName." ".$this->lastName."</b>. PIN: <b>".$this->tempPin;
+        echo "
+            </b></h3>
+            <a href=\"#\" class=\"close\">&times;</a>
+            </div>
+            </div>
+        </div>
+        ";
+    }
+    ?>
+
+    <div class="row">
+        <div class="small-12 columns">
+            <table width="100%">
+                <tr>
+                    <th>Account</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Supervisor</th>
+                    <th>Action</th>
+                </tr>
+            <?php
+            if(count($this->accounts) > 0) {
+                foreach ($this->accounts as $account) {
+                    switch ($account['type']) {
+                        case "part":
+                            $type = "Part Time";
+                            break;
+                        case "full":
+                            $type = "Full Time";
+                            break;
+                        default:
+                            $type = " - ";
+                    }
+
+                    switch ($account['status']) {
+                        case 0:
+                            $status = "Inactive";
+                            break;
+                        case 1:
+                            $status = "Active";
+                            break;
+                        default:
+                            $status = " - ";
+                    }
+
+                    foreach ($this->allAccounts as $allAccount) {
+                        if ($allAccount['id'] == $account['supervisorId']) {
+                            $supervisor = $allAccount['lastName'] . ", " . $allAccount['firstName'];
+                        }
+                    }
+
+                    echo "
+                        <tr>
+                            <td>" . $account['lastName'] . ", " . $account['firstName'] . "</td>
+                            <td>$type</td>
+                            <td>$status</td>
+                            <td>$supervisor</td>
+                            <td><a href=\"" . $this->link(array('accounts', 'edit', $account['id'])) . "\">Edit</a></td>
+                        </tr>
+                    ";
+                }
+            }
+            ?>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="new" class="reveal-modal small" data-reveal aria-labelledby="NewAccount" aria-hidden="true" role="dialog">
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    <h2 id="modalTitle"><i class="fa fa-plus"></i> New Account</h2>
+    <?php echo $this->form ?>
+</div>

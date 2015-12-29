@@ -328,9 +328,6 @@
             $this->note = $note;
         }
 
-
-
-
 		function __construct($id = null)
 		{
             $this->db = Staple_DB::get();
@@ -438,7 +435,8 @@
                 //Check for admin account delete
                 if($accountLevel >= 900)
                 {
-                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."' AND userId <> '".$this->db->real_escape_string($userId)."'";
+                    $sql = "DELETE FROM timeEntries WHERE id = '".$this->db->real_escape_string($id)."'";
+                    //AND userId <> '".$this->db->real_escape_string($userId)."'
                     if($this->db->query($sql))
                     {
                         $audit = new auditModel();
