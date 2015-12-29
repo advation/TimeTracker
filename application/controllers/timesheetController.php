@@ -92,27 +92,65 @@ class timesheetController extends Staple_Controller
             $this->view->insertTimeForm = $form;
         }
 
-        //Set year and month variables if undefined.
-        if($year == null)
+        $date = new DateTime();
+
+        if ($year == null)
         {
-            $date = new DateTime();
-            $date->setTime(0,0,0);
-            $year = $date->format('Y');
+            if($date->format("m") == 12 && $date->format("d") >= 26)
+            {
+                $year = $date->modify('+1 year')->format('Y');
+            }
+            else
+            {
+                $year = date('Y');
+            }
         }
 
-        if($month == null)
+        if ($month == null)
         {
-            $date = new DateTime();
-            $date->setTime(0,0,0);
-            if($date->format("j") >= 26)
+            if($date->format("d") >= 26)
             {
                 $month = $date->modify('+1 month')->format('m');
             }
             else
             {
-                $month = $date->format('m');
+                $month = date('m');
             }
         }
+
+        $date = new DateTime();
+        $date->setDate($year,$month,26);
+        $date->setTime(0,0,0);
+
+        $this->view->year = $date->format('Y');
+
+        $this->view->date = $date->format("F Y");
+
+        $currentDate = new DateTime();
+
+        if($currentDate->format('d') >= 26)
+        {
+            $currentDate->modify('+1 month');
+        }
+
+        $this->view->currentMonth = $currentDate->format('m');
+        $this->view->currentYear = $currentDate->format('Y');
+
+        $date->modify('+1 year');
+        $this->view->nextYear = $date->format('Y');
+
+        $date->modify('-2 year');
+        $this->view->previousYear = $date->format('Y');
+
+        $date->modify('+1 year');
+
+        $month = $date->format('m');
+        $this->view->month = $month;
+
+        $date->modify('-1 month');
+        $this->view->previousMonth = $date->format('m');
+        $date->modify('+2 month');
+        $this->view->nextMonth = $date->format('m');
 
         //Load timesheet for user.
         $timesheet = new timesheetModel($year,$month);
@@ -138,9 +176,6 @@ class timesheetController extends Staple_Controller
         {
             $this->view->needsValidation = false;
         }
-
-        $changeYearForm = new changeYearForm();
-        $this->view->changeYearForm = $changeYearForm;
     }
 
     public function printpreview($id = null, $year = null, $month = null)

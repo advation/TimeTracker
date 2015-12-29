@@ -220,8 +220,6 @@
 					$data[] = $result;
 				}
 				return $data;
-
-
 			}
 		}
 

@@ -4,7 +4,7 @@ class newAccountForm extends Staple_Form
 {
     public function _start()
     {
-        //$this->setLayout('accountFormLayout');
+        $this->setLayout('newAccountFormLayout');
 
         $this->setName('newAccount')
             ->setAction($this->link(array('accounts','index')));
@@ -17,13 +17,11 @@ class newAccountForm extends Staple_Form
 
         $firstName = new Staple_Form_FoundationTextElement('firstName','First Name');
         $firstName->setRequired()
-            ->addValidator(new Staple_Form_Validate_Length(1,40))
-            ->addFilter(new Staple_Form_Filter_ToLower());
+            ->addValidator(new Staple_Form_Validate_Length(1,40));
 
         $lastName = new Staple_Form_FoundationTextElement('lastName','Last Name');
         $lastName->setRequired()
-            ->addValidator(new Staple_Form_Validate_Length(1,40))
-            ->addFilter(new Staple_Form_Filter_ToLower());;
+            ->addValidator(new Staple_Form_Validate_Length(1,40));
 
         $supervisor = new Staple_Form_FoundationSelectElement('supervisor','Select a Supervisor');
         $supervisor->setRequired()
@@ -43,10 +41,22 @@ class newAccountForm extends Staple_Form
             ->addOptionsArray(array("100"=>"Standard User","500"=>"Supervisor","900"=>"Administrator"))
             ->addValidator(new Staple_Form_Validate_InArray(array("100","500","900")));
 
+        $pin = new Staple_Form_FoundationTextElement('pinNum','4 Digit PIN');
+        $pin->setRequired()
+            ->addValidator(new Staple_Form_Validate_Length(4,4))
+            ->addValidator(new Staple_Form_Validate_Numeric())
+            ->addAttrib("maxlength","4");
+
+        $pin2 = new Staple_Form_FoundationTextElement('pinNum2','Confirm 4 Digit PIN');
+        $pin2->setRequired()
+            ->addValidator(new Staple_Form_Validate_Length(4,4))
+            ->addValidator(new Staple_Form_Validate_Numeric())
+            ->addAttrib("maxlength","4");
+
         $submit = new Staple_Form_FoundationSubmitElement('submit','Submit');
         $submit->addClass('button expand radius');
 
-        $this->addField($firstName, $lastName, $supervisor, $type, $level, $submit);
+        $this->addField($firstName, $lastName, $supervisor, $type, $level, $pin, $pin2, $submit);
     }
 
     public function accounts($ids = null)

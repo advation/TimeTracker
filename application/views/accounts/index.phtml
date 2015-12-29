@@ -11,6 +11,26 @@
         </div>
     </div>
 
+    <?php
+    if($this->newUser == true)
+    {
+        echo "
+        <div class=\"row\">
+            <div class=\"small-12 columns text-center\">
+            <div data-alert class=\"alert-box success radius\">
+            <h3><i class='fa fa-check'></i> Created account for <b>
+        ";
+        echo $this->firstName." ".$this->lastName."</b>. PIN: <b>".$this->tempPin;
+        echo "
+            </b></h3>
+            <a href=\"#\" class=\"close\">&times;</a>
+            </div>
+            </div>
+        </div>
+        ";
+    }
+    ?>
+
     <div class="row">
         <div class="small-12 columns">
             <table width="100%">
@@ -70,8 +90,8 @@
     </div>
 </div>
 
-<div id="new" class="reveal-modal small" data-reveal aria-labelledby="New ACcount" aria-hidden="true" role="dialog">
+<div id="new" class="reveal-modal small" data-reveal aria-labelledby="NewAccount" aria-hidden="true" role="dialog">
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
     <h2 id="modalTitle"><i class="fa fa-plus"></i> New Account</h2>
     <?php echo $this->form ?>
-    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>

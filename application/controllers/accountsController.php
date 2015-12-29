@@ -29,13 +29,39 @@ class accountsController extends Staple_Controller
             {
                 $data = $form->exportFormData();
 
-                print_r($data);
+                if($data['pinNum'] == $data['pinNum2'])
+                {
+                    $user = new accountModel();
 
-                $account = substr($data['firstName'],0,1).$data['lastName'];
-                echo $account;
+                    $user->setFirstName(ucfirst($data['firstName']));
+                    $user->setLastName(ucfirst($data['lastName']));
+                    $user->setSupervisorId($data['supervisor']);
+                    $user->setType($data['type']);
+                    $user->setAuthLevel($data['level']);
+                    $user->setPin($data['pinNum']);
 
-                $form = new newAccountForm();
-                $this->view->form = $form;
+                    if($user->save())
+                    {
+                        $this->view->newUser = true;
+                        $this->view->firstName = $user->getFirstName();
+                        $this->view->lastName = $user->getLastName();
+                        $this->view->tempPin = $user->getTempPin();
+                        $form = new newAccountForm();
+                        $this->view->form = $form;
+                    }
+                    else
+                    {
+                        $form->errorMessage = array("ERROR: Could not create account");
+                        $this->view->form = $form;
+                        $this->layout->addScriptBlock('$(document).ready(function() { $("#new").foundation("reveal", "open"); }); ');
+                    }
+                }
+                else
+                {
+                    $form->errorMessage = array("PINs do not match");
+                    $this->view->form = $form;
+                    $this->layout->addScriptBlock('$(document).ready(function() { $("#new").foundation("reveal", "open"); }); ');
+                }
             }
             else
             {

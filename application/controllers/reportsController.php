@@ -141,13 +141,18 @@ class reportsController extends Staple_Controller
         }
         else
         {
+            $date = new DateTime();
 
-            $year = date('Y');
-            $month = date('m');
+            if($date->format('d') >= 26)
+            {
+                $date->modify('+1 month');
+            }
 
-            $timesheets = new reportModel($year, $month);
+            $timesheets = new reportModel($date->format('Y'), $date->format('m'));
 
             $this->view->accounts = $timesheets;
+
+            $this->view->dateTitle = $date->format('F')." ".$date->format('Y');
         }
     }
 
