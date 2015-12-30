@@ -28,7 +28,8 @@ class editTimeForm extends Staple_Form
 
         $lessTime = new Staple_Form_FoundationSelectElement('lessTime','Less Time');
         $lessTime->setRequired()
-            ->addOptionsArray(array("0"=>"None","60"=>"1 Hour","30"=>"30 Minutes","15"=>"15 Minutes"));
+            ->addOptionsArray(array("0"=>"None","60"=>"1 Hour","30"=>"30 Minutes"))
+            ->addValidator(new Staple_Form_Validate_InArray(array('0','60','30')));
 
         $timeCodes = new codeModel();
         $code = new Staple_Form_FoundationSelectElement('code','Code');
