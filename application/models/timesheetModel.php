@@ -28,6 +28,8 @@
 
 		private $totals;
 
+		private $review;
+
 		/**
 		 * @return string
 		 */
@@ -300,7 +302,21 @@
 			$this->userId = $userId;
 		}
 
+		/**
+		 * @return mixed
+		 */
+		public function getReview()
+		{
+			return $this->review;
+		}
 
+		/**
+		 * @param mixed $review
+		 */
+		public function setReview($review)
+		{
+			$this->review = $review;
+		}
 
 		function __construct($year, $month, $uid = null)
 		{

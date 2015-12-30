@@ -415,21 +415,25 @@ class reportsController extends Staple_Controller
     {
         if ($year == null)
         {
-            $date = new DateTime('first day of this month');
+            $date = new DateTime();
+
             if($date->format('d') >= 26)
             {
                 $date->modify('+1 month');
             }
+
             $year = $date->format('Y');
         }
 
         if ($month == null)
         {
-            $date = new DateTime('first day of this month');
+            $date = new DateTime();
+
             if($date->format('d') >= 26)
             {
                 $date->modify('+1 month');
             }
+
             $month = $date->format('m');
         }
 
@@ -438,7 +442,6 @@ class reportsController extends Staple_Controller
         $date->setTime(0,0,0);
 
         $this->view->year = $date->format('Y');
-
         $this->view->date = $date->format("F Y");
 
         $date->modify('+1 year');
@@ -463,6 +466,11 @@ class reportsController extends Staple_Controller
         $this->view->accountLevel = $this->authLevel;
 
         $date = new DateTime();
+        if($date->format('d') >= 26)
+        {
+            $date->modify('+1 month');
+        }
+
         $date->setDate($year, $month, 1);
         $this->view->monthName = $date->format('F');
 
@@ -476,7 +484,7 @@ class reportsController extends Staple_Controller
                 $data = $printInactiveTimeSheetForm->exportFormData();
 
                 $this->layout->addScriptBlock("
-                    window.open('".$this->_link(array("reports","printpreview",$year,$month,$data['account']))."');
+                    window.open('".$this->_link(array("reports","inactive","printpreview",$year,$month,$data['account']))."');
                     ");
                 $this->view->printTimeSheetForm = $printInactiveTimeSheetForm;
             }
