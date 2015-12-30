@@ -165,39 +165,39 @@
                 if(count($timesheet) > 0)
                 {
                 echo "</table>";
+                echo "
+                    <div class='row'>
+                        <div class='small-12 columns text-right'>";
+
+                    echo"</div>
+                    </div>";
 
                 echo "<div class=\"row\">";
-                        echo "<div class='small-12'>
-
-                        FORM GOES HERE
-
-                        </div>";
-                echo "</div>";
-                echo "<div class=\"row\">";
                 echo "<div class=\"small-6 medium-4 large-3 columns\">";
-                                        echo "<div class=\"card successBg\">
-                                            <div class=\"title\">Validated</div>
-                                            <div class=\"value\">".$totalValidated." <small>Hours</small></div>
-                                        </div>";
+                echo "<div class=\"card successBg\">
+                    <div class=\"title\">Validated</div>
+                    <div class=\"value\">".$totalValidated." <small>Hours</small></div>
+                </div>";
                 echo "</div>";
                 echo "<div class=\"small-6 medium-4 large-3 columns\">";
-                                        echo "<div class=\"card warning\">
-                                            <div class=\"title\">Not Validated</div>
-                                            <div class=\"value\">".$totalInvalid." <small>Hours</small></div>
-                                        </div>";
+                echo "<div class=\"card warning\">
+                    <div class=\"title\">Not Validated</div>
+                    <div class=\"value\">".$totalInvalid." <small>Hours</small></div>
+                </div>";
                 echo "</div>";
-                echo "<div class=\"small-6 medium-4 large-3 columns end\">";
-                                     echo "<div class=\"card\">
-                                            <div class=\"title\">Sick</div>
-                                            <div class=\"value\">".$totalSick." <small>Hours</small></div>
-                                        </div>";
+                echo "<div class=\"small-6 medium-4 large-3 columns\">";
+                echo "<div class=\"card\">
+                        <div class=\"title\">Sick</div>
+                        <div class=\"value\">".$totalSick." <small>Hours</small></div>
+                </div>";
                 echo "</div>";
-                echo "<div class=\"small-6 medium-4 large-3 columns end\">";
-                                        echo "<div class=\"card\">
-                                            <div class=\"title\">Vacation</div>
-                                            <div class=\"value\">".$totalVacation." <small>Hours</small></div>
-                                        </div>";
+                echo "<div class=\"small-6 medium-4 large-3 columns\">";
+                echo "<div class=\"card\">
+                    <div class=\"title\">Vacation</div>
+                    <div class=\"value\">".$totalVacation." <small>Hours</small></div>
+                </div>";
                 echo "</div>";
+
                 echo "</div>";
 
                 }

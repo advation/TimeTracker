@@ -19,12 +19,28 @@ class reportsController extends Staple_Controller
 
     public function index($year = null, $month = null)
     {
-        if ($year == null) {
-            $year = date('Y');
+        if ($year == null)
+        {
+            $date = new DateTime();
+
+            if($date->format('d') >= 26)
+            {
+                $date->modify('+1 month');
+            }
+
+            $year = $date->format('Y');
         }
 
-        if ($month == null) {
-            $month = date('m');
+        if ($month == null)
+        {
+            $date = new DateTime();
+
+            if($date->format('d') >= 26)
+            {
+                $date->modify('+1 month');
+            }
+
+            $month = $date->format('m');
         }
 
         $date = new DateTime();
@@ -32,7 +48,6 @@ class reportsController extends Staple_Controller
         $date->setTime(0,0,0);
 
         $this->view->year = $date->format('Y');
-
         $this->view->date = $date->format("F Y");
 
         $date->modify('+1 year');
@@ -57,6 +72,11 @@ class reportsController extends Staple_Controller
         $this->view->accountLevel = $this->authLevel;
 
         $date = new DateTime();
+        if($date->format('d') >= 26)
+        {
+            $date->modify('+1 month');
+        }
+
         $date->setDate($year, $month, 1);
         $this->view->monthName = $date->format('F');
 
@@ -393,12 +413,24 @@ class reportsController extends Staple_Controller
 
     public function inactive($year = null, $month = null)
     {
-        if ($year == null) {
-            $year = date('Y');
+        if ($year == null)
+        {
+            $date = new DateTime('first day of this month');
+            if($date->format('d') >= 26)
+            {
+                $date->modify('+1 month');
+            }
+            $year = $date->format('Y');
         }
 
-        if ($month == null) {
-            $month = date('m');
+        if ($month == null)
+        {
+            $date = new DateTime('first day of this month');
+            if($date->format('d') >= 26)
+            {
+                $date->modify('+1 month');
+            }
+            $month = $date->format('m');
         }
 
         $date = new DateTime();

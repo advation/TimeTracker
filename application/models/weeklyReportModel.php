@@ -12,7 +12,7 @@ class weeklyReportModel extends Staple_Model
     {
         //Get an array of weeks
         $weeks = array();
-        for($i=1;$i<53;$i++)
+        for($i=1;$i<=53;$i++)
         {
             $weeks[$i] = $this->getStartAndEndDate($i, $year);
 
