@@ -40,6 +40,7 @@ class reportModel extends Staple_Model
             foreach($staffIds as $key => $value)
             {
                 $data[$value] = $this->getTimesheet($key, $year, $month);
+                $data[$value]['id'] = $key;
             }
         }
 

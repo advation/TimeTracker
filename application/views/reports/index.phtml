@@ -19,7 +19,7 @@
                     $year = $this->nextYear;
                 }
 
-                if($this->momth == 1)
+                if($this->month == 1)
                 {
                     $year = $this->previousYear;
                 }
@@ -62,10 +62,10 @@
     <div class="row">
         <div class="small-12 columns">
             <?php
-
             $i = 0;
             foreach($this->report as $user=>$timesheet)
             {
+                $userId = $timesheet['id'];
                 echo "<h3 id='user'.$i.'' class='timeTitle'>$user <i class='fa fa-chevron-down right'></i></h3>";
                 echo "
         <div class=\"wrapper hide\">";
@@ -100,66 +100,68 @@
 
                 foreach($timesheet as $key=>$entry)
                 {
-                    echo "
-                        <tr>
-                               <td>".date("l, F jS Y",strtotime($entry['date']))."</td>
-                               <td>".date("g:i A",$entry['inTime'])."</td>
-                               <td>".date("g:i A",$entry['outTime'])."</td>
-                               <td>".$entry['lessTime']." <small>Hours</small></td>
-                               <td>".$entry['timeWorked']."</td>
-                               <td>".$entry['code']."</td>
-                               <td>".date("M. jS Y @ G:i A",strtotime($entry['timestamp']))."</td>
-                               <td><div class='text-center'>";
-
-                    if($entry['validated'] == 1)
-                    {
-                        echo "<i class=\"fa fa-check green\"></i>";
-                    }
-                    else
-                    {
-                        echo "<i class=\"fa fa-close red\"></i>";
-                    }
-
-                    echo "</td>";
-
-                    if($this->accountLevel >= 900)
-                    {
-                        echo "<td><a href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i> Remove</a></td>";
-                    }
-
-                    echo "</tr>";
-
-                    if(strlen($entry['note']) > 0)
-                    {
+                   if($key != 'id')
+                   {
                         echo "
                             <tr>
-                                <td colspan='9'>
-                                    <b>Note:</b> ".$entry['note']."
-                                </td>
-                            </tr>
-                        ";
-                    }
+                                   <td>".date("l, F jS Y",strtotime($entry['date']))."</td>
+                                   <td>".date("g:i A",$entry['inTime'])."</td>
+                                   <td>".date("g:i A",$entry['outTime'])."</td>
+                                   <td>".$entry['lessTime']." <small>Hours</small></td>
+                                   <td>".$entry['timeWorked']."</td>
+                                   <td>".$entry['code']."</td>
+                                   <td>".date("M. jS Y @ G:i A",strtotime($entry['timestamp']))."</td>
+                                   <td><div class='text-center'>";
 
-                    if($entry['validated'] == 1)
-                    {
-                        $totalValidated += $entry['timeWorked'];
-                    }
+                        if($entry['validated'] == 1)
+                        {
+                            echo "<i class=\"fa fa-check green\"></i>";
+                        }
+                        else
+                        {
+                            echo "<i class=\"fa fa-close red\"></i>";
+                        }
 
-                    if($entry['validated'] == 0)
-                    {
-                        $totalInvalid += $entry['timeWorked'];
-                    }
+                        echo "</td>";
 
-                    if($entry['code'] == "Vacation")
-                    {
-                        $totalVacation += $entry['timeWorked'];
-                    }
+                        if($this->accountLevel >= 900)
+                        {
+                            echo "<td><a href=\"".$this->link(array('timesheet','remove',$key))."\"><i class=\"fa fa-trash\"></i> Remove</a></td>";
+                        }
 
-                    if($entry['code'] == "Sick")
-                    {
-                        $totalSick += $entry['timeWorked'];
-                    }
+                        echo "</tr>";
 
+                        if(strlen($entry['note']) > 0)
+                        {
+                            echo "
+                                <tr>
+                                    <td colspan='9'>
+                                        <b>Note:</b> ".$entry['note']."
+                                    </td>
+                                </tr>
+                            ";
+                        }
+
+                        if($entry['validated'] == 1)
+                        {
+                            $totalValidated += $entry['timeWorked'];
+                        }
+
+                        if($entry['validated'] == 0)
+                        {
+                            $totalInvalid += $entry['timeWorked'];
+                        }
+
+                        if($entry['code'] == "Vacation")
+                        {
+                            $totalVacation += $entry['timeWorked'];
+                        }
+
+                        if($entry['code'] == "Sick")
+                        {
+                            $totalSick += $entry['timeWorked'];
+                        }
+                   }
                 }
 
                 if(count($timesheet) > 0)
@@ -198,6 +200,18 @@
                 </div>";
                 echo "</div>";
 
+                echo "<div class=\"small-12 columns text-center\">";
+
+                if(array_key_exists($user, $this->reviewed))
+                {
+                    echo "<h4><i class='fa fa-check'></i> Reviewed by <b>".$this->reviewed[$user]['supervisor']."</b> on ".$this->reviewed[$user]['reviewDateFormatted']."</h4>";
+                }
+                else
+                {
+                    echo "<a class='button radius' href='".$this->link(array('reports','reviewed',$userId,$this->year,$this->month))."'>Mark as reviewed</a>";
+                }
+
+                echo"</div>";
                 echo "</div>";
 
                 }
