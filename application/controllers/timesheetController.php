@@ -283,28 +283,18 @@ class timesheetController extends Staple_Controller
                     $data = $form->exportFormData();
 
                     //Check if dates are within the current pay period.
-                    $startMonth = date('m',strtotime('last month'));
-
-                    if($startMonth == 1)
-                    {
-                        $startYear = date('Y',strtotime('last year'));
-                    }
-                    else
-                    {
-                        $startYear = date('Y');
-                    }
-
                     $date = new DateTime();
-                    $endMonth = $date->modify('+1 month')->format('m');
-                    $endYear = $date->format('Y');
 
-                    $startDate= strtotime($startMonth.'/26/'.$startYear);
-                    $endDate = strtotime($endMonth.'/25/'.$endYear);
-
+                    if($date->format('d') > 25)
+                    {
+                        $date->modify('+1 month');
+                    }
+                    $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->setTime(23,59,59)->getTimestamp();
+                    $minDate = $date->modify('-1 month +1 day')->setTime(0,0,0)->getTimestamp();
                     $userDate = strtotime($data['date']);
 
                     //Date is within pay period
-                    if($userDate >= $startDate && $userDate <= $endDate)
+                    if($userDate >= $minDate && $userDate <= $maxDate)
                     {
                         //Create a new entry object and set properties
                         $entry = new timeEntryModel();
