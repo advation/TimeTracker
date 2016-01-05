@@ -66,8 +66,12 @@
                         <th style="width:150px;"></th>
                         <?php
 
+                            $previousDate = explode("-",$this->previousDate);
+
                             $date = new DateTime();
-                            $date->setDate($this->year,$this->previousMonth,26);
+                            $date->setDate($previousDate[0],$previousDate[1],$previousDate[2]);
+
+                            $date->setTime(0,0,0);
 
                             for($i=1;$i<=$this->span;$i++)
                             {
@@ -79,6 +83,7 @@
                                 {
                                     echo "<th style='border-bottom:1px solid #ccc;'>".$date->format('D')."<br>".$date->format('n')."/".$date->format('j')."</th>";
                                 }
+
                                 $date->modify('+1 day');
                             }
                         ?>

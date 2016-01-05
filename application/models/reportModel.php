@@ -313,9 +313,11 @@ class reportModel extends Staple_Model
         $date->setTime(0,0,0);
         $date->setDate($year,$month,26);
         $date->modify('-1 month');
+
         $startDate = $date->format('U');
         $date->modify('+1 month -1 day');
         $date->setTime(23,59,59);
+
         $endDate = $date->format('U');
 
         foreach($accounts as $account)
