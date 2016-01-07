@@ -49,4 +49,25 @@ class calculateModel extends Staple_Model
             return 0;
         }
     }
+
+    function calculatedCodeTotals($uid,$startDate,$endDate)
+    {
+        $codes = new codeModel();
+        $codes = $codes->allCodes();
+
+        $data = array();
+
+        foreach($codes as $codeKey=>$codeName)
+        {
+            $sql = "SELECT ROUND((TIME_TO_SEC(SEC_TO_TIME(SUM(outTime - inTime)-SUM(lessTime*60)))/3600)*4)/4 AS 'totalTime' FROM timeEntries WHERE inTime >= $startDate AND outTime <= $endDate AND userId = $uid AND codeId = $codeKey";
+
+            if($this->db->query($sql)->num_rows > 0)
+            {
+                $query = $this->db->query($sql);
+                $result = $query->fetch_assoc();
+                $data[$codeKey] = round($result['totalTime'],2);
+            }
+        }
+        return $data;
+    }
 }

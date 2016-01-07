@@ -364,6 +364,7 @@ class reportsController extends Staple_Controller
         $this->view->span = $interval->days;
 
         $reports = new reportModel($year, $month);
+
         $this->view->report = $reports->payroll($year, $month);
         $this->view->startDate = $date->format("F jS Y");
         $days = $interval->days - 1;

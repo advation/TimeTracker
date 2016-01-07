@@ -305,6 +305,37 @@ class reportModel extends Staple_Model
 
     function payroll($year, $month)
     {
+        $data = array();
+
+        $users = new userModel();
+        $accounts = $users->listAll();
+
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+        $date->setDate($year,$month,26);
+        $date->modify('-1 month');
+        $startDate = $date->format('U');
+        $endDate = $date->modify('+1 month -1 day')->setTime(23,59,59)->format('U');
+
+        $i=0;
+        foreach($accounts as $account)
+        {
+            $data[$i]['userInfo'] = $account;
+
+            $timeCalulation = new calculateModel();
+            $time = $timeCalulation->calculatedCodeTotals($data[$i]['userInfo']['id'],$startDate,$endDate);
+
+            $data[$i]['totals'] = $time;
+
+            $i++;
+        }
+
+        return $data;
+    }
+
+    /*
+    function payroll($year, $month)
+    {
         $users = new userModel();
         $accounts = $users->listAll();
 
@@ -326,7 +357,7 @@ class reportModel extends Staple_Model
             $userId = $account['id'];
             $userName = $account['lastName'] . ", " . $account['firstName'];
             $sql = "
-                SELECT * FROM timeEntries WHERE inTime >= '" . $this->db->real_escape_string($startDate) . "' AND inTime <= '" . $this->db->real_escape_string($endDate) . "' AND userId = '" . $this->db->real_escape_string($userId) . "' ORDER BY inTime ASC;
+                SELECT * FROM timeEntries WHERE inTime >= '" . $this->db->real_escape_string($startDate) . "' AND inTime <= '" . $this->db->real_escape_string($endDate) . "' AND userId = '" . $this->db->real_escape_string($userId) . "';
             ";
 
             $query = $this->db->query($sql);
@@ -355,4 +386,5 @@ class reportModel extends Staple_Model
         }
         return $data;
     }
+    */
 }
