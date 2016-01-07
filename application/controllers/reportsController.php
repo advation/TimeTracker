@@ -69,6 +69,9 @@ class reportsController extends Staple_Controller
         $report = new reportModel($year, $month);
         $this->view->report = $report->getTimesheets();
 
+        $reviewed = new reviewModel();
+        $this->view->reviewed = $reviewed->load($year, $month);
+
         $this->view->accountLevel = $this->authLevel;
 
         $date = new DateTime();
@@ -361,6 +364,7 @@ class reportsController extends Staple_Controller
         $this->view->span = $interval->days;
 
         $reports = new reportModel($year, $month);
+
         $this->view->report = $reports->payroll($year, $month);
         $this->view->startDate = $date->format("F jS Y");
         $days = $interval->days - 1;
@@ -507,6 +511,33 @@ class reportsController extends Staple_Controller
         else
         {
             $this->view->printTimeSheetForm = $printInactiveTimeSheetForm;
+        }
+    }
+
+    public function reviewed($userId = null, $year = null, $month = null)
+    {
+        if($userId != null || $year != null || $month != null)
+        {
+            $review = new reviewModel();
+
+            $review->setAccountId($userId);
+            $review->setPayPeriodMonth($month);
+            $review->setPayPeriodYear($year);
+
+            if($review->save())
+            {
+                header("location: ".$this->_link(array('reports',$year,$month,$userId))."");
+            }
+            else
+            {
+                $this->view->year = $year;
+                $this->view->month = $month;
+                $this->view->errorMessage = "Entry already marked as reviewed.";
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link(array('reports',$year,$month,$userId))."");
         }
     }
 }

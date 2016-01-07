@@ -44,28 +44,34 @@
     <tbody>
     <?php
 
-    foreach($this->report as $user=>$codes)
+    foreach($this->report as $account)
     {
-        echo "<tr>";
-        echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b></td>";
 
-        $totals=0;
-        foreach($this->codes as $id=>$timeCode)
+        echo "<tr>";
+        echo "<td style='border-bottom:1px solid #ccc;'><b>".$account['userInfo']['lastName'].", ".$account['userInfo']['firstName']."</b></td>";
+
+        foreach($account['totals'] as $totals)
         {
             echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
-            $value = "-";
-            foreach ($codes as $code => $total)
+            if($totals == 0)
             {
-                if($timeCode == $code)
-                {
-                    $value = $total;
-                    $totals = $totals + $total;
-                }
+                echo " - ";
             }
-            echo $value;
+            else
+            {
+                echo $totals;
+            }
+
             echo "</td>";
         }
-        echo "<td class='text-center'><b>$totals</b></td>";
+
+        $grandTotal = 0;
+        foreach($account['totals'] as $total)
+        {
+            $grandTotal = $grandTotal + $total;
+        }
+
+        echo "<td class='text-center'><b>$grandTotal</b></td>";
         echo "</tr>";
     }
     ?>
