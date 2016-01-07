@@ -3,19 +3,19 @@
 <div class="row">
     <div class="small-12 columns">
       <ul class="button-group even-3">
-          <li><button id='seven' value="7" href="#" class="button keyButton secondary">7</button></li>
-          <li><button id='eight' value="8" href="#" class="button keyButton secondary">8</button></li>
-          <li><button id='nine' value="9" href="#" class="button keyButton secondary">9</button></li>
-          <li><button id='four' value="4" href="#" class="button keyButton secondary">4</button></li>
-          <li><button id='five' value="5" href="#" class="button keyButton secondary">5</button></li>
-          <li><button id='six' value="6" href="#" class="button keyButton secondary">6</button></li>
-          <li><button id='one' value="1" href="#" class="button keyButton secondary">1</button></li>
-          <li><button id='two' value="2" href="#" class="button keyButton secondary">2</button></li>
-          <li><button id='three' value="3" href="#" class="button keyButton secondary">3</button></li>
+          <li><a id='seven' href="#" class="button keyButton secondary">7</a></li>
+          <li><a id='eight' href="#" class="button keyButton secondary">8</a></li>
+          <li><a id='nine' href="#" class="button keyButton secondary">9</a></li>
+          <li><a id='four' href="#" class="button keyButton secondary">4</a></li>
+          <li><a id='five' href="#" class="button keyButton secondary">5</a></li>
+          <li><a id='six' href="#" class="button keyButton secondary">6</a></li>
+          <li><a id='one' href="#" class="button keyButton secondary">1</a></li>
+          <li><a id='two' href="#" class="button keyButton secondary">2</a></li>
+          <li><a id='three' href="#" class="button keyButton secondary">3</a></li>
       </ul>
         <ul class="button-group even-2">
-            <li><button id='zero' value="0" href="#" class="button keyButton secondary">0</button></li>
-            <li><button href="#" class="clearKeyPad button keyButton secondary"><i class="fa fa-close"></i> Clear</button></li>
+            <li><a id='zero' href="#" class="button keyButton secondary">0</a></li>
+            <li><a href="#" class="clearKeyPad button keyButton secondary"><i class="fa fa-close"></i> Clear</a></li>
         </ul>
     </div>
 </div>
@@ -27,27 +27,18 @@
 </div>
 
 <script>
+
     $(document).ready(function() {
         $('.keyButton').click(function() {
-            $value = $(this).val();
+            $value = $(this).text();
             $("#pin").val($("#pin").val()+$value);
-
-            var $count = $('#pin').val().length;
-
-            if($count == 4)
-            {
-                $("#auth_form").submit();
-            }
-            else
-            {
-                return false;
-            }
         });
 
-        $('.clearKeyPad').click(function(){
+        $('.clearKeyPad').click(function() {
             $("#pin").val('');
             $("#errorMessage").foundation('reveal','close');
             return false;
         });
     });
+
 </script>
