@@ -107,6 +107,26 @@ class messagesModel extends Staple_Model
         return $data;
     }
 
+    function getExpiredMessages()
+    {
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+
+        $sql = "
+            SELECT * FROM messages WHERE expireDate < '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
+        ";
+
+        $data = array();
+
+        $query = $this->db->query($sql);
+        while($result = $query->fetch_assoc())
+        {
+        $data[] = $result;
+        }
+
+        return $data;
+    }
+
     function save()
     {
         if(isset($this->id))

@@ -101,6 +101,12 @@ class messagesController extends Staple_Controller
         $message->delete($id);
         header("location:".$this->_link(array('messages'))."");
     }
+
+    public function expired()
+    {
+        $messages = new messagesModel();
+        $this->view->messages = $messages->getExpiredMessages();
+    }
 }
 
 ?>

@@ -1,12 +1,11 @@
 <div class="section">
     <div class="row">
         <div class="small-6 columns">
-            <h1><i class="fa fa-envelope"></i> System Messages</h1>
+            <h1><i class="fa fa-history"></i> Expired Messages</h1>
         </div>
         <div class="small-6 columns right">
             <ul class="button-group radius right">
-                <li><a href="#" data-reveal-id="newMessage" class="button success"><i class="fa fa-plus"></i> New Message</a></li>
-                <li><a href="<?php echo $this->link(array('messages','expired')) ?>" class="button secondary"><i class="fa fa-history"></i> Expired</a></li>
+                <li><a href="<?php echo $this->link(array('messages')) ?>" class="button secondary"><i class="fa fa-arrow-left"></i> Back</a></li>
             </ul>
         </div>
     </div>
@@ -14,9 +13,9 @@
         <div class="small-12 columns">
             <?php
 
-                if(count($this->messages) > 0)
-                {
-                    echo "
+            if(count($this->messages) > 0)
+            {
+                echo "
                         <table width='100%'>
                             <thead>
                                 <tr>
@@ -28,12 +27,12 @@
                             </thead>
                             <tbody>
                     ";
-                    foreach($this->messages as $message)
-                    {
-                        $date = new DateTime();
-                        $date->setTimestamp($message['expireDate']);
+                foreach($this->messages as $message)
+                {
+                    $date = new DateTime();
+                    $date->setTimestamp($message['expireDate']);
 
-                        echo "
+                    echo "
 
                             <tr>
                                 <td>".$message['postDate']."</td>
@@ -43,13 +42,13 @@
                             </tr>
 
                         ";
-                    }
-                    echo "</tbody></table>";
                 }
-                else
-                {
-                    echo "<div class='small-12 columns text-center'>- No system messages -</div>";
-                }
+                echo "</tbody></table>";
+            }
+            else
+            {
+                echo "<div class='small-12 columns text-center'>- No expired messages -</div>";
+            }
 
             ?>
         </div>
