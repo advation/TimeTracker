@@ -1,0 +1,26 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h1><i class="fa fa-pencil"></i> Edit Message</h1>
+        </div>
+        <div class="small-6 columns right">
+            <ul class="button-group radius right">
+                <li><a href="<?php echo $this->link(array('messages'))?>" class="button secondary"><i class="fa fa-arrow-left"></i> Back</a></li>
+                <li><a href="#" data-reveal-id="delete" class="button alert"><i class="fa fa-trash"></i> Delete</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $this->form ?>
+        </div>
+    </div>
+</div>
+
+<div id="delete" class="reveal-modal small text-center" data-reveal aria-labelledby="New Message" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle"><i class="fa fa-alert"></i> Delete Message?</h2>
+    <ul class="button-group radius">
+        <li><a href="<?php echo $this->link(array('messages','delete',$this->id)) ?>" class="button alert"><i class="fa fa-trash"></i> Confirm & Delete</a></li>
+    </ul>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

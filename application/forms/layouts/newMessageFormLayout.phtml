@@ -1,0 +1,26 @@
+<?php echo $this->formstart(); ?>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $this->fields['expireDate'] ?>
+        </div>
+        <div class="small-12 columns">
+            <?php echo $this->fields['message'] ?>
+        </div>
+        <div class="small-12 columns">
+            <?php echo $this->fields['submit'] ?>
+        </div>
+    </div>
+<?php echo $this->formend(); ?>
+
+<script>
+    $(document).ready(function() {
+        $(function () {
+            $("#expireDate").datepicker({
+                numberOfMonths: 1,
+                minDate: 0,
+                showWeek: false,
+                showButtonPanel: false
+            });
+        });
+    });
+</script>

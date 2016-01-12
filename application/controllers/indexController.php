@@ -15,8 +15,8 @@ class indexController extends Staple_Controller
 	{
 		$this->view->authLevel = $this->authLevel;
 
-		$messages = array();
-		$this->view->messages = $messages;
+		$messages = new messagesModel();
+		$this->view->messages = $messages->getMessages();
 
 		$date = new DateTime();
 		$date->setTime(0,0,0);
