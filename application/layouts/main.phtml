@@ -101,8 +101,8 @@
         <?php $this->content(); ?>
         <script>
             $(document).foundation();
+            var delay = 600000; //10 Minutes
             $(document).ready(function() {
-                var delay = 600000;
                 setTimeout(function(){window.location = "<?php echo $this->link(array('account','logout')) ?>"; }, delay);
             });
         </script>
