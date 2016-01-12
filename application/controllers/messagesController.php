@@ -26,7 +26,16 @@ class messagesController extends Staple_Controller
                 $message = new messagesModel();
                 $message->setMessage($data['message']);
                 $message->setExpireDate($data['expireDate']);
-                $message->save();
+
+                if($data['account'] == 'all')
+                {
+                    $message->save();
+                }
+                else
+                {
+                    $message->setUserId($data['account']);
+                    $message->savePrivate();
+                }
 
                 $form = new newMessageForm();
                 $this->view->form = $form;
@@ -45,6 +54,7 @@ class messagesController extends Staple_Controller
 
         $messages = new messagesModel();
         $this->view->messages = $messages->getMessages();
+        $this->view->privateMessages = $messages->getAllPrivateMessages();
     }
 
     public function edit($id = null)

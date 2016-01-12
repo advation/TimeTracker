@@ -8,6 +8,9 @@ class messagesModel extends Staple_Model
     private $postDate;
     private $expireDate;
 
+    private $userId;
+    private $reviewDate;
+
     /**
      * @return mixed
      */
@@ -68,6 +71,38 @@ class messagesModel extends Staple_Model
         return $this->postDate;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param mixed $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReviewDate()
+    {
+        return $this->reviewDate;
+    }
+
+    /**
+     * @param mixed $reviewDate
+     */
+    public function setReviewDate($reviewDate)
+    {
+        $this->reviewDate = $reviewDate;
+    }
+
     function __construct()
     {
         $this->db = Staple_DB::get();
@@ -93,6 +128,54 @@ class messagesModel extends Staple_Model
 
         $sql = "
         SELECT * FROM messages WHERE expireDate >= '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
+        ";
+
+        $data = array();
+
+        $query = $this->db->query($sql);
+
+        while($result = $query->fetch_assoc())
+        {
+            $data[] = $result;
+        }
+
+        return $data;
+    }
+
+    function getPrivateMessages()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
+
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+
+        $sql = "
+        SELECT * FROM privateMessages WHERE userId = '".$this->db->real_escape_string($userId)."' AND expireDate >= '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
+        ";
+
+        $data = array();
+
+        $query = $this->db->query($sql);
+
+        while($result = $query->fetch_assoc())
+        {
+            $data[] = $result;
+        }
+
+        return $data;
+    }
+
+    function getAllPrivateMessages()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
+
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+
+        $sql = "
+        SELECT * FROM privateMessages WHERE expireDate >= '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
         ";
 
         $data = array();
@@ -151,9 +234,43 @@ class messagesModel extends Staple_Model
         }
     }
 
+    function savePrivate()
+    {
+        if(isset($this->id))
+        {
+            //Edit
+            $sql = "UPDATE privateMessages SET expireDate = '".$this->expireDate."', message = '".$this->message."' WHERE id = '".$this->id."';";
+
+            if($this->db->query($sql))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            //Save
+            $sql = "INSERT INTO privateMessages (message,expireDate,userId) VALUES ('".$this->db->real_escape_string($this->message)."','".$this->db->real_escape_string($this->expireDate)."','".$this->db->real_escape_string($this->userId)."')";
+
+            if($this->db->query($sql))
+            {
+                return true;
+            }
+        }
+    }
+
     function delete($id)
     {
         $sql = "DELETE FROM messages WHERE id = '".$this->db->real_escape_string($id)."';";
+
+        if($this->db->query($sql))
+        {
+            return true;
+        }
+    }
+
+    function deletePrivate($id)
+    {
+        $sql = "DELETE FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."';";
 
         if($this->db->query($sql))
         {
