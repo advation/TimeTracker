@@ -13,8 +13,7 @@
     <div class="row">
         <div class="small-12 columns">
             <?php
-
-                if(count($this->messages) > 0)
+                if(count($this->messages->systemMessages) > 0)
                 {
                     echo "
                         <table width='100%'>
@@ -28,8 +27,10 @@
                             </thead>
                             <tbody>
                     ";
-                    foreach($this->messages as $message)
+
+                    foreach($this->messages->systemMessages as $message)
                     {
+
                         $date = new DateTime();
                         $date->setTimestamp($message['expireDate']);
 
@@ -43,6 +44,7 @@
                             </tr>
 
                         ";
+
                     }
                     echo "</tbody></table>";
                 }
@@ -50,7 +52,6 @@
                 {
                     echo "<div class='small-12 columns text-center'>- No system messages -</div>";
                 }
-
             ?>
         </div>
     </div>
@@ -63,14 +64,14 @@
         <div class="small-12 columns">
             <?php
 
-            if(count($this->privateMessages) > 0)
+            if(count($this->messages->privateMessages) > 0)
             {
                 echo "
                         <table width='100%'>
                             <thead>
                                 <tr>
                                     <th>Post Date</th>
-                                    <th>Account</th>
+                                    <th>Sent to</th>
                                     <th>Message</th>
                                     <th>Expiration Date (EOD)</th>
                                     <th>Options</th>
@@ -78,7 +79,7 @@
                             </thead>
                             <tbody>
                     ";
-                foreach($this->privateMessages as $message)
+                foreach($this->messages->privateMessages as $message)
                 {
                     $date = new DateTime();
                     $date->setTimestamp($message['expireDate']);
@@ -93,7 +94,7 @@
                                 <td>".$account['lastName'].", ".$account['firstName']."</td>
                                 <td>".$message['message']."</td>
                                 <td>".$date->format('l, F jS Y')."</td>
-                                <td><a href='".$this->link(array('messages','edit',$message['id']))."'>Edit</a></td>
+                                <td><a href='".$this->link(array('messages','editprivate',$message['id']))."'>Edit</a></td>
                             </tr>
 
                         ";

@@ -23,7 +23,7 @@ class messagesController extends Staple_Controller
             {
                 $data = $form->exportFormData();
 
-                $message = new messagesModel();
+                $message = new messageModel();
                 $message->setMessage($data['message']);
                 $message->setExpireDate($data['expireDate']);
 
@@ -39,7 +39,6 @@ class messagesController extends Staple_Controller
 
                 $form = new newMessageForm();
                 $this->view->form = $form;
-
             }
             else
             {
@@ -53,8 +52,7 @@ class messagesController extends Staple_Controller
         }
 
         $messages = new messagesModel();
-        $this->view->messages = $messages->getMessages();
-        $this->view->privateMessages = $messages->getAllPrivateMessages();
+        $this->view->messages = $messages;
     }
 
     public function edit($id = null)
@@ -62,6 +60,54 @@ class messagesController extends Staple_Controller
         if($id != null)
         {
             $form = new editMessageForm();
+            $message = new messageModel();
+
+            $message->load($id);
+
+            $this->view->id = $message->getId();
+
+            $data['id'] = $message->getId();
+            $data['message'] = $message->getMessage();
+            $data['expireDate'] = $message->getExpireDate();
+
+            $form->setAction($this->_link(array('messages','edit',$message->getId())));
+            $form->addData($data);
+
+            if($form->wasSubmitted())
+            {
+                $form->addData($_POST);
+                if($form->validate())
+                {
+                    $data = $form->exportFormData();
+
+                    $message = new messageModel();
+                    $message->setId($id);
+                    $message->setMessage($data['message']);
+                    $message->setExpireDate($data['expireDate']);
+                    $message->save();
+                    header("location:".$this->_link(array('messages'))."");
+                }
+                else
+                {
+                    $this->view->form = $form;
+                }
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+        }
+        else
+        {
+            header("location: ".$this->_link(array('messages'))."");
+        }
+    }
+
+    public function editPrivate($id = null)
+    {
+        if($id != null)
+        {
+            $form = new editPrivateMessageForm();
             $message = new messagesModel();
 
             $message->load($id);
@@ -105,9 +151,16 @@ class messagesController extends Staple_Controller
         }
     }
 
-    public function delete($id)
+    public function deleteprivate($id)
     {
         $message = new messagesModel();
+        $message->deletePrivate($id);
+        header("location:".$this->_link(array('messages'))."");
+    }
+
+    public function delete($id)
+    {
+        $message = new messageModel();
         $message->delete($id);
         header("location:".$this->_link(array('messages'))."");
     }
