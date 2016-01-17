@@ -43,7 +43,10 @@ class newMessageForm extends Staple_Form
         $data = array();
         if($ids == null)
         {
-            $data['all'] = "All Accounts";
+            if($user->getAuthLevel() >= 900)
+            {
+                $data['all'] = "All Accounts";
+            }
             foreach($users as $user)
             {
                 if($user['supervisorId'] == $id)

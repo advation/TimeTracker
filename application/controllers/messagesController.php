@@ -6,7 +6,7 @@ class messagesController extends Staple_Controller
     {
         $auth = Staple_Auth::get();
         $this->authLevel = $auth->getAuthLevel();
-        if($this->authLevel < 900)
+        if($this->authLevel < 500)
         {
             header("location:".$this->_link(array('index','index'))."");
         }
@@ -14,45 +14,110 @@ class messagesController extends Staple_Controller
 
     public function index()
     {
-        $form = new newMessageForm();
-
-        if($form->wasSubmitted())
+        $user = new userModel();
+        if($user->getAuthLevel() >= 900)
         {
-            $form->addData($_POST);
-            if($form->validate())
+            $form = new newMessageForm();
+
+            if($form->wasSubmitted())
             {
-                $data = $form->exportFormData();
-
-                $message = new messageModel();
-                $message->setMessage($data['message']);
-                $message->setExpireDate($data['expireDate']);
-
-                if($data['account'] == 'all')
+                $form->addData($_POST);
+                if($form->validate())
                 {
-                    $message->save();
+                    $data = $form->exportFormData();
+
+                    if($data['account'] == 'all')
+                    {
+                        $message = new messageModel();
+                        $message->setMessage($data['message']);
+                        $message->setExpireDate($data['expireDate']);
+                        $message->save();
+                    }
+                    else
+                    {
+                        $message = new privateMessageModel();
+                        $message->setMessage($data['message']);
+                        $message->setExpireDate($data['expireDate']);
+                        $message->setUserId($data['account']);
+                        $message->save();
+                    }
+
+                    $form = new newMessageForm();
+                    $this->view->form = $form;
                 }
                 else
                 {
-                    $message->setUserId($data['account']);
-                    $message->savePrivate();
+                    $this->view->form = $form;
+                    $this->layout->addScriptBlock('$(document).ready(function() { $("#newMessage").foundation("reveal", "open"); }); ');
                 }
-
-                $form = new newMessageForm();
-                $this->view->form = $form;
             }
             else
             {
                 $this->view->form = $form;
-                $this->layout->addScriptBlock('$(document).ready(function() { $("#newMessage").foundation("reveal", "open"); }); ');
             }
+
+            $messages = new messagesModel();
+            $this->view->messages = $messages;
         }
         else
         {
-            $this->view->form = $form;
+            header("location: ".$this->_link(array("messages","account"))."");
         }
+    }
 
-        $messages = new messagesModel();
-        $this->view->messages = $messages;
+    public function account()
+    {
+        $user = new userModel();
+        if($user->getAuthLevel() >= 500)
+        {
+            $form = new newMessageForm();
+            $form->setAction($this->_link(array("messages","account")));
+
+            if($form->wasSubmitted())
+            {
+                $form->addData($_POST);
+                if($form->validate())
+                {
+                    $data = $form->exportFormData();
+
+                    if($data['account'] == 'all')
+                    {
+                        $message = new messageModel();
+                        $message->setMessage($data['message']);
+                        $message->setExpireDate($data['expireDate']);
+                        $message->save();
+                    }
+                    else
+                    {
+                        $message = new privateMessageModel();
+                        $message->setMessage($data['message']);
+                        $message->setExpireDate($data['expireDate']);
+                        $message->setUserId($data['account']);
+                        $message->save();
+                    }
+
+                    $form = new newMessageForm();
+                    $form->setAction($this->_link(array("messages","account")));
+                    $this->view->form = $form;
+                }
+                else
+                {
+                    $this->view->form = $form;
+                    $this->layout->addScriptBlock('$(document).ready(function() { $("#newMessage").foundation("reveal", "open"); }); ');
+                }
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+
+            $messages = new messagesModel();
+            $this->view->messages = $messages;
+        }
+        else
+        {
+            header("location: ".$this->_link(array("messages","account"))."");
+        }
     }
 
     public function edit($id = null)
@@ -108,15 +173,9 @@ class messagesController extends Staple_Controller
         if($id != null)
         {
             $form = new editPrivateMessageForm();
-            $message = new messagesModel();
+            $message = new privateMessageModel();
 
-            $message->load($id);
-
-            $this->view->id = $message->getId();
-
-            $data['id'] = $message->getId();
-            $data['message'] = $message->getMessage();
-            $data['expireDate'] = $message->getExpireDate();
+            $data = $message->supervisorLoad($id);
 
             $form->setAction($this->_link(array('messages','edit',$message->getId())));
             $form->addData($data);
@@ -128,7 +187,7 @@ class messagesController extends Staple_Controller
                 {
                     $data = $form->exportFormData();
 
-                    $message = new messagesModel();
+                    $message = new privateMessageModel();
                     $message->setId($id);
                     $message->setMessage($data['message']);
                     $message->setExpireDate($data['expireDate']);
@@ -153,7 +212,7 @@ class messagesController extends Staple_Controller
 
     public function deleteprivate($id)
     {
-        $message = new messagesModel();
+        $message = new privateMessageModel();
         $message->deletePrivate($id);
         header("location:".$this->_link(array('messages'))."");
     }

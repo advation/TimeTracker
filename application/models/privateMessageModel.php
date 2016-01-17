@@ -8,7 +8,9 @@ class privateMessageModel extends messagesModel
     private $postDate;
     private $expireDate;
     private $userId;
+    private $supervisorId;
     private $reviewDate;
+    private $reviewed;
 
     /**
      * @return mixed
@@ -102,6 +104,38 @@ class privateMessageModel extends messagesModel
         $this->reviewDate = $reviewDate;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getReviewed()
+    {
+        return $this->reviewed;
+    }
+
+    /**
+     * @param mixed $reviewed
+     */
+    public function setReviewed($reviewed)
+    {
+        $this->reviewed = $reviewed;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSupervisorId()
+    {
+        return $this->supervisorId;
+    }
+
+    /**
+     * @param mixed $supervisorId
+     */
+    public function setSupervisorId($supervisorId)
+    {
+        $this->supervisorId = $supervisorId;
+    }
+
     function __construct()
     {
         $this->db = Staple_DB::get();
@@ -109,11 +143,75 @@ class privateMessageModel extends messagesModel
 
     function load($id)
     {
-        $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."' ";
+        $user = new userModel();
+        $uid = $user->getId();
+
+        $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($uid)."'";
 
         $query = $this->db->query($sql);
         $result = $query->fetch_assoc();
 
         return $result;
+    }
+
+    function supervisorLoad($id)
+    {
+        $user = new userModel();
+        $uid = $user->getId();
+
+        $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."' AND supervisorId = '".$this->db->real_escape_string($uid)."'";
+
+        $query = $this->db->query($sql);
+        $result = $query->fetch_assoc();
+
+        return $result;
+    }
+
+    function save()
+    {
+        if(isset($this->id))
+        {
+            //update
+            $sql = "UPDATE privateMessages SET message = '".$this->message."', expireDate ='".$this->expireDate."' WHERE id = '".$this->id."' ";
+
+            if($this->db->query($sql))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            //save
+            $date = new DateTime();
+            $datetime = $date->format('U');
+            $user = new userModel();
+            $superId = $user->getId();
+
+            $sql = "INSERT INTO privateMessages (message,postDate,expireDate,userId,supervisorId) VALUES ('".$this->message."','".$datetime."','".$this->expireDate."','".$this->userId."','".$superId."')";
+            if($this->db->query($sql))
+            {
+                return true;
+            }
+        }
+    }
+
+    function delete($id)
+    {
+        $sql = "DELETE FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."'";
+
+        if($this->db->query($sql))
+        {
+            return true;
+        }
+    }
+
+    function markRead($id)
+    {
+        $sql = "UPDATE privateMessages SET reviewed = '".$this->db->real_escape_string(1)."' WHERE id = '".$this->db->real_escape_string($id)."' ";
+
+        if($this->db->query($sql))
+        {
+            return true;
+        }
     }
 }

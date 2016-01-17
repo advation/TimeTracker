@@ -1,13 +1,13 @@
 <?php
-    if(count($this->messages) > 0)
+    if(count($this->messages->systemMessages) > 0)
     {
         echo "
             <div class=\"section message\">
                 <div class=\"row\">
                     <div class=\"small-12 columns\">";
-                        foreach($this->messages as $item)
+                        foreach($this->messages->systemMessages as $message)
                         {
-                            echo "<p><i class='fa fa-warning'></i> ".$item['message']."</p>";
+                            echo "<p><i class='fa fa-warning'></i> ".$message['message']."</p>";
                         }
                         echo "
                     </div>
@@ -15,8 +15,34 @@
             </div>
         ";
     }
-?>
 
+    if(count($this->messages->allPrivateMessages) > 0)
+    {
+
+        echo "
+        <div class=\"section\">
+            <div class=\"row\">
+                <div class=\"small-12 columns\">
+                    <div class=\"\">
+                        <h2>Messages <small> </small></h2>
+        ";
+        echo "<ul>";
+        foreach($this->messages->allPrivateMessages as $message)
+        {
+            $date = new DateTime();
+            $date->setTimestamp($message['postDate']);
+            echo "<li><b>".$date->format('l, F jS Y')."</b><br>".$message['message']."</li>";
+        }
+        echo "</ul>";
+
+        echo "
+                </div>
+            </div>
+        </div>
+    </div>
+        ";
+    }
+?>
 <div class="section">
     <div class="row">
         <div class="small-6 columns">
@@ -79,3 +105,28 @@
         </div>
     </div>
 </div>
+
+<div id="privateMessages" class="reveal-modal medium" data-reveal aria-labelledby="privateMessages" aria-hidden="true" role="dialog">
+
+    <?php
+    if(count($this->messages->privateMessages) > 0)
+    {
+        $total = $this->messages->totalPrivateMessages;
+        $i = 1;
+
+        echo "<h2 id=\"modalTitle\"><i class=\"fa fa-envelope\"></i> New Message <small>$i of $total</small></h2>";
+        foreach ($this->messages->privateMessages as $message)
+        {
+            echo "
+            <p>" . $message['message'] . "</p>
+            <ul class=\"button-group radius text-center\">
+                <li><a class=\"button\" href=\"".$this->link(array("index","read",$message['id']))."\"><i class=\"fa fa-check-square\"></i> Mark as read</a></li>
+            </ul>";
+            $i++;
+        }
+
+    }
+    ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
