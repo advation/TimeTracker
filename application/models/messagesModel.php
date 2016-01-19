@@ -70,11 +70,14 @@ class messagesModel extends Staple_Model
     {
         $this->db = Staple_DB::get();
         $this->systemMessages = $this->loadSystemMessages();
-        $this->expiredSystemMessages = $this->loadExpiredSystemMessages();
+
         $this->privateMessages = $this->loadPrivateMessages();
         $this->allPrivateMessages = $this->loadAllPrivateMessages();
         $this->totalPrivateMessages = $this->countPrivateMessages();
         $this->supervisorMessages = $this->loadSupervisorMessages();
+
+        $this->expiredSystemMessages = $this->loadExpiredSystemMessages();
+        $this->expiredPrivateMessages = $this->loadExpiredPrivateMessages();
     }
 
     private function loadSystemMessages()
@@ -102,13 +105,32 @@ class messagesModel extends Staple_Model
         $date->setTime(23,59,59);
         $timestamp = $date->format('U');
 
-        $sql = "SELECT id FROM messages WHERE expireDate <= $timestamp ORDER BY postDate ASC";
+        $sql = "SELECT id FROM messages WHERE expireDate < $timestamp ORDER BY postDate ASC";
 
         $query = $this->db->query($sql);
         $data = array();
         while($result = $query->fetch_assoc())
         {
             $message = new messageModel();
+            $data[] = $message->load($result['id']);
+        }
+
+        return $data;
+    }
+
+    private function loadExpiredPrivateMessages()
+    {
+        $date = new DateTime();
+        $date->setTime(23,59,59);
+        $timestamp = $date->format('U');
+
+        $sql = "SELECT id FROM privateMessages WHERE expireDate < $timestamp ORDER BY postDate ASC";
+
+        $query = $this->db->query($sql);
+        $data = array();
+        while($result = $query->fetch_assoc())
+        {
+            $message = new privateMessageModel();
             $data[] = $message->load($result['id']);
         }
 
@@ -123,7 +145,7 @@ class messagesModel extends Staple_Model
         $date = new DateTime();
         $date->setTime(0,0,0);
 
-        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND reviewed = '0' ORDER BY postDate ASC limit 1";
+        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND expireDate >= '".$date->format('U')."' AND reviewed = '0' ORDER BY postDate ASC limit 1";
         $query = $this->db->query($sql);
 
         $data = array();
@@ -145,7 +167,7 @@ class messagesModel extends Staple_Model
         $date = new DateTime();
         $date->setTime(0,0,0);
 
-        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND reviewed = '0' ORDER BY postDate ASC";
+        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND expireDate >= '".$date->format('U')."' ORDER BY postDate ASC";
         $query = $this->db->query($sql);
 
         $data = array();
@@ -177,7 +199,7 @@ class messagesModel extends Staple_Model
         $date = new DateTime();
         $date->setTime(0,0,0);
 
-        $sql = "SELECT id FROM privateMessages WHERE supervisorId = '".$userId."' ORDER BY postDate ASC";
+        $sql = "SELECT id FROM privateMessages WHERE supervisorId = '".$userId."' AND expireDate >= '".$date->format('U')."' ORDER BY postDate ASC";
         $query = $this->db->query($sql);
 
         $data = array();

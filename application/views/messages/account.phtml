@@ -24,6 +24,7 @@
                                     <th>Sent to</th>
                                     <th>Message</th>
                                     <th>Expiration Date (EOD)</th>
+                                    <th>Read on</th>
                                     <th>Options</th>
                                 </tr>
                             </thead>
@@ -46,7 +47,8 @@
                                 <td>".$account['lastName'].", ".$account['firstName']."</td>
                                 <td>".$message['message']."</td>
                                 <td>$expireDate</td>
-                                <td><a href='".$this->link(array('messages','editprivate',$message['id']))."'>Edit</a></td>
+                                <td>".$message['reviewDate']."</td>
+                                <td><a href='".$this->link(array('messages','deleteprivate',$message['id']))."'><i class='fa fa-trash'></i> Delete</a></td>
                             </tr>
 
                         ";

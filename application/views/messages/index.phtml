@@ -6,7 +6,7 @@
         <div class="small-6 columns right">
             <ul class="button-group radius right">
                 <li><a href="#" data-reveal-id="newMessage" class="button success"><i class="fa fa-plus"></i> New Message</a></li>
-                <li><a href="<?php echo $this->link(array('messages','expired')) ?>" class="button secondary"><i class="fa fa-history"></i> Expired</a></li>
+                <li><a href="<?php echo $this->link(array('messages','expired')) ?>" class="button secondary"><i class="fa fa-history"></i> History</a></li>
             </ul>
         </div>
     </div>
@@ -74,6 +74,7 @@
                                     <th>Sent to</th>
                                     <th>Message</th>
                                     <th>Expiration Date (EOD)</th>
+                                    <th>Read on</th>
                                     <th>Options</th>
                                 </tr>
                             </thead>
@@ -95,7 +96,8 @@
                                 <td>".$account['lastName'].", ".$account['firstName']."</td>
                                 <td>".$message['message']."</td>
                                 <td>$expireDate</td>
-                                <td><a href='".$this->link(array('messages','editprivate',$message['id']))."'>Edit</a></td>
+                                <td>".$message['reviewDate']."</td>
+                                <td><a href='".$this->link(array('messages','deleteprivate',$message['id']))."'>Delete</a></td>
                             </tr>
 
                         ";

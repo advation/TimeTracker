@@ -9,6 +9,7 @@ class privateMessageModel extends messagesModel
     private $expireDate;
     private $userId;
     private $supervisorId;
+    private $sentId;
     private $reviewDate;
     private $reviewed;
 
@@ -136,6 +137,22 @@ class privateMessageModel extends messagesModel
         $this->supervisorId = $supervisorId;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSentId()
+    {
+        return $this->sentId;
+    }
+
+    /**
+     * @param mixed $sentId
+     */
+    public function setSentId($sentId)
+    {
+        $this->sentId = $sentId;
+    }
+
     function __construct()
     {
         $this->db = Staple_DB::get();
@@ -186,8 +203,10 @@ class privateMessageModel extends messagesModel
             $datetime = $date->format('U');
             $user = new userModel();
             $superId = $user->getId();
+            $sentId = $user->getId();
 
-            $sql = "INSERT INTO privateMessages (message,postDate,expireDate,userId,supervisorId) VALUES ('".$this->message."','".$datetime."','".$this->expireDate."','".$this->userId."','".$superId."')";
+            $sql = "INSERT INTO privateMessages (message,postDate,expireDate,userId,supervisorId,sentId) VALUES ('".$this->message."','".$datetime."','".$this->expireDate."','".$this->userId."','".$superId."','".$sentId."')";
+
             if($this->db->query($sql))
             {
                 return true;

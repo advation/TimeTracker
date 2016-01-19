@@ -213,7 +213,7 @@ class messagesController extends Staple_Controller
     public function deleteprivate($id)
     {
         $message = new privateMessageModel();
-        $message->deletePrivate($id);
+        $message->delete($id);
         header("location:".$this->_link(array('messages'))."");
     }
 
@@ -227,7 +227,7 @@ class messagesController extends Staple_Controller
     public function expired()
     {
         $messages = new messagesModel();
-        $this->view->messages = $messages->getExpiredMessages();
+        $this->view->messages = $messages;
     }
 }
 
