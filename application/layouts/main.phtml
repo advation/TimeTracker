@@ -65,7 +65,6 @@
                             <li class=\"has-dropdown\">
                                 <a href=\"#\"><i class='fa fa-gear'></i> Tools</a>
                                 <ul class=\"dropdown\">
-                                    <li><a href=\"".$this->link(array('messages','index'))."\" ><i class=\"fa fa-envelope\" ></i > System Messages </a ></li>
                                     <li><a href=\"".$this->link(array('timesheet','admininsert'))."\" ><i class=\"fa fa-plus\" ></i > Time Insert </a ></li >
                                     <li><a href=\"".$this->link(array('reports','unlock'))."\"><i class=\"fa fa-unlock\"></i> Time Unlock</a></li>
                                 </ul>
@@ -89,6 +88,15 @@
                                 </ul>
                             </li>
                         ";
+                    }
+
+                    if($user->getAuthLevel() >= 900)
+                    {
+                        echo "<li><a href=\"".$this->link(array('messages','index'))."\" ><i class=\"fa fa-envelope\" ></i > Messaging </a ></li>";
+                    }
+                    elseif($user->getAuthLevel() >= 500)
+                    {
+                        echo "<li><a href=\"".$this->link(array('messages','account'))."\" ><i class=\"fa fa-envelope\" ></i > Messaging </a ></li>";
                     }
 
                     ?>

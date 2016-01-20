@@ -15,6 +15,12 @@ class newMessageForm extends Staple_Form
             ->addValidator(new Staple_Form_Validate_Length(1,1000))
             ->addAttrib("style","height:200px;");
 
+        $account = new Staple_Form_FoundationSelectElement('account','Send To');
+        $account->setRequired()
+            ->addOption('','Select an account')
+            ->addOptionsArray($this->accounts())
+            ->addValidator(new Staple_Form_Validate_InArray($this->accounts(1)));
+
         $expireDate = new Staple_Form_FoundationTextElement('expireDate','Expiration Date');
         $expireDate->setRequired()
             ->addValidator(new Staple_Form_Validate_Date())
@@ -23,7 +29,46 @@ class newMessageForm extends Staple_Form
         $submit = new Staple_Form_FoundationSubmitElement('submit','Submit');
         $submit->addClass('button expand radius');
 
-        $this->addField($expireDate, $message, $submit);
+        $this->addField($account, $expireDate, $message, $submit);
+    }
+
+    public function accounts($ids = null)
+    {
+        $user = new userModel();
+        $id = $user->getId();
+        $authLevel = $user->getAuthLevel();
+
+        $accounts = new userModel();
+        $users = $accounts->listAll();
+        $data = array();
+        if($ids == null)
+        {
+            if($user->getAuthLevel() >= 900)
+            {
+                $data['all'] = "All Accounts";
+            }
+            foreach($users as $user)
+            {
+                if($user['supervisorId'] == $id)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                }
+                elseif($authLevel >= 900)
+                {
+                    $data[$user['id']] = $user['lastName'].", ".$user['firstName']." (". $user['type'] .")";
+                }
+            }
+        }
+        else
+        {
+            $data[] = "all";
+            foreach($users as $user)
+            {
+                $data[] = $user['id'];
+            }
+        }
+
+        return $data;
     }
 }
 

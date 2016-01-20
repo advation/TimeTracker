@@ -16,7 +16,12 @@ class indexController extends Staple_Controller
 		$this->view->authLevel = $this->authLevel;
 
 		$messages = new messagesModel();
-		$this->view->messages = $messages->getMessages();
+		$this->view->messages = $messages;
+
+		if(count($messages->getPrivateMessages()) > 0)
+		{
+			$this->layout->addScriptBlock('$(document).ready(function() { $("#privateMessages").foundation("reveal", "open"); }); ');
+		}
 
 		$date = new DateTime();
 		$date->setTime(0,0,0);
@@ -41,6 +46,20 @@ class indexController extends Staple_Controller
 		$report = new weeklyReportModel();
 
 		$this->view->week = $report->getWeekWorked($this->userId, $week, $year);
+	}
+
+	public function read($id = null)
+	{
+		if($id != null)
+		{
+			$message = new privateMessageModel();
+			$message->markRead($id);
+			header("location: ".$this->_link(array("index"))."");
+		}
+		else
+		{
+			header("location: ".$this->_link(array("index"))."");
+		}
 	}
 }
 ?>

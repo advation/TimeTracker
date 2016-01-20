@@ -1,54 +1,52 @@
 <?php
-    if(count($this->messages) > 0)
-    {
-        echo "
-            <div class=\"section message\">
+if(count($this->messages->systemMessages) > 0)
+{
+    echo "
+            <div class=\"message\">
                 <div class=\"row\">
-                    <div class=\"small-12 columns\">";
-                        foreach($this->messages as $item)
-                        {
-                            echo "<p><i class='fa fa-warning'></i> ".$item['message']."</p>";
-                        }
-                        echo "
+                    <div class=\"small-12 columns\"><br>";
+    foreach($this->messages->systemMessages as $message)
+    {
+        echo "<p><i class='fa fa-warning'></i> ".$message['message']."</p>";
+    }
+    echo "
                     </div>
                 </div>
             </div>
         ";
-    }
+}
 ?>
 
 <div class="section">
     <div class="row">
         <div class="small-6 columns">
-            <div class="panel info">
             <?php
             echo "
-                <div class=\"row\">
-                    <div class='small-12 columns'>
-                        <h2>Time submitted this week</h2>
-                    </div>
-                    <div class='small-12 columns text-center'>
-                        <p>".$this->week['start']['month']." ".$this->week['start']['day']." ".$this->week['year']." to ".$this->week['end']['month']." ".$this->week['end']['day']." ".$this->week['year']."</p>
-                    </div>
-                    <div class='small-12 columns text-center'>
-                        <h2>".$this->week['total']."</h2>
-                    </div>
-                    ";
+            <div class=\"row\">
+                <div class='small-12 columns text-center'>
+                    <h2><i class='fa fa-clock-o'></i> Time this week
+                    <br>
+                    <small>".$this->week['start']['month']." ".$this->week['start']['day']." ".$this->week['year']." - ".$this->week['end']['month']." ".$this->week['end']['day']." ".$this->week['year']."</small>
+                    </h2>
+                </div>
+                <div class='small-12 columns text-center'>
+                    <h2>".$this->week['total']."</h2>
+                </div>
+                ";
             echo "</div>";
             ?>
-            </div>
         </div>
-        <div class="small-6 columns">
-            <div class="panel">
-            <h2><?php echo $this->month." ".$this->year ?> <small> Hours Breakout</small></h2>
+        <div class="small-6 columns text-center">
+            <div class="">
+                <h2><i class="fa fa-calendar"></i> <?php echo $this->month." ".$this->year ?></h2>
 
-            <?php
+                <?php
 
-             foreach($this->timesheet->totals as $key=>$value)
-             {
-                 if($value > 0)
-                 {
-                     echo "
+                foreach($this->timesheet->totals as $key=>$value)
+                {
+                    if($value > 0)
+                    {
+                        echo "
                     <div class='row'>
                         <div class='small-6 columns'>
                             <h4>$key</h4>
@@ -58,24 +56,100 @@
                         </div>
                     </div>
                 ";
-                 }
-             }
+                    }
+                }
 
-             if($this->timesheet->totals['Total Time'] == 0)
-             {
-                 echo "
+                if($this->timesheet->totals['Total Time'] == 0)
+                {
+                    echo "
                     <div class=\"row\">
                         <div class=\"small-12 columns text-center\">
-                            <h4 class='subheader'>No time submitted</h4>
+                            - No time submitted -
                         </div>
                     </div>
                 ";
-             }
-             ?>
+                }
+                ?>
             </div>
-        </div>
-        <div class='small-12 columns text-center'>
-            <a class='button round' href="<?php echo $this->link(array('timesheet')) ?>"><i class='fa fa-clock-o'></i> Your Time Sheet</a>
         </div>
     </div>
 </div>
+
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns">
+            <div class="text-center">
+                <h2><i class='fa fa-envelope'></i> Messages <small> </small></h2>
+                <?php
+                if(count($this->messages->allPrivateMessages) > 0)
+                {
+                    echo "<div class=\"text-left\">";
+                    foreach($this->messages->allPrivateMessages as $message)
+                    {
+                        $user = new userModel();
+                        $account = $user->userInfo($message['sentId']);
+                        $sentBy = $account['firstName']." ".$account['lastName'];
+
+                        $date = new DateTime();
+                        $expireDate = $date->setTimestamp($message['expireDate'])->format("F jS Y");
+                        $postDate = $date->setTimestamp($message['postDate'])->format("l, F jS Y");
+
+                        echo "<div class='row'>";
+                            echo "<div class='small-8 columns'>";
+                                echo "<h4>$postDate <small>Expires ($expireDate)</small></h4>";
+                                echo "From: $sentBy";
+                            echo "</div>";
+                            echo "<div class='small-4 columns text-right'>";
+                                if($message['reviewed'] == 0)
+                                {
+                                    echo "<a class=\"radius button tiny right\" href=\"".$this->link(array("index","read",$message['id']))."\">Mark as read</a>";
+                                }
+                                else
+                                {
+                                    echo "<b>Marked as read:</b> ".$message['reviewDate'];
+                                }
+                            echo "</div>";
+                        echo "</div>";
+                        echo "<div class='row'>";
+                            echo "<div class='small-12 columns'>";
+                                echo "<p>".$message['message']."</p>";
+                            echo "</div>";
+                        echo "</div>";
+                        echo "<hr>";
+                    }
+                    echo "</div>";
+                }
+                else
+                {
+                    echo "<div class='text-center'>- No messages -</div>";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="privateMessages" class="reveal-modal medium" data-reveal aria-labelledby="privateMessages" aria-hidden="true" role="dialog">
+
+    <?php
+    if(count($this->messages->privateMessages) > 0)
+    {
+        $total = $this->messages->totalPrivateMessages;
+        $i = 1;
+
+        echo "<h2 id=\"modalTitle\"><i class=\"fa fa-envelope\"></i> New Message <small></small></h2>";
+        foreach ($this->messages->privateMessages as $message)
+        {
+            echo "
+            <p>" . $message['message'] . "</p>
+            <ul class=\"button-group radius text-center\">
+                <li><a class=\"button\" href=\"".$this->link(array("index","read",$message['id']))."\"><i class=\"fa fa-check-square\"></i> Mark as read</a></li>
+            </ul>";
+            $i++;
+        }
+
+    }
+    ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+

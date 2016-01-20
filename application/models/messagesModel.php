@@ -3,164 +3,213 @@
 class messagesModel extends Staple_Model
 {
     private $db;
-    private $id;
-    private $message;
-    private $postDate;
-    private $expireDate;
+    private $systemMessages;
+    private $expiredSystemMessages;
+    private $privateMessages;
+    private $expiredPrivateMessages;
+    private $allPrivateMessages;
+    private $totalPrivateMessages;
+    private $supervisorMessages;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getSystemMessages()
     {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
+        return $this->systemMessages;
     }
 
     /**
      * @return mixed
      */
-    public function getMessage()
+    public function getPrivateMessages()
     {
-        return $this->message;
-    }
-
-    /**
-     * @param mixed $message
-     */
-    public function setMessage($message)
-    {
-        $this->message = $message;
+        return $this->privateMessages;
     }
 
     /**
      * @return mixed
      */
-    public function getExpireDate()
+    public function getExpiredSystemMessages()
     {
-        $date = new DateTime();
-
-        $date->setTimestamp($this->expireDate);
-
-        return $date->format('m/d/Y');
-    }
-
-    /**
-     * @param mixed $expireDate
-     */
-    public function setExpireDate($expireDate)
-    {
-        $this->expireDate = strtotime($expireDate);
+        return $this->expiredSystemMessages;
     }
 
     /**
      * @return mixed
      */
-    public function getPostDate()
+    public function getExpiredPrivateMessages()
     {
-        return $this->postDate;
+        return $this->expiredPrivateMessages;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalPrivateMessages()
+    {
+        return $this->totalPrivateMessages;
+    }/**
+
+     * @return mixed
+     */
+    public function getAllPrivateMessages()
+    {
+        return $this->allPrivateMessages;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSupervisorMessages()
+    {
+        return $this->supervisorMessages;
     }
 
     function __construct()
     {
         $this->db = Staple_DB::get();
+        $this->systemMessages = $this->loadSystemMessages();
+
+        $this->privateMessages = $this->loadPrivateMessages();
+        $this->allPrivateMessages = $this->loadAllPrivateMessages();
+        $this->totalPrivateMessages = $this->countPrivateMessages();
+        $this->supervisorMessages = $this->loadSupervisorMessages();
+
+        $this->expiredSystemMessages = $this->loadExpiredSystemMessages();
+        $this->expiredPrivateMessages = $this->loadExpiredPrivateMessages();
     }
 
-    function load($id)
-    {
-        $sql = "SELECT * FROM messages WHERE id = '".$this->db->real_escape_string($id)."' ";
-
-        $query = $this->db->query($sql);
-        $result = $query->fetch_assoc();
-
-        $this->id = $result['id'];
-        $this->expireDate = $result['expireDate'];
-        $this->message = $result['message'];
-        $this->postDate = $result['postDate'];
-    }
-
-    function getMessages()
+    private function loadSystemMessages()
     {
         $date = new DateTime();
         $date->setTime(0,0,0);
+        $timestamp = $date->format('U');
 
-        $sql = "
-        SELECT * FROM messages WHERE expireDate >= '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
-        ";
-
-        $data = array();
+        $sql = "SELECT id FROM messages WHERE expireDate >= $timestamp ORDER BY postDate ASC";
 
         $query = $this->db->query($sql);
-
+        $data = array();
         while($result = $query->fetch_assoc())
         {
-            $data[] = $result;
+            $message = new messageModel();
+            $data[] = $message->load($result['id']);
         }
 
         return $data;
     }
 
-    function getExpiredMessages()
+    private function loadExpiredSystemMessages()
     {
         $date = new DateTime();
-        $date->setTime(0,0,0);
+        $date->setTime(23,59,59);
+        $timestamp = $date->format('U');
 
-        $sql = "
-            SELECT * FROM messages WHERE expireDate < '".$this->db->real_escape_string($date->format('U'))."' ORDER BY postDate DESC;
-        ";
-
-        $data = array();
+        $sql = "SELECT id FROM messages WHERE expireDate < '$timestamp' ORDER BY postDate ASC";
 
         $query = $this->db->query($sql);
+        $data = array();
         while($result = $query->fetch_assoc())
         {
-        $data[] = $result;
+            $message = new messageModel();
+            $data[] = $message->load($result['id']);
         }
 
         return $data;
     }
 
-    function save()
+    private function loadExpiredPrivateMessages()
     {
-        if(isset($this->id))
-        {
-            //Edit
-            $sql = "UPDATE messages SET expireDate = '".$this->expireDate."', message = '".$this->message."' WHERE id = '".$this->id."';";
+        $date = new DateTime();
+        $date->setTime(23,59,59);
+        $timestamp = $date->format('U');
 
-            if($this->db->query($sql))
-            {
-                return true;
-            }
-        }
-        else
-        {
-            //Save
-            $sql = "INSERT INTO messages (message,expireDate) VALUES ('".$this->db->real_escape_string($this->message)."','".$this->db->real_escape_string($this->expireDate)."')";
+        $sql = "SELECT id FROM privateMessages WHERE expireDate < '$timestamp' ORDER BY postDate ASC";
 
-            if($this->db->query($sql))
-            {
-                return true;
-            }
+        $query = $this->db->query($sql);
+        $data = array();
+        while($result = $query->fetch_assoc())
+        {
+            $id = $result['id'];
+            $message = new privateMessageModel();
+            $data[] = $message->load($id);
         }
+        return $data;
     }
 
-    function delete($id)
+    private function loadPrivateMessages()
     {
-        $sql = "DELETE FROM messages WHERE id = '".$this->db->real_escape_string($id)."';";
+        $user = new userModel();
+        $userId = $user->getId();
 
-        if($this->db->query($sql))
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+
+        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND expireDate >= '".$date->format('U')."' AND reviewed = '0' ORDER BY postDate ASC limit 1";
+        $query = $this->db->query($sql);
+
+        $data = array();
+
+        while($result = $query->fetch_assoc())
         {
-            return true;
+            $message = new privateMessageModel();
+            $data[] = $message->load($result['id']);
         }
+
+        return $data;
     }
 
+    private function loadAllPrivateMessages()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
 
+        $date = new DateTime();
+        $date->setTime(0,0,0);
 
+        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND expireDate >= '".$date->format('U')."' ORDER BY postDate ASC";
+        $query = $this->db->query($sql);
+
+        $data = array();
+
+        while($result = $query->fetch_assoc())
+        {
+            $message = new privateMessageModel();
+            $data[] = $message->load($result['id']);
+        }
+
+        return $data;
+    }
+
+    private function countPrivateMessages()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
+
+        $sql = "SELECT id FROM privateMessages WHERE userId = '".$userId."' AND reviewed = '0'";
+        $query = $this->db->query($sql);
+        return $query->num_rows;
+    }
+
+    private function loadSupervisorMessages()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
+
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+
+        $sql = "SELECT id FROM privateMessages WHERE supervisorId = '".$userId."' AND expireDate >= '".$date->format('U')."' ORDER BY postDate ASC";
+        $query = $this->db->query($sql);
+
+        $data = array();
+
+        while($result = $query->fetch_assoc())
+        {
+            $message = new privateMessageModel();
+            $data[] = $message->supervisorLoad($result['id']);
+        }
+
+        return $data;
+    }
 }
