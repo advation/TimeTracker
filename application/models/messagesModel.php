@@ -105,7 +105,7 @@ class messagesModel extends Staple_Model
         $date->setTime(23,59,59);
         $timestamp = $date->format('U');
 
-        $sql = "SELECT id FROM messages WHERE expireDate < $timestamp ORDER BY postDate ASC";
+        $sql = "SELECT id FROM messages WHERE expireDate < '$timestamp' ORDER BY postDate ASC";
 
         $query = $this->db->query($sql);
         $data = array();
@@ -124,16 +124,16 @@ class messagesModel extends Staple_Model
         $date->setTime(23,59,59);
         $timestamp = $date->format('U');
 
-        $sql = "SELECT id FROM privateMessages WHERE expireDate < $timestamp ORDER BY postDate ASC";
+        $sql = "SELECT id FROM privateMessages WHERE expireDate < '$timestamp' ORDER BY postDate ASC";
 
         $query = $this->db->query($sql);
         $data = array();
         while($result = $query->fetch_assoc())
         {
+            $id = $result['id'];
             $message = new privateMessageModel();
-            $data[] = $message->load($result['id']);
+            $data[] = $message->load($id);
         }
-
         return $data;
     }
 

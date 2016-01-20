@@ -229,6 +229,15 @@ class messagesController extends Staple_Controller
         $messages = new messagesModel();
         $this->view->messages = $messages;
     }
+
+    public function accountexpired()
+    {
+        $messages = new messagesModel();
+        //$this->view->messages = $messages;
+
+        $this->view->messages = $messages->getExpiredPrivateMessages();
+
+    }
 }
 
 ?>

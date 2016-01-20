@@ -171,6 +171,16 @@ class privateMessageModel extends messagesModel
         return $result;
     }
 
+    function loadexpired($id)
+    {
+        $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."'";
+
+        $query = $this->db->query($sql);
+        $result = $query->fetch_assoc();
+
+        return $result;
+    }
+
     function supervisorLoad($id)
     {
         $user = new userModel();

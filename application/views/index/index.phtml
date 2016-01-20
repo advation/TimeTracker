@@ -137,7 +137,7 @@ if(count($this->messages->systemMessages) > 0)
         $total = $this->messages->totalPrivateMessages;
         $i = 1;
 
-        echo "<h2 id=\"modalTitle\"><i class=\"fa fa-envelope\"></i> New Message <small>$i of $total</small></h2>";
+        echo "<h2 id=\"modalTitle\"><i class=\"fa fa-envelope\"></i> New Message <small></small></h2>";
         foreach ($this->messages->privateMessages as $message)
         {
             echo "
