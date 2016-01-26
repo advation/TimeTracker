@@ -76,6 +76,9 @@
                     <tbody>
 
                     <?php
+                    //Gets the unpaid leave time code ID. These entries will not be reflected in the total.
+                    $code = new codeModel();
+                    $codeId = $code->getIdFor("Unpaid Leave");
 
                     foreach($this->report as $account)
                     {
@@ -99,16 +102,17 @@
                         }
 
                         $grandTotal = 0;
-                        foreach($account['totals'] as $total)
+                        foreach($account['totals'] as $key => $value)
                         {
-                            $grandTotal = $grandTotal + $total;
+                            if($key != $codeId['id'])
+                            {
+                                $grandTotal = $grandTotal + $value;
+                            }
                         }
 
                         echo "<td class='text-center'><b>$grandTotal</b></td>";
                         echo "</tr>";
                     }
-
-
                     ?>
                     </tbody>
                 </table>

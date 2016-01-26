@@ -386,6 +386,7 @@
 				$codeId = $timeCode->getIdFor($code);
 				$totals[$code] = $this->calculatedTotals($codeId['id'],$this->startDate,$this->endDate,$uid);
 			}
+
 			$totals['Total Time'] = array_sum($totals);
 
 			$this->setTotals($totals);
@@ -470,7 +471,7 @@
 				$userId = $account['id'];
 			}
 
-			$sql = "SELECT inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
+			$sql = "SELECT codeId, inTime, outTime, lessTime FROM timeEntries WHERE inTime > UNIX_TIMESTAMP('$startDate 00:00:00') AND outTime < UNIX_TIMESTAMP('$endDate 23:59:59') AND userId = $userId AND codeId = $code;";
 
 			if($this->db->query($sql)->fetch_row() > 0)
 			{
@@ -507,6 +508,14 @@
 					$decimalHours = $this->timeToDecimal($lapseHours);
 					$total = $total + $decimalHours;
 					$total = $total - $lessTime;
+
+					$code = new codeModel();
+					$codeId = $code->getIdFor("Unpaid Leave");
+
+					if($codeId['id'] == $result['codeId'])
+					{
+						$total = (-1)*$total;
+					}
 				}
 
 				return $total;

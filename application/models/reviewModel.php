@@ -148,7 +148,7 @@ class reviewModel extends Staple_Model
 
                 $date = new DateTime();
                 $date->setTimestamp(strtotime($result['reviewDate']));
-                $data[$account['lastName'].", ".$account['firstName']]['reviewDateFormatted'] = $date->format('F jS Y');
+                $data[$account['lastName'].", ".$account['firstName']]['reviewDateFormatted'] = $date->format('F jS Y @ g:i A');
 
                 $data[$account['lastName'].", ".$account['firstName']]['supervisor'] = $account2['firstName']." ".$account2['lastName'];
             }
