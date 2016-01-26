@@ -80,9 +80,9 @@
                     $code = new codeModel();
                     $codeId = $code->getIdFor("Unpaid Leave");
 
+                    $grandTotal = 0;
                     foreach($this->report as $account)
                     {
-
                         echo "<tr>";
                         echo "<td style='border-bottom:1px solid #ccc;'><b>".$account['userInfo']['lastName'].", ".$account['userInfo']['firstName']."</b></td>";
 
@@ -101,18 +101,27 @@
                             echo "</td>";
                         }
 
-                        $grandTotal = 0;
+
+                        $accountTotal = 0;
                         foreach($account['totals'] as $key => $value)
                         {
                             if($key != $codeId['id'])
                             {
+                                $accountTotal = $accountTotal + $value;
                                 $grandTotal = $grandTotal + $value;
                             }
                         }
 
-                        echo "<td class='text-center'><b>$grandTotal</b></td>";
+                        echo "<td class='text-center'><b>$accountTotal</b></td>";
                         echo "</tr>";
                     }
+                    $codeCount = count($account['totals'])+2;
+                    echo "
+                        <tr>
+                            <td class='text-center' colspan=\"$codeCount\"><b>Total Pay Period Hours:</b> $grandTotal </td>
+                        </tr>
+                    ";
+
                     ?>
                     </tbody>
                 </table>
