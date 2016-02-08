@@ -40,10 +40,13 @@ class timesheetController extends Staple_Controller
 
                 if($date->format('d') > 25)
                 {
-                    $date->modify('+1 month');
+                    $date->modify('first day of next month');
+                    $date->modify('+24 days');
                 }
-                $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->setTime(23,59,59)->getTimestamp();
+
+                $maxDate = $date->setDate($date->format('Y'),$date->format('m'),'25')->setTime(23,59,59)->getTimestamp();
                 $minDate = $date->modify('-1 month +1 day')->setTime(0,0,0)->getTimestamp();
+
                 $userDate = strtotime($data['date']);
 
                 //Date is within pay period
@@ -76,7 +79,7 @@ class timesheetController extends Staple_Controller
                 else
                 {
                     //Return the same form with error message.
-                    $form->errorMessage = array("<i class='fa fa-warning'></i> You may only submit time for the current date period.");
+                    $form->errorMessage = array("<i class='fa fa-warning'></i> You may only submit time for the current pay period.");
                     $this->view->insertTimeForm = $form;
                 }
             }
@@ -108,14 +111,16 @@ class timesheetController extends Staple_Controller
 
         if ($month == null)
         {
+
             if($date->format("d") >= 26)
             {
-                $month = $date->modify('+1 month')->format('m');
+                $month = $date->modify('first day of next month')->format('m');
             }
             else
             {
                 $month = date('m');
             }
+
         }
 
         $date = new DateTime();
