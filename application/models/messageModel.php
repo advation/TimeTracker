@@ -93,7 +93,7 @@ class messageModel extends messagesModel
         if(isset($this->id))
         {
             //update
-            $sql = "UPDATE messages SET message = '".$this->message."', expireDate ='".$this->expireDate."' WHERE id = '".$this->id."' ";
+            $sql = "UPDATE messages SET message = '".$this->db->real_escape_string($this->db->real_escape_string($this->message))."', expireDate ='".$this->expireDate."' WHERE id = '".$this->id."' ";
 
             if($this->db->query($sql))
             {
@@ -103,7 +103,7 @@ class messageModel extends messagesModel
         else
         {
             //save
-            $sql = "INSERT INTO messages (message,expireDate) VALUES ('".$this->message."','".$this->expireDate."')";
+            $sql = "INSERT INTO messages (message,expireDate) VALUES ('".$this->db->real_escape_string($this->db->real_escape_string($this->message))."','".$this->expireDate."')";
             if($this->db->query($sql))
             {
                 return true;

@@ -16,12 +16,14 @@ class editTimeForm extends Staple_Form
 
         $inTime = new Staple_Form_FoundationTextElement('inTime','Time In');
         $inTime->setRequired()
+            ->addFilter(new Staple_Form_Filter_Trim())
             ->addValidator(new Staple_Form_Validate_Length('1','8'))
             ->addValidator(new Staple_Form_Validate_Regex('/^(0|[0-9]|1[012]):[0-5][0-9] ?((a|p)m|(A|P)M)$/','Invalid time format. Expected format: h:mm am/pm.'))
             ->addAttrib('placeholder','h:mm am/pm');
 
         $outTime = new Staple_Form_FoundationTextElement('outTime','Time Out');
         $outTime->setRequired()
+            ->addFilter(new Staple_Form_Filter_Trim())
             ->addValidator(new Staple_Form_Validate_Length('1','8'))
             ->addValidator(new Staple_Form_Validate_Regex('/^(0|[0-9]|1[012]):[0-5][0-9] ?((a|p)m|(A|P)M)$/','Invalid time format. Expected format: h:mm am/pm.'))
             ->addAttrib('placeholder','h:mm am/pm');;
