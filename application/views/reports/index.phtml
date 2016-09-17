@@ -204,10 +204,11 @@
                 if(array_key_exists($user, $this->reviewed))
                 {
                     echo "<h4><i class='fa fa-check'></i> Reviewed by <b>".$this->reviewed[$user]['supervisor']."</b> on ".$this->reviewed[$user]['reviewDateFormatted']."</h4>";
+                    echo "<a class='button radius' href='".$this->link(array('reports','reviewed',$userId,$this->year,$this->month))."'><i class=\"fa fa-check\"></i> Update review</a>";
                 }
                 else
                 {
-                    echo "<a class='button radius' href='".$this->link(array('reports','reviewed',$userId,$this->year,$this->month))."'>Mark as reviewed</a>";
+                    echo "<a class='button success radius' href='".$this->link(array('reports','reviewed',$userId,$this->year,$this->month))."'><i class=\"fa fa-check\"></i> Mark as reviewed</a>";
                 }
 
                 echo"</div>";

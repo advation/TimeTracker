@@ -163,23 +163,25 @@ class reviewModel extends Staple_Model
             //Get current users ID.
             $user = new userModel();
             $supervisorId = $user->getId();
+            $supervisorName = $user->getUsername();
 
-            //Check if entry already exists
-            $sql = "
-                SELECT id FROM timesheetReview WHERE accountId = '".$this->db->real_escape_string($this->accountId)."' AND payPeriodMonth = '".$this->db->real_escape_string($this->payPeriodMonth)."' AND payPeriodYear = '".$this->db->real_escape_string($this->payPeriodYear)."';
-            ";
-
-            $result = $this->db->query($sql)->num_rows;
-            if($result == 0)
+            $sql = "INSERT INTO timesheetReview (accountId, payPeriodMonth, payPeriodYear, supervisorId) VALUES ('".$this->db->real_escape_string($this->accountId)."','".$this->db->real_escape_string($this->payPeriodMonth)."','".$this->db->real_escape_string($this->payPeriodYear)."','".$this->db->real_escape_string($supervisorId)."')";
+            if($this->db->query($sql))
             {
-                $sql = "
-                    INSERT INTO timesheetReview (accountId, payPeriodMonth, payPeriodYear, supervisorId) VALUES ('".$this->db->real_escape_string($this->accountId)."','".$this->db->real_escape_string($this->payPeriodMonth)."','".$this->db->real_escape_string($this->payPeriodYear)."','".$this->db->real_escape_string($supervisorId)."')
-                ";
+                $employeeUser = new userModel();
+                $details = $employeeUser->userInfo($this->accountId);
 
-                if($this->db->query($sql))
-                {
-                    return true;
-                }
+                $month = $this->payPeriodMonth;
+                $dateObj = DateTime::createFromFormat('!m', $month);
+                $monthName = $dateObj->format('F');
+
+                $audit = new auditModel();
+                $audit->setUserId($this->accountId);
+                $audit->setAction('Timesheet Review');
+                $audit->setItem($supervisorName." reviewed ".$details['username']." timesheet for ".$monthName." ".$this->payPeriodYear);
+                $audit->save();
+
+                return true;
             }
         }
     }
