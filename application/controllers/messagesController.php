@@ -224,10 +224,10 @@ class messagesController extends Staple_Controller
         header("location:".$this->_link(array('messages'))."");
     }
 
-    public function expired()
+    public function archive()
     {
-        $messages = new messagesModel();
-        $this->view->messages = $messages;
+        $privateMessages = new privateMessageModel();
+        $this->view->privateMessages = $privateMessages->loadExpired();
     }
 
     public function accountexpired()

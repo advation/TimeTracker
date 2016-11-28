@@ -185,6 +185,14 @@
 			}
 		}
 
+		function getById($id)
+		{
+			$sql = "SELECT * FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+			$query = $this->db->query($sql);
+			$result = $query->fetch_assoc();
+			print_r($result);
+		}
+
 		function userInfo($id)
 		{
 			$sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";

@@ -101,6 +101,9 @@ class messagesModel extends Staple_Model
 
     private function loadExpiredSystemMessages()
     {
+        $user = new userModel();
+        $uid = $user->getId();
+
         $date = new DateTime();
         $date->setTime(23,59,59);
         $timestamp = $date->format('U');
@@ -132,8 +135,11 @@ class messagesModel extends Staple_Model
         {
             $id = $result['id'];
             $message = new privateMessageModel();
-            $data[] = $message->load($id);
+
+            $messageData = $message->expiredPrivateMessages;
+            $data[$id] = $messageData;
         }
+
         return $data;
     }
 

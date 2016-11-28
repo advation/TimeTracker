@@ -160,17 +160,51 @@ class privateMessageModel extends messagesModel
 
     function load($id)
     {
+
         $user = new userModel();
         $uid = $user->getId();
 
         $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."' AND userId = '".$this->db->real_escape_string($uid)."'";
-
         $query = $this->db->query($sql);
         $result = $query->fetch_assoc();
 
         return $result;
     }
 
+    function loadExpired()
+    {
+        $user = new userModel();
+        $uid = $user->getId();
+
+        $sql = "SELECT * FROM privateMessages WHERE sentId = '".$this->db->real_escape_string($uid)."' AND expireDate <= CURRENT_TIMESTAMP ORDER BY postDate DESC";
+        
+        $query = $this->db->query($sql);
+        $data = array();
+        while($row = $query->fetch_assoc())
+        {
+            $message = array();
+            $message['id'] = $row['id'];
+            $message['message'] = $row['message'];
+            $message['expireDate'] = $row['expireDate'];
+            $message['postDate'] = $row['postDate'];
+
+            $user = new userModel();
+            $message['sendId'] = $user->getUsername();
+
+            $sentTo = $user->userInfo($row['userId']);
+            $message['sentTo'] = $sentTo['firstName']." ".$sentTo['lastName'];
+
+            $message['reviewDate'] = $row['reviewDate'];
+            $message['reviewed'] = $row['reviewed'];
+
+            $data[] = $message;
+        }
+        return $data;
+    }
+
+    /*TODO
+    DEPRACATED
+    /*
     function loadexpired($id)
     {
         $sql = "SELECT * FROM privateMessages WHERE id = '".$this->db->real_escape_string($id)."'";
@@ -180,6 +214,7 @@ class privateMessageModel extends messagesModel
 
         return $result;
     }
+    */
 
     function supervisorLoad($id)
     {

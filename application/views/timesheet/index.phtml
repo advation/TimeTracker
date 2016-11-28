@@ -173,7 +173,28 @@
         ";
     }
 ?>
-</div><!-- end section -->
+
+
+</div>
+<div class="section">
+    <div class="row">
+        <div class="small-12 text-center columns">
+            <?php
+
+            if($this->needsValidation)
+            {
+                if(count($this->timesheet->entries) >= 5)
+                {
+                    echo "<a class=\"button round success\" href=\"".$this->link(array('timesheet','validate',$this->timesheet->currentYear,$this->timesheet->currentMonth))."\"><i class=\"fa fa-check\"></i> Validate your Timesheet</a>";
+                }
+            }
+
+            ?>
+        </div>
+    </div>
+</div>
+
+<!-- end section -->
 
 <div id="totals" class="totalsPanel">
     <div class="row">
