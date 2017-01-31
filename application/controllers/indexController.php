@@ -28,7 +28,8 @@ class indexController extends Staple_Controller
 
 		if($date->format('d') >= 26)
 		{
-			$date->modify('+1 month');
+			//$date->modify('+1 month');
+			$date->modify('+7 days');
 		}
 
 		$date->setDate($date->format('Y'),$date->format('m'),1);
