@@ -169,7 +169,7 @@ class reportsController extends Staple_Controller
 
             if($date->format('d') >= 26)
             {
-                $date->modify('+1 month');
+                $date->modify('+4 weeks');
             }
 
             $timesheets = new reportModel($date->format('Y'), $date->format('m'));
