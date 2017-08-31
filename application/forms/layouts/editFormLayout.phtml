@@ -55,7 +55,7 @@
 
     if($date->format('d') > 25)
     {
-        $date->modify('+1 month');
+        $date->modify('+4 weeks');
     }
     $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->format('m/d/Y');
     $minDate = $date->modify('-1 month +1 day');

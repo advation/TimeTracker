@@ -292,7 +292,7 @@ class timesheetController extends Staple_Controller
 
                     if($date->format('d') > 25)
                     {
-                        $date->modify('+1 month');
+                        $date->modify('+4 weeks');
                     }
                     $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->setTime(23,59,59)->getTimestamp();
                     $minDate = $date->modify('-1 month +1 day')->setTime(0,0,0)->getTimestamp();
