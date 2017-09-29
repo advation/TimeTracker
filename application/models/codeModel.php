@@ -125,6 +125,37 @@
 			}
 		}
 
+		function requestCodes()
+        {
+            $auth = Staple_Auth::get();
+            $uid = $auth->getAuthId();
+            $user = new userModel();
+            $user->userInfo($uid);
+
+            $type = $user->getType();
+
+            if($type == 'part')
+            {
+                $sql = "SELECT id, name FROM requestTimeCodes WHERE type = 'part' ORDER BY listOrder ASC";
+            }
+            else
+            {
+                $sql = "SELECT id, name FROM requestTimeCodes WHERE 1 ORDER BY listOrder ASC";
+            }
+
+            if($this->db->query($sql)->fetch_row() > 0)
+            {
+                $query = $this->db->query($sql);
+
+                while($result = $query->fetch_assoc())
+                {
+                    $data[$result['id']] = $result['name'];
+                }
+
+                return $data;
+            }
+        }
+
 		function getIdFor($term = null)
 		{
 			if($term !== null)

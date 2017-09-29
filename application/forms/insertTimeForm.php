@@ -64,7 +64,7 @@ class insertTimeForm extends Staple_Form
         $outTime->setRequired()
             ->addFilter(new Staple_Form_Filter_Trim())
             ->addValidator(new Staple_Form_Validate_Regex('/^(0|[0-9]|1[012]):[0-5][0-9] ?((a|p)m|(A|P)M)$/','Invalid time format. Expected format: h:mm am/pm.'))
-            ->addAttrib('placeholder','h:mm am/pm');;
+            ->addAttrib('placeholder','h:mm am/pm');
 
         $lessTime = new Staple_Form_FoundationSelectElement('lessTime','Less Time');
         $lessTime->setRequired()

@@ -1,0 +1,115 @@
+<p>
+    Please adjust the following hours for each day requested to reflect your work schedule.
+</p>
+
+<?php
+echo $this->formstart();
+
+if(count($this->errors) > 0)
+{
+    if( isset($this->errors[0]))
+    {
+        if($this->errors[0]['label'] == 'Date Error')
+        {
+            echo "<div class='panel alert'>";
+            foreach($this->errors as $error)
+            {
+                foreach($error['errors'] as $message)
+                {
+                    echo "<i class='fa fa-warning'></i> ".$message[0];
+                }
+            }
+            echo "</div>";
+        }
+    }
+}
+
+$i = 1;
+foreach($this->fields as $field)
+{
+
+    if($i == 1)
+    {
+        echo "<div class='row'><div class='small-12 columns text-center'><b>$field->label</b></div></div>";
+    }
+    else
+    {
+        echo "<div class='small-6 columns'>".$field."</div>";
+    }
+
+    if($i == 3)
+    {
+        echo "<hr>";
+        $i = 1;
+    }
+    else
+    {
+        $i++;
+    }
+}
+
+echo $this->fields['submit'];
+
+echo $this->formend();
+
+?>
+
+<script>
+    <?php
+    $date = new DateTime();
+
+    if($date->format('d') > 25)
+    {
+        $date->modify('first day of next month');
+        $date->modify('+25 days');
+    }
+
+    $date->modify("+1 year");
+    $maxDate = $date->setDate($date->format('Y'),$date->format('m'),25)->format('m/d/Y');
+    $date->modify("-1 year");
+
+    $minDate = $date->modify('-1 month +1 day');
+    $minDate = $date->format('m/d/Y');
+    ?>
+
+    $(document).ready(function() {
+        $(function() {
+            $( "#startDate" ).datepicker({
+                numberOfMonths:2,
+                inline: true,
+                minDate: "<?php echo $minDate ?>",
+                maxDate: "<?php echo $maxDate ?>",
+                showWeek: true,
+                showButtonPanel: true
+            });
+
+            $( "#endDate" ).datepicker({
+                numberOfMonths:2,
+                inline: true,
+                minDate: "<?php echo $minDate ?>",
+                maxDate: "<?php echo $maxDate ?>",
+                showWeek: true,
+                showButtonPanel: true
+            });
+        });
+
+        $('#entryToggle').click(function()
+        {
+            if($('#entryForm').is(":visible"))
+            {
+                $('#entryToggleIcon').addClass('fa-chevron-circle-down');
+                $('#entryToggleIcon').removeClass('fa-chevron-circle-up');
+                $('#entryToggleText').html('Show');
+            }
+            else
+            {
+                $('#entryToggleIcon').addClass('fa-chevron-circle-up');
+                $('#entryToggleIcon').removeClass('fa-chevron-circle-down');
+                $('#entryToggleText').html('Hide')
+            }
+            $('#entryForm').slideToggle(400);
+        });
+
+
+    });
+</script>
