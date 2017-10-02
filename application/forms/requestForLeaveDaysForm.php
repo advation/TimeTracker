@@ -26,6 +26,7 @@ class requestForLeaveDaysForm extends Staple_Form
             {
                 $dateLabel = $date->format("l, F jS Y");
                 $field = new Staple_Form_FoundationTextElement("day$i","$dateLabel");
+                $field->setValue($dateLabel);
                 $this->addField($field);
 
                 $inTime = new Staple_Form_FoundationTextElement("inTimeDay$i",'Start Time');

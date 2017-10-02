@@ -1,57 +1,63 @@
 <?php
 echo $this->formstart();
+?>
 
-if(count($this->errors) > 0)
-{
-    if( isset($this->errors[0]))
+<div class="panel radius" style="max-height:600px; overflow:auto;">
+    <h3><i class="fa fa-plus"></i> New Request Form</h3>
+    <hr>
+    <?php
+
+    if(count($this->errors) > 0)
     {
-        if($this->errors[0]['label'] == 'Date Error')
+        if( isset($this->errors[0]))
         {
-            echo "<div class='panel alert'>";
-            foreach($this->errors as $error)
+            if($this->errors[0]['label'] == 'Date Error')
             {
-                foreach($error['errors'] as $message)
+                echo "<div class='panel alert'>";
+                foreach($this->errors as $error)
                 {
-                    echo "<i class='fa fa-warning'></i> ".$message[0];
+                    foreach($error['errors'] as $message)
+                    {
+                        echo "<i class='fa fa-warning'></i> ".$message[0];
+                    }
                 }
+                echo "</div>";
             }
-            echo "</div>";
         }
     }
-}
 
-?>
-<div class="row">
-    <div class="small-12 medium-12 columns">
-        <?php echo $this->fields['code'] ?>
+    ?>
+    <div class="row">
+        <div class="small-12 medium-12 columns">
+            <?php echo $this->fields['code'] ?>
+        </div>
+        <div class="small-12 medium-6 columns">
+            <?php echo $this->fields['startDate'] ?>
+        </div>
+        <div class="small-12 medium-6 columns">
+            <?php echo $this->fields['endDate'] ?>
+        </div>
     </div>
-    <div class="small-12 medium-6 columns">
-        <?php echo $this->fields['startDate'] ?>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $this->fields['note'] ?>
+        </div>
     </div>
-    <div class="small-12 medium-6 columns">
-        <?php echo $this->fields['endDate'] ?>
+    <div class="row">
+        <div class="small-4 columns">
+            &nbsp;
+        </div>
+
+        <div class="small-4 columns">
+            <?php echo $this->fields['submit'] ?>
+        </div>
+
+        <div class="small-4 columns">
+            &nbsp;
+        </div>
     </div>
+    <?php echo $this->formend(); ?>
 </div>
-<div class="row">
-    <div class="small-12 columns">
-        <?php echo $this->fields['note'] ?>
-    </div>
-</div>
-<div class="row">
-    <div class="small-4 columns">
-        &nbsp;
-    </div>
-
-    <div class="small-4 columns">
-        <?php echo $this->fields['submit'] ?>
-    </div>
-
-    <div class="small-4 columns">
-        &nbsp;
-    </div>
-</div>
-<?php echo $this->formend(); ?>
-
 <script>
     <?php
     $date = new DateTime();

@@ -24,16 +24,42 @@ class requestsController extends Staple_Controller
             if($form->validate())
             {
                 $data = $form->exportFormData();
+                unset($data['submit']);
+                unset($data['ident']);
                 $startDate = strtotime($data['startDate']);
                 $endDate = strtotime($data['endDate']);
 
+                if($startDate == $endDate)
+                {
+                    $singleDay = true;
+                }
+
+                //Check for sundays
+                if(date("l",$startDate) == 'Sunday')
+                {
+                    $sundayCheck = true;
+                }
+
+                if(date("l",$endDate) == 'Sunday')
+                {
+                    $sundayCheck = true;
+                }
+
                 if($startDate <= $endDate)
                 {
-                    $_SESSION['startDate'] = $startDate;
-                    $_SESSION['endDate'] = $endDate;
-                    $_SESSION['requestData'] = $data;
+                    if($sundayCheck == false)
+                    {
+                        $_SESSION['startDate'] = $startDate;
+                        $_SESSION['endDate'] = $endDate;
+                        $_SESSION['requestData'] = $data;
 
-                    $this->_redirect('requests/days');
+                        $this->_redirect('requests/days');
+                    }
+                    else
+                    {
+                        $form->addError("Date Error","Sundays are not permitted. Please select a date between Monday through Saturday for the desired start and end dates.");
+                        $this->view->form = $form;
+                    }
                 }
                 else
                 {
@@ -55,19 +81,29 @@ class requestsController extends Staple_Controller
     public function days()
     {
         $form = new requestForLeaveDaysForm();
-        $this->view->form = $form;
-
-        if($form->wasSubmitted())
+        if(isset($_SESSION['startDate']) && isset($_SESSION['endDate']))
         {
-            $form->addData($_POST);
-            if($form->validate())
+            if($form->wasSubmitted())
             {
-                echo "second form valid<br>";
-                $data = $form->exportFormData();
-                $_SESSION['requestData']['daysHours'] = $data;
-                echo "<pre>";
-                print_r($_SESSION['requestData']);
-                echo "</pre>";
+                $form->addData($_POST);
+                if($form->validate())
+                {
+                    $data = $form->exportFormData();
+                    unset($data['submit']);
+                    unset($data['ident']);
+                    $_SESSION['requestData']['daysHours'] = $data;
+                    $data = $_SESSION['requestData'];
+
+                    $request = new requestModel();
+                    $this->view->request = $request->calculate($data);
+
+                    unset($_SESSION['startDate']);
+                    unset($_SESSION['endDate']);
+                }
+                else
+                {
+                    $this->view->form = $form;
+                }
             }
             else
             {
@@ -76,9 +112,14 @@ class requestsController extends Staple_Controller
         }
         else
         {
-            $this->view->form = $form;
+            $this->_redirect('requests');
         }
+    }
 
+    public function submit($requestId)
+    {
+        $request = new requestModel();
+        $request->notifySupervisorEmail($requestId);
     }
 
 }

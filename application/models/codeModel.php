@@ -125,6 +125,22 @@
 			}
 		}
 
+		function loadRequestCode($id)
+        {
+            $sql = "SELECT * FROM requestTimeCodes WHERE id = '" . $this->db->real_escape_string($id) . "'";
+            if($this->db->query($sql)->fetch_row() > 0)
+            {
+                $query = $this->db->query($sql);
+                $result = $query->fetch_assoc();
+
+                $this->setId($result['id']);
+                $this->setName($result['name']);
+                $this->setMultiplier($result['multiplier']);
+                $this->setDescription($result['description']);
+                return true;
+            }
+        }
+
 		function requestCodes()
         {
             $auth = Staple_Auth::get();

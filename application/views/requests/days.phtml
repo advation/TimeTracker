@@ -1,10 +1,95 @@
 <div class="section">
     <div class="row">
-        <div class="small-8 push-2 columns">
-            <div class="panel radius">
-                <h3><i class="fa fa-plus"></i> Request Form <small> Hours Requested Off</small></h3>
-                <hr>
-                <?php echo $this->form ?>
+            <div class="small-12 medium-8 medium-push-2 columns">
+                <?php
+                    if(count($this->form) > 0)
+                    {
+                        echo $this->form;
+                    }
+                    else
+                    {
+                        echo "
+                            <div class='text-center'>
+                            <h1>Confirmation</h1>
+                            <p>Please confirm the following request</p>
+                            </div>
+                        ";
+
+                        echo "
+                            <div class='panel white radius'>
+                            <div class='row'>
+                                <div class='small-12 columns text-center'>
+                                    <h3>".$this->request['codeName']." Request</h3>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='small-12 columns'>
+                                    <table width='100%'>
+                                        <tr>
+                                            <td><b>From:</b> ".date("l, F jS Y",strtotime($this->request['startDate']))."</td>
+                                            <td><b>To:</b> ".date("l, F jS Y",strtotime($this->request['endDate']))."</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Total Requested ".$this->request['codeName']." Hours</b></td>
+                                            <td>".$this->request['totalHoursRequested']."</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan='2'>
+                                            <b>Note:</b><br><br>
+                                            ".$this->request['note']."
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='small-12 columns'>
+                                    <table width='100%'>
+                                        <tr>
+                                            <th colspan='4' class='text-center'>
+                                                <h5><b>Times</b></h5>
+                                                <p>All hours are calculated to the nearest half hour.</p>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                               <th>Date</th>
+                                               <th>Start Time</th>
+                                               <th>End Time</th>
+                                               <th>Hours Requested</th>
+                                        </tr>
+                                    ";
+                                    foreach($this->request['dateTimes'] as $day)
+                                    {
+                                        $name = $day['dateString'];
+                                        $start = $day['times']['startTime'];
+                                        $end = $day['times']['endTime'];
+                                        $hours = $day['hoursRequested'];
+                                        echo "
+                                            <tr>
+                                                <td>$name</td>
+                                                <td>$start</td>
+                                                <td>$end</td>
+                                                <td>$hours</td>
+                                            </tr>
+                                        ";
+                                    }
+                                    echo "        
+                                            </table>
+                                        ";
+                                echo"</div>
+                            </div>
+                            <div class='row'>
+                                <div class='small-6 columns'>
+                                    <a class='button radius expand alert' href='".$this->link(array('requests','remove',$this->request['requestId']))."'><i class='fa fa-close'></i> Cancel</a>
+                                </div>
+                                <div class='small-6 columns'>
+                                    <a class='button radius expand success' href='".$this->link(array('requests','submit',$this->request['requestId']))."'><i class='fa fa-check'></i> Submit</a>
+                                </div>
+                            </div>
+                            </div>
+                        ";
+                    }
+                ?>
             </div>
         </div>
     </div>

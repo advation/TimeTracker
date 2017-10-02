@@ -11,8 +11,25 @@
 		private $type;
 		private $authLevel;
 		private $supervisorId;
+		private $supervisorName;
 		private $batchId;
 		private $pin;
+
+        /**
+         * @return mixed
+         */
+        public function getSupervisorName()
+        {
+            return $this->supervisorName;
+        }
+
+        /**
+         * @param mixed $supervisorName
+         */
+        public function setSupervisorName($supervisorName)
+        {
+            $this->supervisorName = $supervisorName;
+        }
 
 		/**
 		 * @return mixed
@@ -192,6 +209,22 @@
 			$result = $query->fetch_assoc();
 			print_r($result);
 		}
+
+		function userSupervisor()
+        {
+            $id = $this->getId();
+            $sql = "SELECT * FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+            $superId = $result['supervisorId'];
+
+            $sql = "SELECT username FROM accounts WHERE id = '".$this->db->real_escape_string($superId)."'";
+
+            $query = $this->db->query($sql);
+            $result = $query->fetch_assoc();
+
+            return $result['username'];
+        }
 
 		function userInfo($id)
 		{
