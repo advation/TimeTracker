@@ -15,6 +15,23 @@ class requestModel extends Staple_Model
     private $dateOfRequest;
     private $status;
     private $approvedById;
+    private $note;
+
+    /**
+     * @return mixed
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param mixed $note
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+    }
 
     /**
      * @return mixed
@@ -216,7 +233,57 @@ class requestModel extends Staple_Model
     function load($requestId)
     {
         $sql = "SELECT * FROM requests WHERE requestId = '".$requestId."'";
-        return $this->db->query($sql)->fetch_assoc();
+        $result = $this->db->query($sql)->fetch_assoc();
+        $this->setId($result['id']);
+        $this->setRequestId($result['requestId']);
+        $this->setDateTimes(json_decode($result['dateTimes']));
+        $this->setTotalHoursRequested($result['totalHoursRequested']);
+        $this->setStartDate($result['startDate']);
+        $this->setEndDate($result['endDate']);
+        $this->setApprovedById($result['approvedById']);
+        $this->setUserId($result['userId']);
+        $code = new codeModel();
+        $code->load($result['code']);
+        $this->setCodeName($code->getName());
+        $this->setCode($result['code']);
+        $this->setDateOfRequest($result['dateOfRequest']);
+        $this->setNote($result['note']);
+        $this->setStatus($result['status']);
+    }
+
+    function getAll()
+    {
+        $user = new userModel();
+        $userId = $user->getId();
+
+        $sql = "SELECT * FROM requests WHERE userId = '".$userId."' ORDER BY status ASC, dateOfRequest DESC";
+        $result = $this->db->query($sql);
+
+        $code = new codeModel();
+        $data = array();
+        $i = 0;
+        while($row = $result->fetch_assoc())
+        {
+            $code->loadRequestCode($row['code']);
+            $data[$i]['id'] = $row['id'];
+            $data[$i]['requestId'] = $row['requestId'];
+            $data[$i]['code'] = $row['code'];
+            $data[$i]['codeName'] = $code->getName();
+            $data[$i]['startDate'] = $row['startDate'];
+            $data[$i]['endDate'] = $row['endDate'];
+            $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+            $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+            $data[$i]['note'] = $row['note'];
+            $data[$i]['status'] = $row['status'];
+            $supervisor = new userModel();
+            $supervisorData = $supervisor->getById($row['approvedById']);
+            $data[$i]['approvedById'] = $row['approvedById'];
+            $data[$i]['approvedByName'] = $supervisorData;
+            $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+            $i++;
+        }
+
+        return $data;
     }
 
     function calculate($data)
@@ -263,9 +330,10 @@ class requestModel extends Staple_Model
         $this->setStartDate($newDateTimes['startDate']);
         $this->setEndDate($newDateTimes['endDate']);
         $this->setDateTimes(json_encode($newDateTimes['dateTimes']));
+        $this->setNote($newDateTimes['note']);
         $this->setTotalHoursRequested($newDateTimes['totalHoursRequested']);
         $this->setDateOfRequest(date('Y-m-d'));
-        $this->setStatus(0);
+        $this->setStatus(3);
         $this->save();
         return $newDateTimes;
     }
@@ -295,7 +363,7 @@ class requestModel extends Staple_Model
 
             $sql = "
                 INSERT INTO requests 
-                (requestId, code, userId, startDate, endDate, dateTimes, totalHoursRequested, status) 
+                (requestId, code, userId, startDate, endDate, dateTimes, note, totalHoursRequested, status) 
                 VALUES
                 ('".$this->db->real_escape_string($this->requestId)."',
                 '".$this->db->real_escape_string($this->code)."',
@@ -303,11 +371,10 @@ class requestModel extends Staple_Model
                 '".$this->db->real_escape_string($this->startDate)."',
                 '".$this->db->real_escape_string($this->endDate)."',
                 '".$this->db->real_escape_string($this->dateTimes)."',
+                '".$this->db->real_escape_string($this->note)."',
                 '".$this->db->real_escape_string($this->totalHoursRequested)."',
                 '".$this->db->real_escape_string($this->status)."'
                 )";
-
-            echo $sql;
 
             if($this->db->query($sql))
             {
@@ -324,25 +391,83 @@ class requestModel extends Staple_Model
 
     function notifySupervisorEmail($requestId)
     {
-        $request = $this->load($requestId);
+        $this->load($requestId);
         $superUser = new userModel();
-        //$email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
-        $email = "aday@twinfallspubliclibrary.org";
+        $email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
         $user = new userModel();
-        $userInfo = $user->userInfo($request['userId']);
-        $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off. Please login to http://timetracker to review.";
-        mail($email, "New TimeTracker Request",$msg);
+        $userInfo = $user->userInfo($this->userId);
+        $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
+        $msg .= "Code: ".$this->codeName."\r\n";
+
+        if($this->startDate == $this->endDate)
+        {
+            $msg .= "Date: ".$this->startDate;
+        }
+        else
+        {
+            $msg .= "Dates: ".$this->startDate." - ".$this->endDate;
+        }
+
+        $msg .= "\r\nTotal Hours Requested: ".$this->totalHoursRequested;
+        $msg .= "\r\n\r\nPlease login to http://timetracker to review.";
+        $headers = "";
+        $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
+        mail($email, "New TimeTracker Request",$msg,$headers);
     }
 
-    function remove($userId, $year, $month)
+    function remove($requestId)
     {
-        /*
-        $sql = "DELETE FROM timesheetReview WHERE accountId = '".$userId."' AND  payPeriodMonth = '".$month."' AND payPeriodYear = '".$year."';";
+        $this->load($requestId);
+        $uid = $this->getUserId();
 
+        $user = new userModel();
+        $id = $user->getId();
+        echo "uid: ".$uid."<br>";
+        echo "id: ".$id."<br>";
+        if($id == $uid)
+        {
+            $sql = "DELETE FROM requests WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+            if($this->db->query($sql))
+            {
+                return true;
+            }
+            else
+            {
+                echo "2";
+            }
+        }
+        else
+        {
+            echo "1";
+        }
+    }
+
+    function changeToPendingApproval($requestId)
+    {
+        $sql = "UPDATE requests SET status = '0' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
         if($this->db->query($sql))
         {
             return true;
         }
-        */
+    }
+
+    function approve($requestId)
+    {
+        //Need to check if the requesting account is a supervisor of the requestID or an administrator account.
+        $sql = "UPDATE requests SET status = '0' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+        if($this->db->query($sql))
+        {
+            return true;
+        }
+    }
+
+    function decline($requestId)
+    {
+        //Need to check if the requesting account is a supervisor of the requestID or an administrator account.
+        $sql = "UPDATE requests SET status = '0' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+        if($this->db->query($sql))
+        {
+            return true;
+        }
     }
 }

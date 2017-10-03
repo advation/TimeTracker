@@ -2,9 +2,9 @@
 echo $this->formstart();
 ?>
 
-<div class="panel radius" style="max-height:600px; overflow:auto;">
-    <h3><i class="fa fa-plus"></i> New Request Form</h3>
-    <hr>
+<div class="text-center">
+    <h3>New Request Form</h3>
+</div>
     <?php
 
     if(count($this->errors) > 0)
@@ -57,7 +57,7 @@ echo $this->formstart();
         </div>
     </div>
     <?php echo $this->formend(); ?>
-</div>
+
 <script>
     <?php
     $date = new DateTime();

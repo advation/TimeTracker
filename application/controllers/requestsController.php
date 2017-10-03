@@ -59,22 +59,40 @@ class requestsController extends Staple_Controller
                     {
                         $form->addError("Date Error","Sundays are not permitted. Please select a date between Monday through Saturday for the desired start and end dates.");
                         $this->view->form = $form;
+                        $this->view->formError = 1;
                     }
                 }
                 else
                 {
                     $form->addError("Date Error","Start date cannot be greater then end date");
                     $this->view->form = $form;
+                    $this->view->formError = 1;
                 }
             }
             else
             {
                 $this->view->form = $form;
+                $this->view->formError = 1;
             }
         }
         else
         {
             $this->view->form = $form;
+        }
+
+        $requests = new requestModel();
+        $this->view->requests = $requests->getAll();
+    }
+
+    public function request($requestId = null)
+    {
+        if($requestId != null)
+        {
+            echo $requestId;
+        }
+        else
+        {
+            header("location: ".$this->_link(array('requests'))."");
         }
     }
 
@@ -95,6 +113,9 @@ class requestsController extends Staple_Controller
                     $data = $_SESSION['requestData'];
 
                     $request = new requestModel();
+                    //Check if start or end dates already exist for a pending request for this user.
+
+
                     $this->view->request = $request->calculate($data);
 
                     unset($_SESSION['startDate']);
@@ -112,7 +133,7 @@ class requestsController extends Staple_Controller
         }
         else
         {
-            $this->_redirect('requests');
+            header("location: ".$this->_link(array('requests'))."");
         }
     }
 
@@ -120,6 +141,22 @@ class requestsController extends Staple_Controller
     {
         $request = new requestModel();
         $request->notifySupervisorEmail($requestId);
+        $request->changeToPendingApproval($requestId);
+        header("location: ".$this->_link(array('requests'))."");
+    }
+
+    public function remove($requestId)
+    {
+        $request = new requestModel();
+        if($request->remove($requestId))
+        {
+            echo "Removed";
+            //header("location: ".$this->_link(array('requests'))."");
+        }
+        else
+        {
+            echo "Not removed";
+        }
     }
 
 }

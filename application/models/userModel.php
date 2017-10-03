@@ -207,7 +207,7 @@
 			$sql = "SELECT * FROM accounts WHERE id = '".$this->db->real_escape_string($id)."'";
 			$query = $this->db->query($sql);
 			$result = $query->fetch_assoc();
-			print_r($result);
+			return $result;
 		}
 
 		function userSupervisor()
