@@ -73,57 +73,65 @@ if(count($this->messages->systemMessages) > 0)
             </div>
         </div>
     </div>
-</div>
 
-<div class="section">
     <div class="row">
-        <div class="small-12 columns">
-            <div class="text-center">
-                <h2><i class='fa fa-envelope'></i> Messages <small> </small></h2>
-                <?php
-                if(count($this->messages->allPrivateMessages) > 0)
-                {
-                    echo "<div class=\"text-left\">";
-                    foreach($this->messages->allPrivateMessages as $message)
+        <div class="small-12 medium-6 columns">
+            <div class="panel">
+                <div class="text-center">
+                    <h2><i class='fa fa-envelope'></i> Messages <small> </small></h2>
+                    <?php
+                    if(count($this->messages->allPrivateMessages) > 0)
                     {
-                        $user = new userModel();
-                        $account = $user->userInfo($message['sentId']);
-                        $sentBy = $account['firstName']." ".$account['lastName'];
+                        echo "<div class=\"text-left\">";
+                        foreach($this->messages->allPrivateMessages as $message)
+                        {
+                            echo "<div class='panel radius' style='background-color:#fff;'>";
+                            $user = new userModel();
+                            $account = $user->userInfo($message['sentId']);
+                            $sentBy = $account['firstName']." ".$account['lastName'];
 
-                        $date = new DateTime();
-                        $expireDate = $date->setTimestamp($message['expireDate'])->format("F jS Y");
-                        $postDate = $date->setTimestamp($message['postDate'])->format("l, F jS Y");
+                            $date = new DateTime();
+                            $expireDate = $date->setTimestamp($message['expireDate'])->format("F jS Y");
+                            $postDate = $date->setTimestamp($message['postDate'])->format("l, F jS Y");
 
-                        echo "<div class='row'>";
-                            echo "<div class='small-8 columns'>";
-                                echo "<h4>$postDate <small>Expires ($expireDate)</small></h4>";
-                                echo "From: $sentBy";
+                            echo "<div class='row'>";
+                                echo "<div class='small-8 columns'>";
+                                    echo "<h5>$postDate <br><small>Expires ($expireDate)</small></h5>";
+                                    echo "<b>From:</b> $sentBy";
+                                echo "</div>";
+                                echo "<div class='small-4 columns text-right'>";
+                                    if($message['reviewed'] == 0)
+                                    {
+                                        echo "<a class=\"radius button tiny right\" href=\"".$this->link(array("index","read",$message['id']))."\">Mark as read</a>";
+                                    }
+                                    else
+                                    {
+                                        echo "<div style='font-size:0.8em;'><b>Marked as read:</b><br>".$message['reviewDate']."</div>";
+                                    }
+                                echo "</div>";
                             echo "</div>";
-                            echo "<div class='small-4 columns text-right'>";
-                                if($message['reviewed'] == 0)
-                                {
-                                    echo "<a class=\"radius button tiny right\" href=\"".$this->link(array("index","read",$message['id']))."\">Mark as read</a>";
-                                }
-                                else
-                                {
-                                    echo "<b>Marked as read:</b> ".$message['reviewDate'];
-                                }
+                            echo "<div class='row'>";
+                                echo "<div class='small-12 columns' style='max-height:200px; overflow:auto;'>";
+                                    echo "<p>".$message['message']."</p>";
+                                echo "</div>";
                             echo "</div>";
+                            echo "</div>";
+                        }
                         echo "</div>";
-                        echo "<div class='row'>";
-                            echo "<div class='small-12 columns'>";
-                                echo "<p>".$message['message']."</p>";
-                            echo "</div>";
-                        echo "</div>";
-                        echo "<hr>";
                     }
-                    echo "</div>";
-                }
-                else
-                {
-                    echo "<div class='text-center'>- No messages -</div>";
-                }
-                ?>
+                    else
+                    {
+                        echo "<div class='text-center'>- No messages -</div>";
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="small-12 medium-6 columns">
+            <div class="panel">
+                <div class="text-center">
+                    <h2><i class='fa fa-check-square'></i> Requests <small> </small></h2>
+                </div>
             </div>
         </div>
     </div>

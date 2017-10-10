@@ -88,7 +88,19 @@ class requestsController extends Staple_Controller
     {
         if($requestId != null)
         {
-            echo $requestId;
+            $request = new requestModel();
+            $request->load($requestId);
+            $this->view->requestId = $request->getRequestId();
+            $this->view->codeName = $request->getCodeName();
+            $this->view->startDate = $request->getStartDate();
+            $this->view->endDate = $request->getEndDate();
+            $this->view->dateTimes = $request->getDateTimes();
+            $this->view->requestDate = $request->getDateOfRequest();
+            $this->view->totalHoursRequested = $request->getTotalHoursRequested();
+            $this->view->note = $request->getNote();
+            $this->view->status = $request->getStatus();
+            $this->view->approvedBy = $request->getApprovedByName();
+            $this->view->dateTime = $request->getDateTimes();
         }
         else
         {

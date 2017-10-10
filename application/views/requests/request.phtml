@@ -1,0 +1,108 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+                <h1><i class="fa fa-file"></i> Request Details</h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <a class="button radius" href="<?php echo $this->link(array("requests")) ?>">Back</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <hr>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="small-4 columns">
+            <b>Type</b>:
+            <?php echo $this->codeName ?><br><br>
+        </div>
+        <div class="small-4 columns">
+            <b>Requested On</b>:
+            <?php echo $this->requestDate ?>
+        </div>
+        <div class="small-4 columns">
+            <b>Status</b>:
+            <?php
+
+            if($this->status == "0")
+            {
+                echo "Pending approval";
+            }
+            elseif($this->status == "1")
+            {
+                echo "Approved";
+            }
+            elseif($this->status == "2")
+            {
+                echo "Declined";
+            }
+            elseif($this->status == "3")
+            {
+                echo "Pending notification";
+            }
+            else
+            {
+                echo "Pending";
+            }
+
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-4 columns">
+            <b>Start Date</b>:
+            <?php echo $this->startDate ?>
+        </div>
+        <div class="small-4 columns">
+            <b>End Date</b>:
+            <?php echo $this->endDate ?><br><br>
+        </div>
+        <div class="small-4 columns">
+            <b>Total Hours Requested</b>:
+            <?php echo $this->totalHoursRequested ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-4 columns">
+            <b>Approved By</b>:
+            <?php echo $this->approvedBy ?><br><br>
+        </div>
+        <div class="small-12 columns">
+            <b>Note</b>:
+            <?php echo $this->note ?><br><br>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <b>Dates/Times</b><br>
+            <table width="100%">
+                <tr>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Hours Requested</th>
+                </tr>
+            <?php
+                if(count($this->dateTime) > 0)
+                {
+                    foreach($this->dateTime as $date)
+                    {
+                        echo "
+                        <tr>
+                            <td>".$date->dateString."</td>
+                            <td>".$date->times->startTime."</td>
+                            <td>".$date->times->endTime."</td>
+                            <td>".$date->hoursRequested."</td>
+                        </tr>
+                        ";
+                    }
+                }
+
+            ?>
+
+            </table>
+        </div>
+    </div>
+</div>

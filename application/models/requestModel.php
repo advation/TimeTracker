@@ -15,7 +15,24 @@ class requestModel extends Staple_Model
     private $dateOfRequest;
     private $status;
     private $approvedById;
+    private $approvedByName;
     private $note;
+
+    /**
+     * @return mixed
+     */
+    public function getApprovedByName()
+    {
+        return $this->approvedByName;
+    }
+
+    /**
+     * @param mixed $approvedByName
+     */
+    public function setApprovedByName($approvedByName)
+    {
+        $this->approvedByName = $approvedByName;
+    }
 
     /**
      * @return mixed
@@ -241,6 +258,11 @@ class requestModel extends Staple_Model
         $this->setStartDate($result['startDate']);
         $this->setEndDate($result['endDate']);
         $this->setApprovedById($result['approvedById']);
+        $user = new userModel();
+        $user->setId($result['approvedById']);
+        $superFirst = $user->getFirstName();
+        $superLast = $user->getLastName();
+        $this->setApprovedByName($superFirst." ".$superLast);
         $this->setUserId($result['userId']);
         $code = new codeModel();
         $code->load($result['code']);
