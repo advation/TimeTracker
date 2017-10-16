@@ -79,18 +79,16 @@ echo $this->formstart();
     $(document).ready(function() {
         $(function() {
             $( "#startDate" ).datepicker({
-                numberOfMonths:2,
+                numberOfMonths:1,
                 inline: true,
-                minDate: "<?php echo $minDate ?>",
                 maxDate: "<?php echo $maxDate ?>",
                 showWeek: true,
                 showButtonPanel: true
             });
 
             $( "#endDate" ).datepicker({
-                numberOfMonths:2,
+                numberOfMonths:1,
                 inline: true,
-                minDate: "<?php echo $minDate ?>",
                 maxDate: "<?php echo $maxDate ?>",
                 showWeek: true,
                 showButtonPanel: true

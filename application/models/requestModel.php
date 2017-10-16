@@ -17,6 +17,23 @@ class requestModel extends Staple_Model
     private $approvedById;
     private $approvedByName;
     private $note;
+    private $superNote;
+
+    /**
+     * @return mixed
+     */
+    public function getSuperNote()
+    {
+        return $this->superNote;
+    }
+
+    /**
+     * @param mixed $superNote
+     */
+    public function setSuperNote($superNote)
+    {
+        $this->superNote = $superNote;
+    }
 
     /**
      * @return mixed
@@ -260,8 +277,9 @@ class requestModel extends Staple_Model
         $this->setApprovedById($result['approvedById']);
         $user = new userModel();
         $user->setId($result['approvedById']);
-        $superFirst = $user->getFirstName();
-        $superLast = $user->getLastName();
+        $supervisor = $user->userInfo($result['approvedById']);
+        $superFirst = $supervisor['firstName'];
+        $superLast = $supervisor['lastName'];
         $this->setApprovedByName($superFirst." ".$superLast);
         $this->setUserId($result['userId']);
         $code = new codeModel();
@@ -271,6 +289,111 @@ class requestModel extends Staple_Model
         $this->setDateOfRequest($result['dateOfRequest']);
         $this->setNote($result['note']);
         $this->setStatus($result['status']);
+        $this->setSuperNote($result['superNote']);
+    }
+
+    function allStaffRequests($type = null)
+    {
+        //Check for administrator level
+        $user = new userModel();
+        if($user->getAuthLevel() == 900)
+        {
+            if($type == "completed")
+            {
+                $sql = "SELECT * FROM requests WHERE status = '1' OR status = '2' ORDER BY userId ASC, status ASC, dateOfRequest DESC";
+            }
+            else
+            {
+                $sql = "SELECT * FROM requests WHERE status = '0' ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+            }
+
+            $result = $this->db->query($sql);
+            $code = new codeModel();
+            $data = array();
+            $i = 0;
+            while($row = $result->fetch_assoc())
+            {
+                $code->loadRequestCode($row['code']);
+                $data[$i]['id'] = $row['id'];
+                $data[$i]['userId'] = $row['userId'];
+                $user = new userModel();
+                $staff = $user->userInfo($row['userId']);
+                $data[$i]['firstName'] = $staff['firstName'];
+                $data[$i]['lastName'] = $staff['lastName'];
+                $data[$i]['requestId'] = $row['requestId'];
+                $data[$i]['code'] = $row['code'];
+                $data[$i]['codeName'] = $code->getName();
+                $data[$i]['startDate'] = $row['startDate'];
+                $data[$i]['endDate'] = $row['endDate'];
+                $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+                $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+                $data[$i]['note'] = $row['note'];
+                $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+                $data[$i]['status'] = $row['status'];
+                $data[$i]['superNote'] = $row['superNote'];
+                $i++;
+            }
+
+            return $data;
+        }
+        else
+        {
+            return array();
+        }
+    }
+
+
+    function staffRequests()
+    {
+        //Get a list of staff under this user.
+        $user = new userModel();
+        $sql = "SELECT id, firstName, lastName, username, type FROM accounts WHERE supervisorId = '".$this->db->real_escape_string($user->getId())."'";
+        $result = $this->db->query($sql);
+        $staff = array();
+        while($row = $result->fetch_assoc())
+        {
+            $staff[] = $row;
+        }
+        $data = array();
+
+        if(count($staff) > 0)
+        {
+            $i = 0;
+            foreach($staff as $user)
+            {
+                $sql = "
+                    SELECT * FROM requests WHERE 
+                    userId = '".$this->db->real_escape_string($user['id'])."' ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+
+                $result = $this->db->query($sql);
+
+                $code = new codeModel();
+                while($row = $result->fetch_assoc())
+                {
+                    $code->loadRequestCode($row['code']);
+                    $data[$i]['id'] = $row['id'];
+                    $data[$i]['userId'] = $row['userId'];
+                    $user = new userModel();
+                    $staff = $user->userInfo($row['userId']);
+                    $data[$i]['firstName'] = $staff['firstName'];
+                    $data[$i]['lastName'] = $staff['lastName'];
+                    $data[$i]['requestId'] = $row['requestId'];
+                    $data[$i]['code'] = $row['code'];
+                    $data[$i]['codeName'] = $code->getName();
+                    $data[$i]['startDate'] = $row['startDate'];
+                    $data[$i]['endDate'] = $row['endDate'];
+                    $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+                    $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+                    $data[$i]['note'] = $row['note'];
+                    $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+                    $data[$i]['status'] = $row['status'];
+                    $data[$i]['superNote'] = $row['superNote'];
+                    $i++;
+                }
+            }
+        }
+
+        return $data;
     }
 
     function getAll()
@@ -302,6 +425,7 @@ class requestModel extends Staple_Model
             $data[$i]['approvedById'] = $row['approvedById'];
             $data[$i]['approvedByName'] = $supervisorData;
             $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+            $data[$i]['superNote'] = $row['superNote'];
             $i++;
         }
 
@@ -431,36 +555,26 @@ class requestModel extends Staple_Model
         }
 
         $msg .= "\r\nTotal Hours Requested: ".$this->totalHoursRequested;
-        $msg .= "\r\n\r\nPlease login to http://timetracker to review.";
+        $msg .= "\r\n\r\nPlease login to http://devtimetracker to review.";
         $headers = "";
         $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
-        mail($email, "New TimeTracker Request",$msg,$headers);
+        //mail($email, "New TimeTracker Request",$msg,$headers);
     }
 
     function remove($requestId)
     {
         $this->load($requestId);
         $uid = $this->getUserId();
-
         $user = new userModel();
         $id = $user->getId();
-        echo "uid: ".$uid."<br>";
-        echo "id: ".$id."<br>";
-        if($id == $uid)
+        $status = $this->getStatus();
+        if($id == $uid && $status == 0)
         {
             $sql = "DELETE FROM requests WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
             if($this->db->query($sql))
             {
                 return true;
             }
-            else
-            {
-                echo "2";
-            }
-        }
-        else
-        {
-            echo "1";
         }
     }
 
@@ -475,21 +589,112 @@ class requestModel extends Staple_Model
 
     function approve($requestId)
     {
-        //Need to check if the requesting account is a supervisor of the requestID or an administrator account.
-        $sql = "UPDATE requests SET status = '0' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
-        if($this->db->query($sql))
+        $user = new userModel();
+        $request = new requestModel();
+        $request->load($requestId);
+
+        if($user->getAuthLevel() == 500 || $user->getAuthLevel() == 900)
         {
-            return true;
+            $staff = $user->getById($request->getUserId());
+            //If the current user is the supervisor of the staff request or an admin
+            if($staff['supervisorId'] == $user->getId() || $user->getAuthLevel() == 900)
+            {
+                $sql = "UPDATE requests SET status = '1', approvedById = '".$this->db->real_escape_string($user->getId())."' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+                if($this->db->query($sql))
+                {
+                    //Log to audit
+                    $audit = new auditModel();
+                    $audit->setUserId($staff['id']);
+                    $audit->setAction('Request Approved');
+                    $audit->setItem($user->getUsername()." approved ".$request->getCodeName()." for ".$staff['firstName']." ".$staff['lastName']." for the following dates ".$request->getStartDate()." through ".$request->getEndDate().". Request ID:".$request->getRequestId()." ");
+                    $audit->save();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
-    function decline($requestId)
+    function hasAccess($requestId)
     {
-        //Need to check if the requesting account is a supervisor of the requestID or an administrator account.
-        $sql = "UPDATE requests SET status = '0' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
-        if($this->db->query($sql))
+        //Currently logged in user
+        $user = new userModel();
+        $userId = $user->getId();
+
+        //Load request
+        $request = new requestModel();
+        $request->load($requestId);
+
+        //If current user id == request userId
+        if($userId == $request->getUserId())
         {
             return true;
+        }
+        else
+        {
+            //Check if the current user is the requesters supervisor
+            // RequesterId
+            $requesterId = $request->userId."<br>";
+
+            // RequesterSupervisor ID
+            $supervisor = new userModel();
+            $superInfo = $supervisor->userInfo($requesterId);
+
+            // Check if current user ID == RequesterSupervisor ID
+            if($userId == $superInfo['supervisorId'])
+            {
+                return true;
+            }
+            else
+            {
+                //Check if the current user is an administrator
+                if($user->getAuthLevel() == 900)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    function decline($requestId,$note)
+    {
+        $user = new userModel();
+        $request = new requestModel();
+        $request->load($requestId);
+
+        if($user->getAuthLevel() == 500 || $user->getAuthLevel() == 900)
+        {
+            $staff = $user->getById($request->getUserId());
+            //If the current user is the supervisor of the staff request or an admin
+            if($staff['supervisorId'] == $user->getId() || $user->getAuthLevel() == 900)
+            {
+                $sql = "UPDATE requests SET status = '2', superNote = '".$this->db->real_escape_string($note)."', approvedById = '".$this->db->real_escape_string($user->getId())."' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+                if($this->db->query($sql))
+                {
+                    //Log to audit
+                    $audit = new auditModel();
+                    $audit->setUserId($staff['id']);
+                    $audit->setAction('Request Declined');
+                    $audit->setItem($user->getUsername()." declined ".$request->getCodeName()." for ".$staff['firstName']." ".$staff['lastName']." for the following dates ".$request->getStartDate()." through ".$request->getEndDate().". Request ID:".$request->getRequestId()." ");
+                    $audit->save();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

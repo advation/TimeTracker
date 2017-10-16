@@ -1,0 +1,145 @@
+<div class="section">
+    <div class="row">
+        <div class="small-6 columns">
+            <h1><i class="fa fa-check-square"></i> All Requests</h1>
+        </div>
+        <div class="small-6 columns text-right">
+            <ul class="button-group radius">
+                <?php
+                    if($this->completed == false)
+                    {
+                        echo "
+                        <li><a href=\"".$this->link(array('requests','all','completed'))."\" class=\"button radius\"><i class=\"fa fa-check\"></i> Completed</a></li>
+                        ";
+                    }
+                    else
+                    {
+                        echo "<li><a href=\"".$this->link(array('requests','all'))."\" class=\"button radius\"><i class=\"fa fa-refresh\"></i> Pending</a></li>";
+                    }
+                ?>
+
+            </ul>
+
+        </div>
+    </div>
+
+    <?php
+
+    if(count($this->requests) > 0)
+    {
+        echo "
+            <div class=\"row\">
+                <div class=\"small-12 columns\" style=\"max-height:800px; overflow:auto;\">
+                    <h3>All Staff Requests</h3>
+        ";
+
+        echo "
+        <table width='100%'>
+        ";
+        $lastRequestName = "";
+        foreach($this->requests as $request)
+        {
+            if($request['firstName']." ".$request['lastName'] != $lastRequestName)
+            {
+                echo "
+                    <tr>
+                        <td colspan='7' class='text-center' style='background-color:#fff; border-top:2px #ccc solid;'>
+                            <b><h4>".$request['firstName']." ".$request['lastName']."</h4></b>
+                        </td>
+                    </tr>   
+                    <tr>
+                       <th>Type</th>
+                       <th>Requested On</th>
+                       <th>Start Date</th>
+                       <th>End Date</th>
+                       <th>Total Hours</th>
+                       <th>Status</th>
+                       <th></th>
+                   </tr> 
+                ";
+            }
+            echo "
+            <tr>
+                <td>
+                    <a class='' href='".$this->link(array("requests","request",$request['requestId']))."'><i class='fa fa-file'></i> ".$request['codeName']."</a>
+                </td>
+                <td>
+                    ".date("l",strtotime($request['dateOfRequest']))."<br>
+                    ".date("M. jS Y",strtotime($request['dateOfRequest']))."
+                </td>
+                <td>
+                    ".date("l",strtotime($request['startDate']))."<br>
+                    ".date("M. jS Y",strtotime($request['startDate']))."
+                </td>
+                <td>
+                    ".date("l",strtotime($request['endDate']))."<br>
+                    ".date("M. jS Y",strtotime($request['endDate']))."
+                </td>
+                <td>".$request['totalHoursRequested']."</td>
+
+            ";
+
+            if($request['status'] == "0")
+            {
+                echo "<td><i class='fa fa-refresh'></i> Pending</td>";
+            }
+            elseif($request['status'] == "1")
+            {
+                echo "<td><i class='fa fa-check'></i> Approved</td>";
+            }
+            elseif($request['status'] == "2")
+            {
+                echo "<td><i class='fa fa-close'></i> Declined</td>";
+            }
+            elseif($request['status'] == "3")
+            {
+                echo "<td><i class='fa fa-refresh'></i> Pending notification</td>";
+            }
+            else
+            {
+                echo "<td><i class='fa fa-refresh'></i> Pending</td>";
+            }
+
+            if($request['status'] == 0 || $request['status'] == 3)
+            {
+                echo "<td style='width:205px;'>
+                        <br>
+                        <ul class='button-group'>
+                            <li><a class='button tiny success' href=\"".$this->link(array('requests','approve',$request['requestId']))."\" class='green'><i class='fa fa-check'></i> Approve</a></li>
+                            <li><a class='button tiny alert' href=\"".$this->link(array('requests','decline',$request['requestId']))."\" class='red'><i class='fa fa-close'></i> Decline</a></li>
+                        </ul>
+                    </td>";
+            }
+            else
+            {
+                echo "<td><i class='fa fa-lock'></i> Locked</td>";
+            }
+            echo "
+
+            </tr>
+            <tr>
+                <td colspan='7' style='border-bottom:1px #ccc solid;'>
+                    <b>Requester Note:</b> " .$request['note']."<br><br>
+                    <b>Supervisor Note:</b> " .$request['superNote']."
+                </td>
+            </tr>
+        ";
+            $lastRequestName = $request['firstName']." ".$request['lastName'];
+        }
+    echo "</table></div></div>";
+
+}
+
+?>
+</div>
+
+<script>
+
+    $(window).ready(function() {
+        $('.viewNote').click(function(e) {
+            $(this).parent().parent().next('.note').toggle();
+            e.preventDefault();
+        });
+    });
+
+</script>

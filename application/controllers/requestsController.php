@@ -82,6 +82,24 @@ class requestsController extends Staple_Controller
 
         $requests = new requestModel();
         $this->view->requests = $requests->getAll();
+
+        $this->view->staffRequests = $requests->staffRequests();
+    }
+
+    public function all($option = null)
+    {
+        if($option == "completed")
+        {
+            $requests = new requestModel();
+            $this->view->requests = $requests->allStaffRequests('completed');
+            $this->view->completed = true;
+        }
+        else
+        {
+            $requests = new requestModel();
+            $this->view->requests = $requests->allStaffRequests();
+            $this->view->completed = false;
+        }
     }
 
     public function request($requestId = null)
@@ -89,18 +107,32 @@ class requestsController extends Staple_Controller
         if($requestId != null)
         {
             $request = new requestModel();
-            $request->load($requestId);
-            $this->view->requestId = $request->getRequestId();
-            $this->view->codeName = $request->getCodeName();
-            $this->view->startDate = $request->getStartDate();
-            $this->view->endDate = $request->getEndDate();
-            $this->view->dateTimes = $request->getDateTimes();
-            $this->view->requestDate = $request->getDateOfRequest();
-            $this->view->totalHoursRequested = $request->getTotalHoursRequested();
-            $this->view->note = $request->getNote();
-            $this->view->status = $request->getStatus();
-            $this->view->approvedBy = $request->getApprovedByName();
-            $this->view->dateTime = $request->getDateTimes();
+
+            if($request->hasAccess($requestId))
+            {
+                $request->load($requestId);
+                $this->view->requestId = $request->getRequestId();
+                $user = new userModel();
+                $userInfo = $user->userInfo($request->getUserId());
+                $this->view->firstName = $userInfo['firstName'];
+                $this->view->lastName = $userInfo['lastName'];
+                $this->view->codeName = $request->getCodeName();
+                $this->view->startDate = $request->getStartDate();
+                $this->view->endDate = $request->getEndDate();
+                $this->view->dateTimes = $request->getDateTimes();
+                $this->view->requestDate = $request->getDateOfRequest();
+                $this->view->totalHoursRequested = $request->getTotalHoursRequested();
+                $this->view->note = $request->getNote();
+                $this->view->status = $request->getStatus();
+                $this->view->approvedBy = $request->getApprovedByName();
+                $this->view->dateTime = $request->getDateTimes();
+                $this->view->superNote = $request->getSuperNote();
+                $this->view->error = 0;
+            }
+            else
+            {
+                $this->view->error = "ERROR: You do not have access to this request.";
+            }
         }
         else
         {
@@ -126,7 +158,6 @@ class requestsController extends Staple_Controller
 
                     $request = new requestModel();
                     //Check if start or end dates already exist for a pending request for this user.
-
 
                     $this->view->request = $request->calculate($data);
 
@@ -157,17 +188,50 @@ class requestsController extends Staple_Controller
         header("location: ".$this->_link(array('requests'))."");
     }
 
+    public function approve($requestId)
+    {
+        $request = new requestModel();
+        $request->approve($requestId);
+        header("location: ".$this->_link(array('requests'))."");
+    }
+
+    public function decline($requestId)
+    {
+        $_SESSION['requestDeclineId'] = $requestId;
+        $form = new declineCommentForm();
+        if($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if($form->validate())
+            {
+                $data = $form->exportFormData();
+                $declineNote = $data['note'];
+
+                $request = new requestModel();
+                $request->decline($requestId,$declineNote);
+                header("location: ".$this->_link(array('requests'))."");
+            }
+            else
+            {
+                $this->view->form = $form;
+            }
+        }
+        else
+        {
+            $this->view->form = $form;
+        }
+    }
+
     public function remove($requestId)
     {
         $request = new requestModel();
         if($request->remove($requestId))
         {
-            echo "Removed";
-            //header("location: ".$this->_link(array('requests'))."");
+            header("location: ".$this->_link(array('requests'))."");
         }
         else
         {
-            echo "Not removed";
+            header("location: ".$this->_link(array('requests'))."");
         }
     }
 

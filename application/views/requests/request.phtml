@@ -4,7 +4,7 @@
                 <h1><i class="fa fa-file"></i> Request Details</h1>
         </div>
         <div class="small-6 columns text-right">
-            <a class="button radius" href="<?php echo $this->link(array("requests")) ?>">Back</a>
+            <a class="button radius secondary" href="<?php echo $this->link(array("requests")) ?>"><i class="fa fa-arrow-left"></i> Back</a>
         </div>
     </div>
     <div class="row">
@@ -12,18 +12,21 @@
             <hr>
         </div>
     </div>
-
     <div class='row'>
-        <div class="small-4 columns">
-            <b>Type</b>:
+        <div class="small-3 columns">
+            <b>Requester</b><br>
+            <?php echo $this->firstName ?> <?php echo $this->lastName ?><br><br>
+        </div>
+        <div class="small-3 columns">
+            <b>Type</b><br>
             <?php echo $this->codeName ?><br><br>
         </div>
-        <div class="small-4 columns">
-            <b>Requested On</b>:
-            <?php echo $this->requestDate ?>
+        <div class="small-3 columns">
+            <b>Total Hours Requested</b><br>
+            <?php echo $this->totalHoursRequested ?><br><br>
         </div>
-        <div class="small-4 columns">
-            <b>Status</b>:
+        <div class="small-3 columns">
+            <b>Status</b><br>
             <?php
 
             if($this->status == "0")
@@ -51,32 +54,36 @@
         </div>
     </div>
     <div class="row">
-        <div class="small-4 columns">
-            <b>Start Date</b>:
+        <div class="small-3 columns">
+            <b>Requested On</b><br>
+            <?php echo $this->requestDate ?>
+        </div>
+        <div class="small-3 columns">
+            <b>Request Start Date</b><br>
             <?php echo $this->startDate ?>
         </div>
-        <div class="small-4 columns">
-            <b>End Date</b>:
+        <div class="small-3 columns">
+            <b>Request End Date</b><br>
             <?php echo $this->endDate ?><br><br>
         </div>
-        <div class="small-4 columns">
-            <b>Total Hours Requested</b>:
-            <?php echo $this->totalHoursRequested ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-4 columns">
-            <b>Approved By</b>:
+        <div class="small-3 columns">
+            <b>Assigned Supervisor</b><br>
             <?php echo $this->approvedBy ?><br><br>
         </div>
-        <div class="small-12 columns">
-            <b>Note</b>:
+    </div>
+    <div class="row">
+        <div class="small-6 columns">
+            <b>Requester Note</b><br>
             <?php echo $this->note ?><br><br>
+        </div>
+        <div class="small-6 columns">
+            <b>Supervisor Note</b><br>
+            <?php echo $this->superNote ?><br><br>
         </div>
     </div>
     <div class="row">
         <div class="small-12 columns">
-            <b>Dates/Times</b><br>
+            <b>Request Details</b><br>
             <table width="100%">
                 <tr>
                     <th>Date</th>
