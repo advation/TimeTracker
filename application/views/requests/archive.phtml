@@ -1,23 +1,11 @@
 <div class="section">
     <div class="row">
-        <div class="small-6 columns">
-            <h1><i class="fa fa-check-square"></i> All Staff Requests</h1>
+        <div class="small-8 columns">
+            <h1><i class="fa fa-archive"></i> Your Archived Requests</h1>
         </div>
-        <div class="small-6 columns text-right">
+        <div class="small-4 columns text-right">
             <ul class="button-group radius">
-                <?php
-                    if($this->completed == false)
-                    {
-                        echo "
-                        <li><a href=\"".$this->link(array('requests','all','completed'))."\" class=\"button radius\"><i class=\"fa fa-check\"></i> Completed</a></li>
-                        ";
-                    }
-                    else
-                    {
-                        echo "<li><a href=\"".$this->link(array('requests','all'))."\" class=\"button radius\"><i class=\"fa fa-refresh\"></i> Pending</a></li>";
-                    }
-                ?>
-
+                <li><a href="<?php echo $this->link(array('requests'))?>" class="button"><i class="fa fa-chevron-left"></i> Back</a></li>
             </ul>
 
         </div>
@@ -27,6 +15,7 @@
 
     if(count($this->requests) > 0)
     {
+        /*
         echo "
             <div class=\"row\">
                 <div class=\"small-8 columns text-right\" style='padding-top:8px;'>
@@ -48,6 +37,7 @@
                 </div>
             </div>
         ";
+        */
 
         echo "
         <div class=\"row\">
@@ -62,7 +52,7 @@
                 echo "
                     
                     <tr>
-                        <td colspan='7' class='text-center' style='background-color:#999;'>
+                        <td colspan='6' class='text-center' style='background-color:#999;'>
                             <b><h5 style='color:#fff;' id=\"".$request['firstName']."".$request['lastName']."\">".$request['firstName']." ".$request['lastName']."</h5></b>
                         </td>
                     </tr>   
@@ -73,7 +63,6 @@
                        <th>End Date</th>
                        <th>Total Hours</th>
                        <th>Status</th>
-                       <th></th>
                    </tr> 
                 ";
             }
@@ -119,28 +108,11 @@
                 echo "<td><i class='fa fa-refresh'></i> Pending</td>";
             }
 
-            if($request['status'] == 0 || $request['status'] == 3)
-            {
-                echo "<td style='width:205px;'>
-                        <br>
-                        <ul class='button-group'>
-                            <li><a class='button tiny success' href=\"".$this->link(array('requests','approve',$request['requestId']))."\" class='green'><i class='fa fa-check'></i> Approve</a></li>
-                            <li><a class='button tiny alert' href=\"".$this->link(array('requests','decline',$request['requestId']))."\" class='red'><i class='fa fa-close'></i> Decline</a></li>
-                        </ul>
-                    </td>";
-            }
-            else
-            {
-                echo "<td>
-                        <br>
-                        <a class='button tiny warning' href=\"".$this->link(array('requests','cancel',$request['requestId']))."\" class='red'><i class='fa fa-close'></i> Cancel</a>
-                    </td>";
-            }
             echo "
 
             </tr>
             <tr>
-                <td colspan='7' style='border-bottom:1px #ccc solid;'>
+                <td colspan='6' style='border-bottom:1px #ccc solid;'>
                     <b>Requester Note:</b> " .$request['note']."<br><br>
                     <b>Supervisor Note:</b> " .$request['superNote']."
                 </td>

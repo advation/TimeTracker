@@ -1,18 +1,24 @@
 <div class="section">
     <div class="row">
-        <div class="small-6 columns">
+        <div class="small-4 columns">
             <h1><i class="fa fa-check-square"></i> Requests</h1>
         </div>
-        <div class="small-6 columns text-right">
+        <div class="small-8 columns text-right">
             <ul class="button-group radius">
                 <li><a href="#" class="button" data-reveal-id="newRequest"><i class="fa fa-plus"></i> New Request</a></li>
+                <li><a href="<?php echo $this->link(array("requests","archive")) ?>" class="button"><i class="fa fa-archive"></i> Your Archive</a></li>
                 <?php
+
                     $user = new userModel();
-                    if($user->getAuthLevel() == 900)
+                    if($user->getAuthLevel() >= 500)
                     {
-                        echo "<li><a href=\"".$this->link(array('requests','all'))."\" class=\"button\"><i class=\"fa fa-list\"></i> All Staff Requests</a></li>";
+                        echo "
+                        <li><a href=\"".$this->link(array("requests","staffarchive"))."\" class=\"button\"><i class=\"fa fa-archive\"></i> Staff Archive</a></li>
+                        ";
                     }
+
                 ?>
+
             </ul>
         </div>
     </div>
@@ -63,15 +69,19 @@
                             }
                             elseif($request['status'] == "1")
                             {
-                                echo "<td><i class='fa fa-check'></i> Approved by ".$request['approvedByName']['firstName']." ".$request['approvedByName']['lastName']."</td>";
+                                echo "<td style='color:green;'><i class='fa fa-check'></i> Approved by ".$request['approvedByName']['firstName']." ".$request['approvedByName']['lastName']."</td>";
                             }
                             elseif($request['status'] == "2")
                             {
-                                echo "<td><i class='fa fa-close'></i> Declined by ".$request['approvedByName']['firstName']." ".$request['approvedByName']['lastName']."</td>";
+                                echo "<td style='color:orangered;'><i class='fa fa-close'></i> Declined by ".$request['approvedByName']['firstName']." ".$request['approvedByName']['lastName']."</td>";
                             }
                             elseif($request['status'] == "3")
                             {
                                 echo "<td><i class='fa fa-refresh'></i> Pending notification</td>";
+                            }
+                            elseif($request['status'] == "4")
+                            {
+                                echo "<td style='color:red;'><i class='fa fa-warning'></i> Cancelled</td>";
                             }
                             else
                             {
@@ -102,34 +112,44 @@
                 }
                 echo "</table>";
             }
+            else
+            {
+                echo "
+                    <div class='panel radius text-center'>
+                        <p>-No requests-</p>
+                    </div>
+                ";
+            }
 
             ?>
         </div>
     </div>
 
             <?php
+            if($this->authLevel >= 500)
+            {
+                echo "
+                <div class=\"row\">
+                    <div class=\"small-12 columns\">
+                        <h3>Your Staff Requests</h3>";
+            }
 
             if(count($this->staffRequests) > 0)
             {
                 echo "
-                    <div class=\"row\">
-                        <div class=\"small-12 columns\" style=\"max-height:800px; overflow:auto;\">
-                            <h3>Your Staff Requests</h3>
-                ";
 
-                echo "
-                <table width='100%'>
-                   <tr>
-                       <th>Staff</th>
-                       <th>Type</th>
-                       <th>Requested On</th>
-                       <th>Start Date</th>
-                       <th>End Date</th>
-                       <th>Total Hours</th>
-                       <th>Status</th>
-                       <th></th>
-                   </tr>
-            ";
+                            <table width='100%'>
+                               <tr>
+                                   <th>Staff</th>
+                                   <th>Type</th>
+                                   <th>Requested On</th>
+                                   <th>Start Date</th>
+                                   <th>End Date</th>
+                                   <th>Total Hours</th>
+                                   <th>Status</th>
+                                   <th></th>
+                               </tr>
+                ";
                 foreach($this->staffRequests as $request)
                 {
                     echo "
@@ -172,6 +192,10 @@
                     {
                         echo "<td><i class='fa fa-refresh'></i> Pending notification</td>";
                     }
+                    elseif($request['status'] == "4")
+                    {
+                        echo "<td style='color:red;'><i class='fa fa-warning'></i> Cancelled</td>";
+                    }
                     else
                     {
                         echo "<td><i class='fa fa-refresh'></i> Pending</td>";
@@ -202,8 +226,25 @@
                     </tr>
                 ";
                 }
-                echo "</table></div></div>";
+                echo "</table>";
+                echo "</div></div>";
             }
+            else
+            {
+                if($this->authLevel >= 500)
+                {
+                    echo "
+                        <div class='row'>
+                            <div class='small-12 column'>
+                                <div class='panel radius text-center'>
+                                    <p>-No requests-</p>
+                                </div>
+                            </div>
+                        </div>  
+                    ";
+                }
+            }
+
 
             ?>
 </div>

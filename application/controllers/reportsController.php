@@ -287,6 +287,9 @@ class reportsController extends Staple_Controller
 
         $reports = new reportModel($year, $month);
         $this->view->report = $reports->payPeriodTotals($year, $month);
+
+        $requests = $reports->timeOffRequestsForPayPeriod($year, $month);
+        $this->view->requests = $requests;
     }
 
     public function payperiodprint($year,$month)
@@ -405,7 +408,6 @@ class reportsController extends Staple_Controller
 
         $codes = new codeModel();
         $this->view->codes = $codes->allCodes();
-
     }
 
     public function payrollprint($year = null, $month =  null)

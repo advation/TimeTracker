@@ -333,6 +333,46 @@ class reportModel extends Staple_Model
         return $data;
     }
 
+    function timeOffRequestsForPayPeriod($year, $month)
+    {
+        $date = new DateTime();
+        $date->setTime(0,0,0);
+        $date->setDate($year,$month,26);
+        $date->modify('-1 month');
+        $startDate = $date->format('m/d/Y');
+        $endDate = $date->modify('+1 month -1 day')->setTime(23,59,59)->format('m/d/Y');
+
+        $sql = "SELECT * FROM requests WHERE startDate BETWEEN '$startDate' AND '$endDate'";
+
+        $result = $this->db->query($sql);
+        $i = 0;
+        $code = new codeModel();
+        $data = array();
+        while($row = $result->fetch_assoc())
+        {
+            $code->loadRequestCode($row['code']);
+            $data[$i]['id'] = $row['id'];
+            $data[$i]['userId'] = $row['userId'];
+            $user = new userModel();
+            $staff = $user->userInfo($row['userId']);
+            $data[$i]['firstName'] = $staff['firstName'];
+            $data[$i]['lastName'] = $staff['lastName'];
+            $data[$i]['requestId'] = $row['requestId'];
+            $data[$i]['code'] = $row['code'];
+            $data[$i]['codeName'] = $code->getName();
+            $data[$i]['startDate'] = $row['startDate'];
+            $data[$i]['endDate'] = $row['endDate'];
+            $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+            $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+            $data[$i]['note'] = $row['note'];
+            $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+            $data[$i]['status'] = $row['status'];
+            $data[$i]['superNote'] = $row['superNote'];
+            $i++;
+        }
+        return $data;
+    }
+
     /*
     function payroll($year, $month)
     {

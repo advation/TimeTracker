@@ -82,8 +82,12 @@ class requestsController extends Staple_Controller
 
         $requests = new requestModel();
         $this->view->requests = $requests->getAll();
-
-        $this->view->staffRequests = $requests->staffRequests();
+        $user = new userModel();
+        $this->view->authLevel = $user->getAuthLevel();
+        if($user->getAuthLevel() >= 500)
+        {
+            $this->view->staffRequests = $requests->staffRequests();
+        }
     }
 
     public function all($option = null)
@@ -100,6 +104,18 @@ class requestsController extends Staple_Controller
             $this->view->requests = $requests->allStaffRequests();
             $this->view->completed = false;
         }
+    }
+
+    public function archive()
+    {
+        $requests = new requestModel();
+        $this->view->requests = $requests->requestArchive();
+    }
+
+    public function staffarchive()
+    {
+        $requests = new requestModel();
+        $this->view->requests = $requests->requestStaffArchive();
     }
 
     public function request($requestId = null)
@@ -192,7 +208,7 @@ class requestsController extends Staple_Controller
     {
         $request = new requestModel();
         $request->approve($requestId);
-        header("location: ".$this->_link(array('requests'))."");
+        header("location: ".$_SERVER['HTTP_REFERER']."");
     }
 
     public function decline($requestId)
@@ -222,16 +238,23 @@ class requestsController extends Staple_Controller
         }
     }
 
+    public function cancel($requestId)
+    {
+        $request = new requestModel();
+        $request->cancel($requestId);
+        header("location: ".$_SERVER['HTTP_REFERER']."");
+    }
+
     public function remove($requestId)
     {
         $request = new requestModel();
         if($request->remove($requestId))
         {
-            header("location: ".$this->_link(array('requests'))."");
+            header("location: ".$_SERVER['HTTP_REFERER']."");
         }
         else
         {
-            header("location: ".$this->_link(array('requests'))."");
+            header("location: ".$_SERVER['HTTP_REFERER']."");
         }
     }
 

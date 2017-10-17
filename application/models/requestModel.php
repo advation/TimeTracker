@@ -298,13 +298,25 @@ class requestModel extends Staple_Model
         $user = new userModel();
         if($user->getAuthLevel() == 900)
         {
+            $date = new DateTime();
+            $date->modify("-4 weeks");
+            $expireDate = $date->format('Y-m-d');
+
             if($type == "completed")
             {
-                $sql = "SELECT * FROM requests WHERE status = '1' OR status = '2' ORDER BY userId ASC, status ASC, dateOfRequest DESC";
+                $sql = "
+                  SELECT * FROM requests 
+                  WHERE status = '1' OR status = '2'
+                  AND dateOfRequest >= '".$this->db->real_escape_string($expireDate)."'
+                  ORDER BY userId ASC, status ASC, dateOfRequest DESC";
             }
             else
             {
-                $sql = "SELECT * FROM requests WHERE status = '0' ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+                $sql = "
+                  SELECT * FROM requests 
+                  WHERE status = '0'
+                  AND dateOfRequest >= '".$this->db->real_escape_string($expireDate)."'
+                  ORDER BY status ASC, userId ASC, dateOfRequest DESC";
             }
 
             $result = $this->db->query($sql);
@@ -342,6 +354,152 @@ class requestModel extends Staple_Model
         }
     }
 
+    function requestStaffArchive()
+    {
+        $user = new userModel();
+        $date = new DateTime();
+        $date->modify("-4 weeks");
+        $expireDate = $date->format('Y-m-d');
+
+        if($user->getAuthLevel() == 900)
+        {
+            $sql = "
+                    SELECT * FROM requests WHERE 
+                    dateOfRequest <= '".$this->db->real_escape_string($expireDate)."'
+                    ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+
+            $result = $this->db->query($sql);
+
+            $code = new codeModel();
+            $i = 0;
+            $data = array();
+            while($row = $result->fetch_assoc())
+            {
+                $code->loadRequestCode($row['code']);
+                $data[$i]['id'] = $row['id'];
+                $data[$i]['userId'] = $row['userId'];
+                $user = new userModel();
+                $staff = $user->userInfo($row['userId']);
+                $data[$i]['firstName'] = $staff['firstName'];
+                $data[$i]['lastName'] = $staff['lastName'];
+                $data[$i]['requestId'] = $row['requestId'];
+                $data[$i]['code'] = $row['code'];
+                $data[$i]['codeName'] = $code->getName();
+                $data[$i]['startDate'] = $row['startDate'];
+                $data[$i]['endDate'] = $row['endDate'];
+                $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+                $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+                $data[$i]['note'] = $row['note'];
+                $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+                $data[$i]['status'] = $row['status'];
+                $data[$i]['superNote'] = $row['superNote'];
+                $i++;
+            }
+
+            return $data;
+        }
+        else {
+            //Get a list of staff under this user.
+            $user = new userModel();
+            $sql = "SELECT id, firstName, lastName, username, type FROM accounts WHERE supervisorId = '" . $this->db->real_escape_string($user->getId()) . "'";
+            $result = $this->db->query($sql);
+            $staff = array();
+            while ($row = $result->fetch_assoc()) {
+                $staff[] = $row;
+            }
+            $data = array();
+
+            if (count($staff) > 0) {
+                $i = 0;
+                $date = new DateTime();
+                $date->modify("-4 weeks");
+                $expireDate = $date->format('Y-m-d');
+
+                foreach ($staff as $user) {
+                    $sql = "
+                    SELECT * FROM requests WHERE 
+                    userId = '" . $this->db->real_escape_string($user['id']) . "' AND
+                    dateOfRequest <= '" . $this->db->real_escape_string($expireDate) . "'
+                    ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+
+                    $result = $this->db->query($sql);
+
+                    $code = new codeModel();
+
+                    while ($row = $result->fetch_assoc()) {
+                        $code->loadRequestCode($row['code']);
+                        $data[$i]['id'] = $row['id'];
+                        $data[$i]['userId'] = $row['userId'];
+                        $user = new userModel();
+                        $staff = $user->userInfo($row['userId']);
+                        $data[$i]['firstName'] = $staff['firstName'];
+                        $data[$i]['lastName'] = $staff['lastName'];
+                        $data[$i]['requestId'] = $row['requestId'];
+                        $data[$i]['code'] = $row['code'];
+                        $data[$i]['codeName'] = $code->getName();
+                        $data[$i]['startDate'] = $row['startDate'];
+                        $data[$i]['endDate'] = $row['endDate'];
+                        $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+                        $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+                        $data[$i]['note'] = $row['note'];
+                        $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+                        $data[$i]['status'] = $row['status'];
+                        $data[$i]['superNote'] = $row['superNote'];
+                        $i++;
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    function requestArchive()
+    {
+        //Check for administrator level
+        $user = new userModel();
+
+        $date = new DateTime();
+        $date->modify("-4 weeks");
+        $expireDate = $date->format('Y-m-d');
+
+        $user = new userModel();
+
+        //Pulls archive for a specific staff member
+        $sql = "
+          SELECT * FROM requests 
+          WHERE userId = '".$user->getId()."' 
+          AND dateOfRequest <= '".$this->db->real_escape_string($expireDate)."'
+          ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+        $result = $this->db->query($sql);
+        $code = new codeModel();
+        $data = array();
+        $i = 0;
+        while($row = $result->fetch_assoc())
+        {
+            $code->loadRequestCode($row['code']);
+            $data[$i]['id'] = $row['id'];
+            $data[$i]['userId'] = $row['userId'];
+            $user = new userModel();
+            $staff = $user->userInfo($row['userId']);
+            $data[$i]['firstName'] = $staff['firstName'];
+            $data[$i]['lastName'] = $staff['lastName'];
+            $data[$i]['requestId'] = $row['requestId'];
+            $data[$i]['code'] = $row['code'];
+            $data[$i]['codeName'] = $code->getName();
+            $data[$i]['startDate'] = $row['startDate'];
+            $data[$i]['endDate'] = $row['endDate'];
+            $data[$i]['totalHoursRequested'] = $row['totalHoursRequested'];
+            $data[$i]['dateOfRequest'] = $row['dateOfRequest'];
+            $data[$i]['note'] = $row['note'];
+            $data[$i]['dateTimes'] = json_decode($row['dateTimes']);
+            $data[$i]['status'] = $row['status'];
+            $data[$i]['superNote'] = $row['superNote'];
+            $i++;
+        }
+
+        return $data;
+    }
 
     function staffRequests()
     {
@@ -359,15 +517,22 @@ class requestModel extends Staple_Model
         if(count($staff) > 0)
         {
             $i = 0;
+            $date = new DateTime();
+            $date->modify("-4 weeks");
+            $expireDate = $date->format('Y-m-d');
+
             foreach($staff as $user)
             {
                 $sql = "
                     SELECT * FROM requests WHERE 
-                    userId = '".$this->db->real_escape_string($user['id'])."' ORDER BY status ASC, userId ASC, dateOfRequest DESC";
+                    userId = '".$this->db->real_escape_string($user['id'])."' AND
+                    dateOfRequest >= '".$this->db->real_escape_string($expireDate)."'
+                    ORDER BY status ASC, userId ASC, dateOfRequest DESC";
 
                 $result = $this->db->query($sql);
 
                 $code = new codeModel();
+
                 while($row = $result->fetch_assoc())
                 {
                     $code->loadRequestCode($row['code']);
@@ -401,7 +566,16 @@ class requestModel extends Staple_Model
         $user = new userModel();
         $userId = $user->getId();
 
-        $sql = "SELECT * FROM requests WHERE userId = '".$userId."' ORDER BY status ASC, dateOfRequest DESC";
+        $date = new DateTime();
+        $date->modify("-4 weeks");
+        $expireDate = $date->format('Y-m-d');
+
+        $sql = "
+          SELECT * FROM requests 
+          WHERE userId = '".$userId."'
+          AND dateOfRequest >= '".$this->db->real_escape_string($expireDate)."'
+          ORDER BY status ASC, dateOfRequest DESC
+        ";
         $result = $this->db->query($sql);
 
         $code = new codeModel();
@@ -539,7 +713,8 @@ class requestModel extends Staple_Model
     {
         $this->load($requestId);
         $superUser = new userModel();
-        $email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
+        //$email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
+        $email = "tbartley@twinfallspubliclibrary.org";
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
         $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
@@ -558,7 +733,7 @@ class requestModel extends Staple_Model
         $msg .= "\r\n\r\nPlease login to http://devtimetracker to review.";
         $headers = "";
         $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
-        //mail($email, "New TimeTracker Request",$msg,$headers);
+        mail($email, "New TimeTracker Request",$msg,$headers);
     }
 
     function remove($requestId)
@@ -607,6 +782,41 @@ class requestModel extends Staple_Model
                     $audit->setUserId($staff['id']);
                     $audit->setAction('Request Approved');
                     $audit->setItem($user->getUsername()." approved ".$request->getCodeName()." for ".$staff['firstName']." ".$staff['lastName']." for the following dates ".$request->getStartDate()." through ".$request->getEndDate().". Request ID:".$request->getRequestId()." ");
+                    $audit->save();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    function cancel($requestId)
+    {
+        $user = new userModel();
+        $request = new requestModel();
+        $request->load($requestId);
+
+        if($user->getAuthLevel() == 500 || $user->getAuthLevel() == 900)
+        {
+            $staff = $user->getById($request->getUserId());
+            //If the current user is the supervisor of the staff request or an admin
+            if($staff['supervisorId'] == $user->getId() || $user->getAuthLevel() == 900)
+            {
+                $sql = "UPDATE requests SET status = '4', approvedById = '".$this->db->real_escape_string($user->getId())."' WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
+                if($this->db->query($sql))
+                {
+                    //Log to audit
+                    $audit = new auditModel();
+                    $audit->setUserId($staff['id']);
+                    $audit->setAction('Request Cancelled');
+                    $audit->setItem($user->getUsername()." cancelled ".$request->getCodeName()." for ".$staff['firstName']." ".$staff['lastName']." for the following dates ".$request->getStartDate()." through ".$request->getEndDate().". Request ID:".$request->getRequestId()." ");
                     $audit->save();
                     return true;
                 }

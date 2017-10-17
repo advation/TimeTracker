@@ -106,6 +106,7 @@
                                 $value = "-";
                                 foreach ($dates as $entryDate => $total)
                                 {
+
                                     $newDate = explode("-", $entryDate);
                                     $dayOfMonth = $newDate[2];
 
@@ -114,7 +115,35 @@
                                         $value = $total;
                                     }
                                 }
-                                echo $value;
+
+                                echo $value." ";
+
+                                //Check for requests on this day
+                                foreach($this->requests as $request)
+                                {
+                                    //print_r($request);
+                                    $userInfo = new userModel();
+                                    $staff = $userInfo->userInfo($request['userId']);
+                                    $firstName = $staff['firstName'];
+                                    $lastName = $staff['lastName'];
+                                    $name = $lastName.", ".$firstName;
+
+                                    if($date->format('m/d/Y') == $request['startDate'] && $name == $user)
+                                    {
+                                        $startDate = $request['startDate'];
+                                        $endDate = $request['endDate'];
+                                        $codeName = $request['codeName'];
+                                        $totalHours = $request['totalHoursRequested'];
+                                        if ($startDate == $endDate) {
+                                            $msg = "#1 $codeName request for $startDate for $totalHours hours.";
+                                        } else {
+                                            $msg = "#2 $codeName request from $startDate to $endDate for $totalHours hours.";
+                                        }
+
+                                        echo "<span data-tooltip aria-haspopup='true' class='has-tip ' title='" . $msg . "'><i class='fa fa-file'></i></span>";
+                                    }
+                                }
+
                                 echo "</td>";
 
                                 $date->modify('+1 day');
