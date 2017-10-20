@@ -351,6 +351,9 @@ class reportsController extends Staple_Controller
 
         $reports = new reportModel($year, $month);
         $this->view->report = $reports->payPeriodTotals($year, $month);
+
+        $requests = $reports->timeOffRequestsForPayPeriod($year, $month);
+        $this->view->requests = $requests;
     }
 
     public function payroll($year = null, $month =  null)

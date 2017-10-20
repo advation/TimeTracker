@@ -19,8 +19,18 @@
 </style>
 <table width="100%" style="border:0px; padding:0px; margin:0px;">
     <tr>
-        <td style="border:0px;"><h3><i class="fa fa-clock-o"></i> Total Hours: <?php echo $this->date ?></h3></td>
-        <td style="border:0px;" class="text-right"><?php echo $this->startDate ?> - <?php echo $this->endDate ?></td>
+        <td style="border:0px;">
+            <h3><i class="fa fa-clock-o"></i> Total Hours: <?php echo $this->date ?></h3>
+
+        </td>
+        <td style="border:0px;" class="text-right">
+            <br>
+            <p>
+                (-) No time entry.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                (*) Paycode other than 'Normal' was used.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                (<i class="fa fa-sticky-note"></i>) Timeoff request submitted.
+            </p>
+        </td>
     </tr>
 </table>
 <table width="100%">
@@ -66,7 +76,7 @@
         for($j=1;$j<=$this->span;$j++)
         {
             echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
-            $value = "-";
+            $value = "-&nbsp;";
             foreach ($dates as $entryDate => $total)
             {
                 $newDate = explode("-", $entryDate);
@@ -74,10 +84,42 @@
 
                 if($dayOfMonth == $date->format('d'))
                 {
-                    $value = $total;
+                    $value = $total."&nbsp;";
+                    if(count($newDate) == 4)
+                    {
+                        //Displays an icon if some of the time for this day is not a normal pay code.
+                        echo "*";
+                    }
                 }
             }
             echo $value;
+
+            //Check for requests on this day
+            foreach($this->requests as $request)
+            {
+                //print_r($request);
+                $userInfo = new userModel();
+                $staff = $userInfo->userInfo($request['userId']);
+                $firstName = $staff['firstName'];
+                $lastName = $staff['lastName'];
+                $name = $lastName.", ".$firstName;
+
+                if($date->format('m/d/Y') == $request['startDate'] && $name == $user)
+                {
+                    $startDate = $request['startDate'];
+                    $endDate = $request['endDate'];
+                    $codeName = $request['codeName'];
+                    $totalHours = $request['totalHoursRequested'];
+                    if ($startDate == $endDate) {
+                        $msg = "$codeName request for $startDate for $totalHours hours.";
+                    } else {
+                        $msg = "$codeName request from $startDate to $endDate for $totalHours hours.";
+                    }
+
+                    echo "<i class='fa fa-sticky-note'></i>";
+                }
+            }
+
             echo "</td>";
 
             $date->modify('+1 day');

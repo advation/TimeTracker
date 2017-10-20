@@ -114,6 +114,10 @@
             {
                 echo "<td><i class='fa fa-refresh'></i> Pending notification</td>";
             }
+            elseif($request['status'] == "4")
+            {
+                echo "<td><i class='fa fa-warning'></i> Cancelled</td>";
+            }
             else
             {
                 echo "<td><i class='fa fa-refresh'></i> Pending</td>";
@@ -127,6 +131,12 @@
                             <li><a class='button tiny success' href=\"".$this->link(array('requests','approve',$request['requestId']))."\" class='green'><i class='fa fa-check'></i> Approve</a></li>
                             <li><a class='button tiny alert' href=\"".$this->link(array('requests','decline',$request['requestId']))."\" class='red'><i class='fa fa-close'></i> Decline</a></li>
                         </ul>
+                    </td>";
+            }
+            elseif($request['status'] == 4)
+            {
+                echo "<td>
+                        <i class='fa fa-lock'></i> Locked
                     </td>";
             }
             else

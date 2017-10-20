@@ -1,9 +1,14 @@
 <div class="section">
     <div class="row">
-        <div class="small-6 columns">
+        <div class="small-8 columns">
             <h2><i class="fa fa-file"></i> Daily Totals <small><?php echo $this->date ?></small></h2>
+            <p>
+                (-) No time entry.<br>
+                (*) Paycode other than 'Normal' was used.<br>
+                (<i class="fa fa-sticky-note"></i>) Timeoff request submitted. Hovering over the icon for details.
+            </p>
         </div>
-        <div class="small-6 columns text-right">
+        <div class="small-4 columns text-right">
             <ul class="button-group round">
                 <li><a class="button small secondary" href="
                     <?php
@@ -33,7 +38,7 @@
             </ul>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="max-width:100%;">
         <div class="small-12 columns">
             <style>
                 table {
@@ -42,15 +47,14 @@
 
                 th {
                     border:1px solid #ccc;
-                    padding:0px;
-                    margin:0px;
-                    background-color: #eaeaea;
+
                 }
 
                 td {
                     border:1px solid #ccc;
                     padding:0px;
                     margin:0px;
+                    padding-left: 200px;
                 }
 
                 .scroll {
@@ -63,7 +67,7 @@
                 <table>
                     <thead>
                     <tr>
-                        <th style="width:150px;"></th>
+                        <th>&nbsp;</th>
                         <?php
 
                             $previousDate = explode("-",$this->previousDate);
@@ -96,27 +100,32 @@
                         {
                             $totalTime = array_sum($dates);
                             echo "<tr>";
-                            echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
+                            echo "<th class=\"headcol\" style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</th>";
 
                             $date = new DateTime();
                             $date->setDate($this->year,$this->previousMonth,26);
                             for($j=1;$j<=$this->span;$j++)
                             {
                                 echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
-                                $value = "-";
+                                $value = "-&nbsp;";
+
                                 foreach ($dates as $entryDate => $total)
                                 {
+                                        $newDate = explode("-", $entryDate);
+                                        $dayOfMonth = $newDate[2];
 
-                                    $newDate = explode("-", $entryDate);
-                                    $dayOfMonth = $newDate[2];
-
-                                    if($dayOfMonth == $date->format('d'))
-                                    {
-                                        $value = $total;
-                                    }
+                                        if($dayOfMonth == $date->format('d'))
+                                        {
+                                            $value = $total."&nbsp;";
+                                            if(count($newDate) == 4)
+                                            {
+                                                //Displays an icon if some of the time for this day is not a normal pay code.
+                                                echo "*";
+                                            }
+                                        }
                                 }
 
-                                echo $value." ";
+                                echo $value;
 
                                 //Check for requests on this day
                                 foreach($this->requests as $request)
@@ -128,22 +137,20 @@
                                     $lastName = $staff['lastName'];
                                     $name = $lastName.", ".$firstName;
 
-                                    if($date->format('m/d/Y') == $request['startDate'] && $name == $user)
+                                    if($date->format('m/d/Y') >= $request['startDate'] && $date->format('m/d/Y') <= $request['endDate'] && $name == $user)
                                     {
                                         $startDate = $request['startDate'];
                                         $endDate = $request['endDate'];
                                         $codeName = $request['codeName'];
                                         $totalHours = $request['totalHoursRequested'];
                                         if ($startDate == $endDate) {
-                                            $msg = "#1 $codeName request for $startDate for $totalHours hours.";
+                                            $msg = "$codeName request for $startDate for $totalHours hours.";
                                         } else {
-                                            $msg = "#2 $codeName request from $startDate to $endDate for $totalHours hours.";
+                                            $msg = "$codeName request from $startDate to $endDate for $totalHours hours.";
                                         }
-
-                                        echo "<span data-tooltip aria-haspopup='true' class='has-tip ' title='" . $msg . "'><i class='fa fa-file'></i></span>";
+                                        echo "<span data-tooltip aria-haspopup='true' class='has-tip ' title='" . $msg . "'><i class='fa fa-sticky-note'></i></span>";
                                     }
                                 }
-
                                 echo "</td>";
 
                                 $date->modify('+1 day');

@@ -279,6 +279,7 @@ class reportModel extends Staple_Model
 
             $setDate = 0;
             $timeWorked = 0;
+
             while($result = $query->fetch_assoc())
             {
                 $day = new DateTime();
@@ -295,9 +296,19 @@ class reportModel extends Staple_Model
                     $timeWorked = $entry['timeWorked'];
                 }
 
-                $data2[$date] = $timeWorked;
+                if($result['codeId'] != 1)
+                {
+                    $data2[$date."-1"] = $timeWorked;
+                }
+                else
+                {
+                    $data2[$date] = $timeWorked;
+                }
+
+
                 $setDate = $date;
             }
+
             $data[$userName] = $data2;
         }
         return $data;

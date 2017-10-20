@@ -306,7 +306,7 @@ class requestModel extends Staple_Model
             {
                 $sql = "
                   SELECT * FROM requests 
-                  WHERE status = '1' OR status = '2'
+                  WHERE status = '1' OR status = '2' OR status = '4'
                   AND dateOfRequest >= '".$this->db->real_escape_string($expireDate)."'
                   ORDER BY userId ASC, status ASC, dateOfRequest DESC";
             }
