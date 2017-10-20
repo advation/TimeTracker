@@ -5,7 +5,7 @@
             <p>
                 (-) No time entry.<br>
                 (*) Paycode other than 'Normal' was used.<br>
-                (<i class="fa fa-sticky-note"></i>) Timeoff request submitted. Hovering over the icon for details.
+                (<i class="fa fa-sticky-note"></i>) Approved time off request submitted. Hovering over the icon for details.
             </p>
         </div>
         <div class="small-4 columns text-right">
@@ -142,13 +142,18 @@
                                         $startDate = $request['startDate'];
                                         $endDate = $request['endDate'];
                                         $codeName = $request['codeName'];
+                                        $status = $request['status'];
                                         $totalHours = $request['totalHoursRequested'];
-                                        if ($startDate == $endDate) {
-                                            $msg = "$codeName request for $startDate for $totalHours hours.";
-                                        } else {
-                                            $msg = "$codeName request from $startDate to $endDate for $totalHours hours.";
+
+                                        if($status == 1)
+                                        {
+                                            if ($startDate == $endDate) {
+                                                $msg = "$codeName request for $startDate for $totalHours hours.";
+                                            } else {
+                                                $msg = "$codeName request from $startDate to $endDate for $totalHours hours.";
+                                            }
+                                            echo "<span data-tooltip aria-haspopup='true' class='has-tip ' title='" . $msg . "'><i class='fa fa-sticky-note'></i></span>";
                                         }
-                                        echo "<span data-tooltip aria-haspopup='true' class='has-tip ' title='" . $msg . "'><i class='fa fa-sticky-note'></i></span>";
                                     }
                                 }
                                 echo "</td>";
