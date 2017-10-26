@@ -37,10 +37,18 @@ foreach($this->fields as $field)
     }
     else
     {
-        echo "<div class='small-6 columns'>".$field."</div>";
+        if($i == 4)
+        {
+            echo "<div class='small-4 columns'><br>".$field."</div>";
+        }
+        else
+        {
+            echo "<div class='small-4 columns'>".$field."</div>";
+        }
+
     }
 
-    if($i == 3)
+    if($i == 4)
     {
         echo "<hr>";
         $i = 1;

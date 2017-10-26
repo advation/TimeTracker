@@ -53,6 +53,16 @@ class requestForLeaveDaysForm extends Staple_Form
                 }
 
                 $this->addField($outTime);
+
+                $exclude = new Staple_Form_FoundationCheckboxElement("exclude$i",'Remove this entry');
+                $exclude->setRequired();
+
+                $this->addField($exclude);
+
+            }
+            else
+            {
+
             }
             $date->modify("+1 day");
         }

@@ -167,12 +167,20 @@ class requestsController extends Staple_Controller
                 if($form->validate())
                 {
                     $data = $form->exportFormData();
+
                     unset($data['submit']);
                     unset($data['ident']);
+
+                    echo "<pre>";
+                    print_r($data);
+                    echo "</pre>";
+
+
                     $_SESSION['requestData']['daysHours'] = $data;
                     $data = $_SESSION['requestData'];
 
                     $request = new requestModel();
+
                     //Check if start or end dates already exist for a pending request for this user.
 
                     $this->view->request = $request->calculate($data);

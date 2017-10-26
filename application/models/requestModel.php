@@ -625,23 +625,37 @@ class requestModel extends Staple_Model
         $newDateTimes['totalHoursRequested'] = 0;
         for($i=0;$i<$numOfDays;$i++)
         {
-            $day = array();
-            $day['dateString'] = $dateTimes["day$i"];
-            $day['date'] = strtotime($dateTimes["day$i"]);
+            if(array_key_exists("day$i", $dateTimes))
+            {
+                if($dateTimes["exclude$i"] == 1)
+                {
+                    unset($dateTimes["day$i"]);
+                    unset($dateTimes["inTimeDay$i"]);
+                    unset($dateTimes["outTimeDay$i"]);
+                    unset($dateTimes["exclude$i"]);
+                }
 
-            $times = array();
-            $times['startTime'] = $dateTimes["inTimeDay$i"];
-            $times['endTime'] = $dateTimes["outTimeDay$i"];
+                $day = array();
+                $day['dateString'] = $dateTimes["day$i"];
+                $day['date'] = strtotime($dateTimes["day$i"]);
 
-            //Calculate hours
-            $totalHours = $this->calculateHours(strtotime($dateTimes["inTimeDay$i"]),strtotime($dateTimes["outTimeDay$i"]));
-            $day['hoursRequested'] = $totalHours;
+                $times = array();
+                $times['startTime'] = $dateTimes["inTimeDay$i"];
+                $times['endTime'] = $dateTimes["outTimeDay$i"];
 
-            //Combine arrays
-            $day['times'] = $times;
-            $newDateTimes['dateTimes'][] = $day;
+                //Calculate hours
+                $totalHours = $this->calculateHours(strtotime($dateTimes["inTimeDay$i"]),strtotime($dateTimes["outTimeDay$i"]));
+                $day['hoursRequested'] = $totalHours;
 
-            $newDateTimes['totalHoursRequested'] = $newDateTimes['totalHoursRequested'] + $totalHours;
+                //Combine arrays
+                $day['times'] = $times;
+                $newDateTimes['dateTimes'][] = $day;
+
+                if($dateTimes["exclude$i"] != 1)
+                {
+                    $newDateTimes['totalHoursRequested'] = $newDateTimes['totalHoursRequested'] + $totalHours;
+                }
+            }
         }
         $this->setRequestId($newDateTimes['requestId']);
         $this->setCode($newDateTimes['code']);
@@ -714,7 +728,7 @@ class requestModel extends Staple_Model
         $this->load($requestId);
         $superUser = new userModel();
         //$email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
-        $email = "tbartley@twinfallspubliclibrary.org";
+        $email = "aday@tfpl.org";
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
         $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
@@ -743,7 +757,7 @@ class requestModel extends Staple_Model
         $user = new userModel();
         $id = $user->getId();
         $status = $this->getStatus();
-        if($id == $uid && $status == 0)
+        if($id == $uid && $status == 0 || $status == 3)
         {
             $sql = "DELETE FROM requests WHERE requestId = '".$this->db->real_escape_string($requestId)."'";
             if($this->db->query($sql))
