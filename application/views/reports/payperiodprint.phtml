@@ -30,10 +30,15 @@
                 (*) Paycode other than 'Normal' was used.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 (<i class="fa fa-sticky-note"></i>) Approved time off request submitted.
             </p>
+            <p class="hide-for-print">
+                (<i class="fa fa-square" style="color:#e2413b;"></i>) Request for leave required.
+                (<i class="fa fa-square" style="color:#e4a030;"></i>) Request for leave without timesheet entry.
+                (<i class="fa fa-square" style="color:#f1e96d;"></i>) Request for leave with normal paycode entry.
+            </p>
         </td>
     </tr>
 </table>
-<table width="100%">
+<table width="100%" id="report">
     <thead>
     <tr>
         <th></th>
@@ -76,7 +81,7 @@
         for($j=1;$j<=$this->span;$j++)
         {
             echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
-            $value = "-";
+            $value = "-&nbsp;";
             foreach ($dates as $entryDate => $total)
             {
                 $newDate = explode("-", $entryDate);
@@ -84,15 +89,15 @@
 
                 if($dayOfMonth == $date->format('d'))
                 {
-                    $value = $total;
+                    $value = $total."&nbsp;";
                     if(count($newDate) == 4)
                     {
                         //Displays an icon if some of the time for this day is not a normal pay code.
-                        echo "*";
+                        echo "<span class=\"otherCodeTag\">*</span>";
                     }
                 }
             }
-            echo $value;
+            echo "<span class=\"valueTag\">$value</span>";
 
             //Check for requests on this day
             foreach($this->requests as $request)
@@ -103,8 +108,19 @@
                 $firstName = $staff['firstName'];
                 $lastName = $staff['lastName'];
                 $name = $lastName.", ".$firstName;
+                $requestDays = $request['dateTimes'];
 
-                if($date->format('m/d/Y') >= $request['startDate'] && $date->format('m/d/Y') <= $request['endDate'] && $name == $user)
+                $requestDates = array();
+
+                foreach($requestDays as $day)
+                {
+                    $z = new DateTime();
+                    $z->setTimestamp($day->date);
+                    $requestDates[] = $z->format("m/d/Y");
+                }
+
+                if(in_array($date->format('m/d/Y'),$requestDates) && $name == $user)
+                //if($date->format('m/d/Y') >= $request['startDate'] && $date->format('m/d/Y') <= $request['endDate'] && $name == $user)
                 {
                     $startDate = $request['startDate'];
                     $endDate = $request['endDate'];
@@ -120,7 +136,7 @@
                             $msg = "$codeName request from $startDate to $endDate for $totalHours hours.";
                         }
 
-                        echo "<i class='fa fa-sticky-note'></i>";
+                        echo "<span class='requestTag'><i class='fa fa-sticky-note'></i></span>";
                     }
                 }
             }
@@ -134,3 +150,50 @@
     ?>
     </tbody>
 </table>
+<script>
+    $(window).ready(function() {
+        $("#report").find('td').each(function() {
+            $v = $(this).html();
+            $otherCodeTag = 0;
+            $valueTag = 0;
+            $requestTag = 0;
+
+            if($otherCodeValue = $(this).find(".otherCodeTag").html() == '*')
+            {
+                $otherCodeTag = 1;
+            }
+
+            if($otherCodeValue = $(this).find(".valueTag").html() != '-&nbsp;')
+            {
+                $valueTag = 1;
+            }
+
+            //console.log($(this).find(".requestTag").html());
+            if($requestTagValue = $(this).find(".requestTag").html() == '<i class="fa fa-sticky-note"></i>')
+            {
+                $requestTag = 1;
+            }
+
+            //Highlight the cell if a not normal paycode submitted without a request for leave.
+            if($otherCodeTag == 1 && $requestTag == 0)
+            {
+                $(this).css("background-color","#e2413b");
+                $(this).css("color","white");
+            }
+
+            //Highlight the cell if a normal paycode was submitted with a request for leave.
+            if($otherCodeTag == 0 && $requestTag == 1 && $valueTag == 1)
+            {
+                $(this).css("background-color","#f1e96d");
+            }
+
+            //Highlight the cell if request for leave submitted but no time submitted
+            if($requestTag == 1 && $valueTag == 0)
+            {
+                $(this).css("background-color","#e4a030");
+            }
+
+        });
+    });
+
+</script>

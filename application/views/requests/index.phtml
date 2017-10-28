@@ -5,15 +5,16 @@
         </div>
         <div class="small-8 columns text-right">
             <ul class="button-group radius">
-                <li><a href="#" class="button success" data-reveal-id="newRequest"><i class="fa fa-plus"></i> New Request</a></li>
-                <li><a href="<?php echo $this->link(array("requests","archive")) ?>" class="button"><i class="fa fa-archive"></i> Your Archive</a></li>
+                <li><a href="#" class="button small success" data-reveal-id="newRequest"><i class="fa fa-plus"></i> New Request</a></li>
+                <li><a href="#" class="button small " data-reveal-id="policy"><i class="fa fa-file"></i> Policy</a></li>
+                <li><a href="<?php echo $this->link(array("requests","archive")) ?>" class="button small "><i class="fa fa-archive"></i> Your Archive</a></li>
                 <?php
 
                     $user = new userModel();
                     if($user->getAuthLevel() >= 500)
                     {
                         echo "
-                        <li><a href=\"".$this->link(array("requests","staffarchive"))."\" class=\"button\"><i class=\"fa fa-archive\"></i> Staff Archive</a></li>
+                        <li><a href=\"".$this->link(array("requests","staffarchive"))."\" class=\"button small \"><i class=\"fa fa-archive\"></i> Staff Archive</a></li>
                         ";
                     }
 
@@ -260,6 +261,16 @@
 
 <div id="newRequest" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
     <?php echo $this->form ?>
+    <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+<div id="policy" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h1>Request for Leave</h1>
+    <p>As per the Twin Falls Public Library Personnel Policy, paid Vacation & Sick leave are available only to full-time employees with benefits.</p>
+    <p>Part-time employees may ask for vacation or sick time off without pay & upon approval of their immediate supervisor</p>
+    <p>Vacation or Sick leave, per this policy, is to be scheduled with consent of the responsible department supervisor. They will then put this information on the "GONE CALENDAR".</p>
+    <p>Each employee is required to submit a "Request for Leave" form. Your immediate Supervisor and Director will then determine the appropriateness of the dates in accordance with scheduling.</p>
+    <p><b><u>As a courtesy to fellow employees, and for scheduling arrangements, please submit requests two weeks in advance for vacation time, leave of absence, and military leave. For sick time, notify your supervisor as soon as possible and submit a Request for Leave form.</u></b></p>
     <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 

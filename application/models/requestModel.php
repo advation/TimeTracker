@@ -627,14 +627,6 @@ class requestModel extends Staple_Model
         {
             if(array_key_exists("day$i", $dateTimes))
             {
-                if($dateTimes["exclude$i"] == 1)
-                {
-                    unset($dateTimes["day$i"]);
-                    unset($dateTimes["inTimeDay$i"]);
-                    unset($dateTimes["outTimeDay$i"]);
-                    unset($dateTimes["exclude$i"]);
-                }
-
                 $day = array();
                 $day['dateString'] = $dateTimes["day$i"];
                 $day['date'] = strtotime($dateTimes["day$i"]);
@@ -649,10 +641,10 @@ class requestModel extends Staple_Model
 
                 //Combine arrays
                 $day['times'] = $times;
-                $newDateTimes['dateTimes'][] = $day;
 
                 if($dateTimes["exclude$i"] != 1)
                 {
+                    $newDateTimes['dateTimes'][] = $day;
                     $newDateTimes['totalHoursRequested'] = $newDateTimes['totalHoursRequested'] + $totalHours;
                 }
             }

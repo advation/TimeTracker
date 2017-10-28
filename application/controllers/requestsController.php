@@ -171,11 +171,6 @@ class requestsController extends Staple_Controller
                     unset($data['submit']);
                     unset($data['ident']);
 
-                    echo "<pre>";
-                    print_r($data);
-                    echo "</pre>";
-
-
                     $_SESSION['requestData']['daysHours'] = $data;
                     $data = $_SESSION['requestData'];
 
