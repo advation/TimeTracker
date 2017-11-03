@@ -39,7 +39,6 @@
                            <th>End Date</th>
                            <th>Total Hours</th>
                            <th>Status</th>
-                           <th>Note</th>
                            <th></th>
                        </tr>
                 ";
@@ -48,7 +47,7 @@
                     echo "
                         <tr>
                             <td>
-                                    <a class='' href='".$this->link(array("requests","request",$request['requestId']))."'><i class='fa fa-file'></i> ".$request['codeName']."</a>                                
+                                <a class='' href='".$this->link(array("requests","request",$request['requestId']))."'><i class='fa fa-file'></i> ".$request['codeName']."</a>                                
                             </td>
                             <td>
                                 ".date("l",strtotime($request['dateOfRequest']))."<br>
@@ -89,10 +88,6 @@
                                 echo "<td><i class='fa fa-refresh'></i> Pending</td>";
                             }
 
-                            echo "
-                                <td><a href='#' class='viewNote'>View</a></td>
-                            ";
-
                             if($request['status'] == 0 || $request['status'] == 3)
                             {
                                 echo "<td><a href=\"".$this->link(array('requests','remove',$request['requestId']))."\" class='red'><i class='fa fa-trash'></i> Remove</a></td>";
@@ -101,15 +96,6 @@
                             {
                                 echo "<td><i class='fa fa-lock'></i> Locked</td>";
                             }
-                    echo "
-                          
-                        </tr>
-                        <tr class='note' style='display:none;'>
-                            <td colspan='8'>
-                                <b>Note:</b> ".$request['note']."
-                            </td>
-                        </tr>
-                    ";
                 }
                 echo "</table>";
             }
@@ -138,18 +124,17 @@
             if(count($this->staffRequests) > 0)
             {
                 echo "
-
-                            <table width='100%'>
-                               <tr>
-                                   <th>Staff</th>
-                                   <th>Type</th>
-                                   <th>Requested On</th>
-                                   <th>Start Date</th>
-                                   <th>End Date</th>
-                                   <th>Total Hours</th>
-                                   <th>Status</th>
-                                   <th></th>
-                               </tr>
+                    <table width='100%'>
+                       <tr>
+                           <th>Staff</th>
+                           <th>Type</th>
+                           <th>Requested On</th>
+                           <th>Start Date</th>
+                           <th>End Date</th>
+                           <th>Total Hours</th>
+                           <th>Status</th>
+                           <th></th>
+                       </tr>
                 ";
                 foreach($this->staffRequests as $request)
                 {
@@ -173,8 +158,7 @@
                             ".date("l",strtotime($request['endDate']))."<br>
                             ".date("M. jS Y",strtotime($request['endDate']))."
                         </td>
-                        <td>".$request['totalHoursRequested']."</td>
-                        
+                        <td>".$request['totalHoursRequested']."</td>   
                     ";
 
                     if($request['status'] == "0")

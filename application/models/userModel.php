@@ -245,8 +245,6 @@
 					$data[] = $result;
 				}
 				return $data;
-
-
 			}
 		}
 
@@ -279,5 +277,19 @@
 
 			}
 		}
+
+		function assignedUsers()
+        {
+            $sql = "SELECT id, username, firstName, lastName, authLevel, batchId, supervisorId, type, status FROM accounts WHERE status = 1 AND supervisorId = '".$this->db->real_escape_string($this->getId())."' ORDER BY type DESC, lastName ASC, firstName ASC";
+            if($this->db->query($sql)->num_rows > 0)
+            {
+                $query = $this->db->query($sql);
+                while($result = $query->fetch_assoc())
+                {
+                    $data[] = $result;
+                }
+                return $data;
+            }
+        }
 	}
 ?>

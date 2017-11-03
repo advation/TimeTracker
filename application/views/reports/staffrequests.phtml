@@ -1,0 +1,117 @@
+<div class="section">
+    <div class="row">
+        <div class="small-12 columns">
+            <h1><i class="fa fa-file"></i> Request for Leave Report</h1>
+        </div>
+        <div class="small-12 columns">
+            <p>This report shows the total hours of approved Requests for Leave for the selected date range.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <table width="100%">
+                <?php
+                if(count($this->report) > 0)
+                {
+                    $prevUser = "";
+                    $header = 0;
+                    foreach($this->report as $report)
+                    {
+                        if($header == 0)
+                        {
+                            echo "
+                                <tr>
+                                    <td>
+                                        <h4><a class='button radius' href='#' data-reveal-id=\"changeDateRange\"><i class='fa fa-calendar'></i> Date Range</a> ".$report['payperiod']['startDate']." to ".$report['payperiod']['endDate']."</h4>
+                                    </td>
+                                    <td>
+                                    <select>
+                                        <option value=\"0\">Select an account</option>";
+                            foreach($this->users as $user)
+                            {
+                                echo "<option value='".$user['id']."'>".$user['lastName'].", ".$user['firstName']."</option>";
+                            }
+                            echo "
+                                        </select>
+                                    </td>
+                                </tr>
+                            ";
+                            $header = 1;
+                        }
+                        if($prevUser != $report['user']['id'])
+                        {
+                            echo "
+                                <tr id='".$report['user']['id']."'>
+                                    <th colspan='2' style='background-color:#eaeaea;'><h4>".$report['user']['lastName'].", ".$report['user']['firstName']." (".ucfirst($report['user']['type'])." time)</h4></th>
+                                </tr>
+                                <tr>
+                                    <th>Request Type</th>
+                                    <th>Hours Requested</th>
+                                </tr>
+                            ";
+                        }
+
+                        $totalHours = 0;
+                        foreach($report['hours'] as $hours)
+                        {
+                            echo "
+                            <tr>
+                                <td>".$hours['codeName']."</td>
+                                <td>".$hours['total']."</td>
+                            </tr>
+                            ";
+                            $totalHours = $totalHours + $hours['total'];
+                        }
+
+                        echo "
+                            <tr>
+                                <th class='text-right'><h5>Total Time Requested</h5></th>
+                                <th><h5><b>$totalHours</b></h5></th>
+                            </tr>
+                        ";
+
+                        $prevUser = $report['user']['id'];
+                    }
+                }
+                else
+                {
+                    echo "
+                        <tr>
+                            <td colspan='2' class='text-center'>
+                                <a class='button radius' href='".$this->link(array("reports","staffrequests"))."'><i class='fa fa-chevron-left'></i> Back</a> <a class='button radius' href='#' data-reveal-id=\"changeDateRange\"><i class='fa fa-calendar'></i> Change Date Range</a> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='2' class='text-center'><i class='fa fa-warning'></i> No Requests</td>
+                        </tr>
+                    ";
+                }
+                ?>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="changeDateRange" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <?php echo $this->form ?>
+</div>
+<script>
+    $(document).ready(function() {
+
+        <?php
+
+        if($this->formError == 1)
+        {
+            echo "$('#changeDateRange').foundation('reveal','open');";
+        }
+
+        ?>
+
+        $('select').on('change', function(){
+            $('body, html').animate({
+                scrollTop: $('#' + $(this).val()).position().top
+            });
+            $('#' + $(this).val()).css("background-color","lightblue");
+        });
+    });
+
+</script>

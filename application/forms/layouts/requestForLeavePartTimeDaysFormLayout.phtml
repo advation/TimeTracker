@@ -1,0 +1,78 @@
+<div class="panel radius">
+    <h3><i class="fa fa-plus"></i> Request Form <small> Hours Requested Off</small></h3>
+    <hr>
+<p>
+    Please provide the total number of hours for each day requested.
+</p>
+
+<?php
+echo $this->formstart();
+
+if(count($this->errors) > 0)
+{
+    if( isset($this->errors[0]))
+    {
+        if($this->errors[0]['label'] == 'Date Error')
+        {
+            echo "<div class='panel alert'>";
+            foreach($this->errors as $error)
+            {
+                foreach($error['errors'] as $message)
+                {
+                    echo "<i class='fa fa-warning'></i> ".$message[0];
+                }
+            }
+            echo "</div>";
+        }
+    }
+}
+
+$i = 1;
+foreach($this->fields as $field)
+{
+
+    if($i == 1)
+    {
+        echo "<div class='row'><div class='small-12 columns'><h5>&nbsp;&nbsp;&nbsp;<b>$field->label</b></h5></div></div>";
+    }
+    else
+    {
+        if($i == 3)
+        {
+            echo "<div class='small-6 columns'><br>".$field."</div>";
+        }
+        else
+        {
+            echo "<div class='small-6 columns'>".$field."</div>";
+        }
+
+    }
+
+    if($i == 3)
+    {
+        echo "<hr>";
+        $i = 1;
+    }
+    else
+    {
+        $i++;
+    }
+}
+
+echo $this->fields['submit'];
+
+echo $this->formend();
+
+?>
+
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        $("label").click(function(event) {
+            id = $(this).prev().attr("data-id");
+            $("#hours"+id).val("0");
+        });
+    });
+</script>

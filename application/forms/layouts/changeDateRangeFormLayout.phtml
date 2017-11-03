@@ -1,0 +1,26 @@
+<?php echo $this->formstart(); ?>
+<div class="row">
+    <div class="small-12 columns text-center">
+        <h3><i class="fa fa-calendar"></i> Change Date Range</h3>
+    </div>
+    <div class="small-6 columns">
+        <?php echo $this->fields['startDate']; ?>
+    </div>
+    <div class="small-6 columns">
+        <?php echo $this->fields['endDate']; ?>
+    </div>
+    <div class="small-12 columns text-center">
+        <?php echo $this->fields['submit']; ?>
+    </div>
+</div>
+
+<?php echo $this->formend(); ?>
+<script>
+$(document).ready(function() {
+    $(function() {
+    $( ".hasDatePicker" ).datepicker({
+         showButtonPanel: true
+        });
+    });
+});
+</script>

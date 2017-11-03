@@ -47,6 +47,13 @@ class indexController extends Staple_Controller
 		$report = new weeklyReportModel();
 
 		$this->view->week = $report->getWeekWorked($this->userId, $week, $year);
+
+
+        $requests = new requestReportModel();
+        echo "<pre>";
+        print_r($requests->userUpComingRequests());
+        echo "</pre>";
+
 	}
 
 	public function read($id = null)

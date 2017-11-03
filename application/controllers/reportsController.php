@@ -572,4 +572,82 @@ class reportsController extends Staple_Controller
             header("location: ".$this->_link(array('reports',$year,$month,$userId))."");
         }
     }
+
+    public function requests()
+    {
+        $user = new userModel();
+        if($user->getAuthLevel() == 900)
+        {
+            $form = new changeDateRangeForm();
+            $report = new requestReportModel();
+
+            if ($form->wasSubmitted())
+            {
+                $form->addData($_POST);
+                if ($form->validate())
+                {
+                    $data = $form->exportFormData();
+                    $startDate = $data['startDate'];
+                    $endDate = $data['endDate'];
+                    $this->view->report = $report->dateRangeRequests($startDate, $endDate);
+                    $form = new changeDateRangeForm();
+                    $this->view->form = $form;
+                }
+                else
+                {
+                    $this->view->form = $form;
+                    $this->view->formError = 1;
+                    $this->view->report = $report->currentPayperiodRequests();
+                }
+            }
+            else
+            {
+                $this->view->form = $form;
+                $this->view->report = $report->currentPayperiodRequests();
+            }
+
+            $users = new userModel();
+            $this->view->users = $users->listActive();
+        }
+        else
+        {
+            header("location: ".$this->_link(array('reports','staffrequests'))."");
+        }
+    }
+
+    public function staffrequests()
+    {
+        $report = new requestReportModel();
+
+        $form = new changeDateRangeForm();
+        $form->setAction($this->_link(array('reports','staffrequests')));
+
+        if ($form->wasSubmitted())
+        {
+            $form->addData($_POST);
+            if ($form->validate())
+            {
+                $data = $form->exportFormData();
+                $startDate = $data['startDate'];
+                $endDate = $data['endDate'];
+                $this->view->report = $report->staffRequests($startDate, $endDate);
+                $form = new changeDateRangeForm();
+                $form->setAction($this->_link(array('reports','staffrequests')));
+                $this->view->form = $form;
+            }
+            else
+            {
+                $this->view->form = $form;
+                $this->view->formError = 1;
+                $this->view->report = $report->staffRequests();
+            }
+        }
+        else
+        {
+            $this->view->form = $form;
+            $this->view->report = $report->staffRequests();
+        }
+        $users = new userModel();
+        $this->view->users = $users->assignedUsers();
+    }
 }

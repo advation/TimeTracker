@@ -30,8 +30,8 @@
                                             <td><b>To:</b> ".date("l, F jS Y",strtotime($this->request['endDate']))."</td>
                                         </tr>
                                         <tr>
-                                            <td><b>Total Requested ".$this->request['codeName']." Hours</b></td>
-                                            <td>".$this->request['totalHoursRequested']."</td>
+                                            <td><b>Type:</b> ".$this->request['codeName']."</b></td>
+                                            <td><b>Hours:</b> ".$this->request['totalHoursRequested']."</td>
                                         </tr>
                                         <tr>
                                             <td colspan='2'>
@@ -48,34 +48,68 @@
                                         <tr>
                                             <th colspan='4' class='text-center'>
                                                 <h5><b>Times</b></h5>
-                                                <p>All hours are calculated to the nearest half hour.</p>
+                                                ";
+                                                if($this->userType == "full")
+                                                {
+                                                    echo "<p>All hours are calculated to the nearest half hour.</p>";
+                                                }
+                                                echo "
                                             </th>
                                         </tr>
+                                        ";
+
+                                    if($this->userType == "full")
+                                    {
+                                        echo "
                                         <tr>
                                                <th>Date</th>
                                                <th>Start Time</th>
                                                <th>End Time</th>
                                                <th>Hours Requested</th>
                                         </tr>
-                                    ";
-                                    foreach($this->request['dateTimes'] as $day)
-                                    {
-                                        $name = $day['dateString'];
-                                        $start = $day['times']['startTime'];
-                                        $end = $day['times']['endTime'];
-                                        $hours = $day['hoursRequested'];
-                                        echo "
-                                            <tr>
-                                                <td>$name</td>
-                                                <td>$start</td>
-                                                <td>$end</td>
-                                                <td>$hours</td>
-                                            </tr>
                                         ";
                                     }
-                                    echo "        
-                                            </table>
+                                    else
+                                    {
+                                        echo "
+                                        <tr>
+                                               <th>Date</th>
+                                               <th>Hours Requested</th>
+                                        </tr>
                                         ";
+                                    }
+
+                                    if(count($this->request['dateTimes']) > 0)
+                                    {
+                                        foreach($this->request['dateTimes'] as $day)
+                                        {
+                                            $name = $day['dateString'];
+                                            $hours = $day['hoursRequested'];
+                                            if($this->userType == "full")
+                                            {
+                                                $start = $day['times']['startTime'];
+                                                $end = $day['times']['endTime'];
+                                                echo "
+                                                    <tr>
+                                                        <td>$name</td>
+                                                        <td>$start</td>
+                                                        <td>$end</td>
+                                                        <td>$hours</td>
+                                                    </tr>
+                                                ";
+                                            }
+                                            else
+                                            {
+                                                echo "
+                                                    <tr>
+                                                        <td>$name</td>
+                                                        <td>$hours</td>
+                                                    </tr>
+                                                ";
+                                            }
+                                        }
+                                    }
+                                    echo "</table>";
                                 echo"</div>
                             </div>
                             <div class='row'>

@@ -144,6 +144,7 @@ class requestsController extends Staple_Controller
                 $this->view->dateTime = $request->getDateTimes();
                 $this->view->superNote = $request->getSuperNote();
                 $this->view->error = 0;
+                $this->view->userType = $user->getType();
             }
             else
             {
@@ -158,7 +159,19 @@ class requestsController extends Staple_Controller
 
     public function days()
     {
-        $form = new requestForLeaveDaysForm();
+        //Get user type
+        $user = new userModel();
+        $type = $user->getType();
+
+        if($type == "full")
+        {
+            $form = new requestForLeaveDaysForm();
+        }
+        else
+        {
+            $form = new requestForLeavePartTimeDaysForm();
+        }
+
         if(isset($_SESSION['startDate']) && isset($_SESSION['endDate']))
         {
             if($form->wasSubmitted())
@@ -167,21 +180,23 @@ class requestsController extends Staple_Controller
                 if($form->validate())
                 {
                     $data = $form->exportFormData();
-
                     unset($data['submit']);
                     unset($data['ident']);
-
                     $_SESSION['requestData']['daysHours'] = $data;
                     $data = $_SESSION['requestData'];
-
                     $request = new requestModel();
-
-                    //Check if start or end dates already exist for a pending request for this user.
-
-                    $this->view->request = $request->calculate($data);
+                    if($type == "full")
+                    {
+                        $this->view->request = $request->calculate($data);
+                    }
+                    else
+                    {
+                        $this->view->request = $request->calculatePartTime($data);
+                    }
 
                     unset($_SESSION['startDate']);
                     unset($_SESSION['endDate']);
+                    $this->view->userType = $type;
                 }
                 else
                 {

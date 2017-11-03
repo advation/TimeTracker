@@ -283,7 +283,7 @@ class requestModel extends Staple_Model
         $this->setApprovedByName($superFirst." ".$superLast);
         $this->setUserId($result['userId']);
         $code = new codeModel();
-        $code->load($result['code']);
+        $code->loadRequestCode($result['code']);
         $this->setCodeName($code->getName());
         $this->setCode($result['code']);
         $this->setDateOfRequest($result['dateOfRequest']);
@@ -606,6 +606,59 @@ class requestModel extends Staple_Model
         return $data;
     }
 
+    function calculatePartTime($data)
+    {
+        unset($data['daysHours']['submit']);
+        unset($data['daysHours']['ident']);
+
+        $user = new userModel();
+        //Organize dates and times into a new array
+        $numOfDays = count($data['daysHours'])/3;
+        $dateTimes = $data['daysHours'];
+        $newDateTimes = array();
+
+        $code = new codeModel();
+        $code->loadRequestCode($data['code']);
+        $newDateTimes['code'] = $data['code'];
+        $newDateTimes['codeName'] = $code->getName();
+        $newDateTimes['requestId'] = sha1($user->getId()."".$data['code']."".$numOfDays."".time());
+        $newDateTimes['note'] = $data['note'];
+        $newDateTimes['startDate'] = $data['startDate'];
+        $newDateTimes['endDate'] = $data['endDate'];
+        $newDateTimes['totalHoursRequested'] = 0;
+
+        for($i=0;$i<$numOfDays;$i++)
+        {
+            if(array_key_exists("day$i", $dateTimes))
+            {
+                $day = array();
+                $day['dateString'] = $dateTimes["day$i"];
+                $day['date'] = strtotime($dateTimes["day$i"]);
+                $day['hoursRequested'] = $dateTimes["hours$i"];
+
+                if($dateTimes["exclude$i"] != 1)
+                {
+                    $newDateTimes['dateTimes'][] = $day;
+                    $newDateTimes['totalHoursRequested'] = $newDateTimes['totalHoursRequested'] + $dateTimes["hours$i"];
+                }
+            }
+        }
+        $this->setRequestId($newDateTimes['requestId']);
+        $this->setCode($newDateTimes['code']);
+        $this->setCodeName($newDateTimes['codeName']);
+        $this->setUserId($user->getId());
+        $this->setStartDate($newDateTimes['startDate']);
+        $this->setEndDate($newDateTimes['endDate']);
+        $this->setDateTimes(json_encode($newDateTimes['dateTimes']));
+        $this->setNote($newDateTimes['note']);
+        $this->setTotalHoursRequested($newDateTimes['totalHoursRequested']);
+        $this->setDateOfRequest(date('Y-m-d'));
+        $this->setStatus(3);
+        $this->save();
+
+        return $newDateTimes;
+    }
+
     function calculate($data)
     {
         $user = new userModel();
@@ -724,7 +777,8 @@ class requestModel extends Staple_Model
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
         $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
-        $msg .= "Code: ".$this->codeName."\r\n";
+        $codeName = $this->codeName;
+        $msg .= "Code: ".$codeName."\r\n";
 
         if($this->startDate == $this->endDate)
         {
@@ -736,7 +790,7 @@ class requestModel extends Staple_Model
         }
 
         $msg .= "\r\nTotal Hours Requested: ".$this->totalHoursRequested;
-        $msg .= "\r\n\r\nPlease login to http://devtimetracker to review.";
+        $msg .= "\r\n\r\nPlease login to http://timetracker to review.";
         $headers = "";
         $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
         mail($email, "New TimeTracker Request",$msg,$headers);

@@ -384,6 +384,16 @@ class reportModel extends Staple_Model
         return $data;
     }
 
+    function payPeriodRequests($year, $month)
+    {
+
+    }
+
+    function yearlyRequests($year)
+    {
+
+    }
+
     /*
     function payroll($year, $month)
     {

@@ -43,7 +43,7 @@
             }
             elseif($this->status == "3")
             {
-                echo "Pending notification";
+                echo "Draft";
             }
             elseif($this->status == "4")
             {
@@ -89,25 +89,57 @@
         <div class="small-12 columns">
             <b>Request Details</b><br>
             <table width="100%">
-                <tr>
-                    <th>Date</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Hours Requested</th>
-                </tr>
+
+                <?php
+
+                if($this->userType == "full")
+                {
+                    echo "
+                    <tr>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Hours Requested</th>
+                    </tr>
+                    ";
+                }
+                else
+                {
+                    echo "
+                    <tr>
+                        <th>Date</th>
+                        <th>Hours Requested</th>
+                    </tr>
+                    ";
+                }
+
+                ?>
             <?php
                 if(count($this->dateTime) > 0)
                 {
                     foreach($this->dateTime as $date)
                     {
-                        echo "
+                        if($this->userType == "full")
+                        {
+                            echo "
+                            <tr>
+                                <td>".$date->dateString."</td>
+                                <td>".$date->times->startTime."</td>
+                                <td>".$date->times->endTime."</td>
+                                <td>".$date->hoursRequested."</td>
+                            </tr>
+                            ";
+                        }
+                        else
+                        {
+                            echo "
                         <tr>
                             <td>".$date->dateString."</td>
-                            <td>".$date->times->startTime."</td>
-                            <td>".$date->times->endTime."</td>
                             <td>".$date->hoursRequested."</td>
                         </tr>
                         ";
+                        }
+
                     }
                 }
 
