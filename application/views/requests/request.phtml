@@ -4,7 +4,23 @@
                 <h1><i class="fa fa-file"></i> Request Details</h1>
         </div>
         <div class="small-6 columns text-right">
-            <a class="button radius" href="<?php echo $_SERVER['HTTP_REFERER'] ?>"><i class="fa fa-arrow-left"></i> Back</a>
+            <?php
+
+            if(isset($_SERVER['HTTP_REFERER']))
+            {
+                echo "
+                <a class=\"button radius\" href=\"".$_SERVER['HTTP_REFERER']."\"><i class=\"fa fa-arrow-left\"></i> Back</a>
+                ";
+            }
+            else
+            {
+                echo "
+                <a class=\"button radius\" href=\"".$this->link(array('requests'))."\"><i class=\"fa fa-arrow-left\"></i> Back</a>
+                ";
+            }
+
+            ?>
+
         </div>
     </div>
     <div class="row">
