@@ -296,21 +296,22 @@ class reportModel extends Staple_Model
                     $timeWorked = $entry['timeWorked'];
                 }
 
-                if($result['codeId'] != 1)
-                {
-                    $data2[$date."-1"] = $timeWorked;
-                }
-                else
+                //Check for the following time codes: Normal(1), Holiday(4), Holiday Worked(10). These codes do not require a request for leave.
+                if($result['codeId'] == 1 || $result['codeId'] == 4 || $result['codeId'] == 10)
                 {
                     $data2[$date] = $timeWorked;
                 }
-
+                else
+                {
+                    $data2[$date."-1"] = $timeWorked;
+                }
 
                 $setDate = $date;
             }
 
             $data[$userName] = $data2;
         }
+
         return $data;
     }
 
