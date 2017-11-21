@@ -37,28 +37,33 @@ class requestReportModel extends Staple_Model
 
         if($userId == null)
         {
-            foreach($user->assignedUsers() as $user)
+            if(count($user->assignedUsers()) > 0)
             {
-                $sql = "SELECT code, SUM(totalHoursRequested) as totalHours FROM requests WHERE startDate BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND userId = '" . $user['id'] . "' AND status = '1' GROUP BY code ASC";
+                foreach($user->assignedUsers() as $user)
+                {
+                    $sql = "SELECT code, SUM(totalHoursRequested) as totalHours FROM requests WHERE startDate BETWEEN '" . $startDate . "' AND '" . $endDate . "' AND userId = '" . $user['id'] . "' AND status = '1' GROUP BY code ASC";
 
-                $query = $this->db->query($sql);
-                $userInfo = array();
+                    $query = $this->db->query($sql);
+                    $userInfo = array();
 
-                if ($query->num_rows > 0) {
-                    $userInfo['user'] = $user;
+                    if ($query->num_rows > 0)
+                    {
+                        $userInfo['user'] = $user;
 
-                    while ($row = $query->fetch_assoc()) {
-                        $codeArray = array();
-                        $code = new codeModel();
-                        $code->loadRequestCode($row['code']);
-                        $codeArray['code'] = $row['code'];
-                        $codeArray['codeName'] = $code->getName();
-                        $codeArray['total'] = $row['totalHours'];
-                        $userInfo['hours'][] = $codeArray;
-                        $userInfo['payperiod']['startDate'] = $startDate;
-                        $userInfo['payperiod']['endDate'] = $endDate;
+                        while ($row = $query->fetch_assoc())
+                        {
+                            $codeArray = array();
+                            $code = new codeModel();
+                            $code->loadRequestCode($row['code']);
+                            $codeArray['code'] = $row['code'];
+                            $codeArray['codeName'] = $code->getName();
+                            $codeArray['total'] = $row['totalHours'];
+                            $userInfo['hours'][] = $codeArray;
+                            $userInfo['payperiod']['startDate'] = $startDate;
+                            $userInfo['payperiod']['endDate'] = $endDate;
+                        }
+                        $data[] = $userInfo;
                     }
-                    $data[] = $userInfo;
                 }
             }
         }
