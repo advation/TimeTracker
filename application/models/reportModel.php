@@ -314,7 +314,7 @@ class reportModel extends Staple_Model
                 //Check for the following time codes: Normal(1), Holiday(4), Holiday Worked(10). These codes do not require a request for leave.
                 if($codeFlag == 1)
                 {
-                    $data2[$date] = "*".$timeWorked;
+                    $data2[$date] = $timeWorked."*";
                 }
                 else
                 {

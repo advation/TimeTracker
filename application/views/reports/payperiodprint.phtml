@@ -89,12 +89,16 @@
 
                 if($dayOfMonth == $date->format('d'))
                 {
-                    $value = $total."&nbsp;";
-                    if(count($newDate) == 4)
+                    //Displays an icon if some of the time for this day is not a normal pay code.
+                    $pos = strpos($total, '*');
+                    if($pos !== False)
                     {
-                        //Displays an icon if some of the time for this day is not a normal pay code.
+
                         echo "<span class=\"otherCodeTag\">*</span>";
                     }
+
+                    $value = str_replace("*","",$total);
+                    $value = $value."&nbsp;";
                 }
             }
             echo "<span class=\"valueTag\">$value</span>";
