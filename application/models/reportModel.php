@@ -279,7 +279,9 @@ class reportModel extends Staple_Model
 
             $setDate = 0;
             $timeWorked = 0;
+            $codeFlag = 0;
 
+            $i = 1;
             while($result = $query->fetch_assoc())
             {
                 $day = new DateTime();
@@ -296,17 +298,31 @@ class reportModel extends Staple_Model
                     $timeWorked = $entry['timeWorked'];
                 }
 
-                //Check for the following time codes: Normal(1), Holiday(4), Holiday Worked(10). These codes do not require a request for leave.
-                if($result['codeId'] == 1 || $result['codeId'] == 4 || $result['codeId'] == 10)
+                //Set codeFlag if code other then Normal (1), Holiday(4), or Holiday Worked(10) was used.
+                if($date == $setDate)
                 {
-                    $data2[$date] = $timeWorked;
+                    if($result['codeId'] != 1 && $result['codeId'] != 4 && $result['codeId'] != 10)
+                    {
+                        $codeFlag = 1;
+                    }
                 }
                 else
                 {
-                    $data2[$date."-1"] = $timeWorked;
+                    $codeFlag = 0;
+                }
+
+                //Check for the following time codes: Normal(1), Holiday(4), Holiday Worked(10). These codes do not require a request for leave.
+                if($codeFlag == 1)
+                {
+                    $data2[$date] = "*".$timeWorked;
+                }
+                else
+                {
+                    $data2[$date] = $timeWorked;
                 }
 
                 $setDate = $date;
+                $i++;
             }
 
             $data[$userName] = $data2;
