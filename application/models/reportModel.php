@@ -308,6 +308,10 @@ class reportModel extends Staple_Model
                 {
                     $codeFlag = 1;
                 }
+                else
+                {
+                    $codeFlag = 0;
+                }
 
                 /*
                 }
