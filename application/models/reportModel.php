@@ -299,17 +299,24 @@ class reportModel extends Staple_Model
                 }
 
                 //Set codeFlag if code other then Normal (1), Holiday(4), or Holiday Worked(10) was used.
+                /*
                 if($date == $setDate)
                 {
-                    if($result['codeId'] != 1 && $result['codeId'] != 4 && $result['codeId'] != 10)
-                    {
-                        $codeFlag = 1;
-                    }
+                */
+
+                if($result['codeId'] != 1 && $result['codeId'] != 4 && $result['codeId'] != 10)
+                {
+                    $codeFlag = 1;
+                }
+
+                /*
                 }
                 else
                 {
                     $codeFlag = 0;
                 }
+                */
+                //}
 
                 //Check for the following time codes: Normal(1), Holiday(4), Holiday Worked(10). These codes do not require a request for leave.
                 if($codeFlag == 1)
