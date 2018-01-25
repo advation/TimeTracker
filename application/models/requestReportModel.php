@@ -183,7 +183,25 @@ class requestReportModel extends Staple_Model
 
         foreach($users as $user)
         {
-            $sql = "SELECT code, SUM(totalHoursRequested) as totalHours FROM requests WHERE startDate BETWEEN '".$startDate."' AND '".$endDate."' AND userId = '".$user['id']."' AND status = '1' GROUP BY code ASC";
+            /*$sql = "
+            SELECT code, SUM(totalHoursRequested) as totalHours FROM requests 
+            WHERE startDate 
+            BETWEEN '".$startDate."' 
+            AND '".$endDate."' 
+            AND userId = '".$user['id']."' 
+            AND status = '1' 
+            GROUP BY code ASC";*/
+
+            $sql = "
+            SELECT code, SUM(totalHoursRequested) as totalHours FROM requests 
+            WHERE STR_TO_DATE(startDate, '%m/%d/%Y') 
+            BETWEEN STR_TO_DATE('$startDate', '%m/%d/%Y')
+            AND STR_TO_DATE('$endDate', '%m/%d/%Y')
+            AND userId = '".$user['id']."' 
+            AND status = '1' 
+            GROUP BY code ASC
+            ";
+
             $query  = $this->db->query($sql);
             $userInfo = array();
 

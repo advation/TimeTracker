@@ -92,6 +92,7 @@
 
                                 $date->modify('+1 day');
                             }
+
                         ?>
                     </tr>
                     </thead>
@@ -105,7 +106,15 @@
                             echo "<th class=\"headcol\" style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</th>";
 
                             $date = new DateTime();
-                            $date->setDate($this->year,$this->previousMonth,26);
+
+                            if($this->month == "01")
+                            {
+                                $date->setDate($this->previousYear,$this->previousMonth,26);
+                            }
+                            else
+                            {
+                                $date->setDate($this->year,$this->previousMonth,26);
+                            }
 
                             for($j=1;$j<=$this->span;$j++)
                             {

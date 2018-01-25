@@ -277,12 +277,13 @@ class reportsController extends Staple_Controller
 
         $span = $interval->days;
         $this->view->span = $span;
-
         $this->view->date = $date->format("F Y");
 
         $date = new dateTime();
         $date->setDate($year, $month, 25);
+
         $this->view->currentDate = $date->format('Y-m-d');
+
         $this->view->previousDate = $date->modify('-1 month +1 day')->format('Y-m-d');
 
         $reports = new reportModel($year, $month);
@@ -589,6 +590,7 @@ class reportsController extends Staple_Controller
                     $data = $form->exportFormData();
                     $startDate = $data['startDate'];
                     $endDate = $data['endDate'];
+
                     $this->view->report = $report->dateRangeRequests($startDate, $endDate);
                     $form = new changeDateRangeForm();
                     $this->view->form = $form;

@@ -262,9 +262,13 @@ class reportModel extends Staple_Model
         $date->setDate($year,$month,26);
         $date->modify('-1 month');
         $startDate = $date->format('U');
+        //echo $date->format('Y-m-d h:i:s')."<br>";
+
+
         $date->modify('+1 month -1 day');
         $date->setTime(23,59,59);
         $endDate = $date->format('U');
+        //echo $date->format('Y-m-d h:i:s')."<br>";
 
         foreach($accounts as $account)
         {
@@ -381,7 +385,14 @@ class reportModel extends Staple_Model
         $startDate = $date->format('m/d/Y');
         $endDate = $date->modify('+1 month -1 day')->setTime(23,59,59)->format('m/d/Y');
 
-        $sql = "SELECT * FROM requests WHERE startDate BETWEEN '$startDate' AND '$endDate'";
+        //$sql = "SELECT * FROM requests WHERE startDate BETWEEN '$startDate' AND '$endDate'";
+
+        $sql = "
+        SELECT * FROM requests 
+        WHERE STR_TO_DATE(startDate, '%m/%d/%Y') 
+        BETWEEN STR_TO_DATE('$startDate', '%m/%d/%Y')
+        AND STR_TO_DATE('$endDate', '%m/%d/%Y')
+        ";
 
         $result = $this->db->query($sql);
         $i = 0;
@@ -389,6 +400,7 @@ class reportModel extends Staple_Model
         $data = array();
         while($row = $result->fetch_assoc())
         {
+
             $code->loadRequestCode($row['code']);
             $data[$i]['id'] = $row['id'];
             $data[$i]['userId'] = $row['userId'];
@@ -409,6 +421,7 @@ class reportModel extends Staple_Model
             $data[$i]['superNote'] = $row['superNote'];
             $i++;
         }
+
         return $data;
     }
 

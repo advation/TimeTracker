@@ -77,7 +77,16 @@
         echo "<td style='border-bottom:1px solid #ccc;'><b>$user</b><br>Total: $totalTime</td>";
 
         $date = new DateTime();
-        $date->setDate($this->year,$this->previousMonth,26);
+
+        if($this->month == "01")
+        {
+            $date->setDate($this->previousYear,$this->previousMonth,26);
+        }
+        else
+        {
+            $date->setDate($this->year,$this->previousMonth,26);
+        }
+
         for($j=1;$j<=$this->span;$j++)
         {
             echo "<td class='text-center' style='border-bottom:1px solid #ccc;'>";
