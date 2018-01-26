@@ -772,8 +772,8 @@ class requestModel extends Staple_Model
     {
         $this->load($requestId);
         $superUser = new userModel();
-        //$email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
-        $email = "aday@tfpl.org";
+        $email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
+        //$email = "aday@tfpl.org";
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
         $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
