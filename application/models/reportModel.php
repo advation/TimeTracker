@@ -302,13 +302,9 @@ class reportModel extends Staple_Model
                     $timeWorked = $entry['timeWorked'];
                 }
 
-                //Set codeFlag if code other then Normal (1), Holiday(4), or Holiday Worked(10) was used.
-                /*
-                if($date == $setDate)
-                {
-                */
+                //Set codeFlag if code other then Normal (1), Holiday(4), or Holiday Worked(10), or Overtime(11) was used.
 
-                if($result['codeId'] != 1 && $result['codeId'] != 4 && $result['codeId'] != 10)
+                if($result['codeId'] != 1 && $result['codeId'] != 4 && $result['codeId'] != 10 && $result['codeId'] != 11)
                 {
                     $codeFlag = 1;
                 }
