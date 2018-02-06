@@ -26,11 +26,17 @@
                         ";
 
                     $previousName = "";
+                    $z = 0;
                     foreach($this->requests as $request)
                     {
                         if($request['firstName']." ".$request['lastName'] != $previousName)
-                        echo "<option value='".$request['firstName']."".$request['lastName']."'>".$request['firstName']." ".$request['lastName']."</option>";
-                        $previousName = $request['firstName']." ".$request['lastName'];
+                        {
+                            $idName = $request['firstName']."".$request['lastName']."$z";
+                            $idName = str_replace(" ","",$idName);
+                            echo "<option value='".$idName."'>".$request['firstName']." ".$request['lastName']."</option>";
+                            $previousName = $request['firstName']." ".$request['lastName'];
+                            $z++;
+                        }
                     }
                 echo "</select>
                 </div>
@@ -43,15 +49,19 @@
         <table width='100%'>
         ";
         $lastRequestName = "";
+        $z = 0;
+
         foreach($this->requests as $request)
         {
             if($request['firstName']." ".$request['lastName'] != $lastRequestName)
             {
+                $idName = $request['firstName']."".$request['lastName']."$z";
+                $idName = str_replace(" ","",$idName);
                 echo "
                     
                     <tr>
                         <td colspan='6' class='text-center' style='background-color:#999;'>
-                            <b><h5 style='color:#fff;' id=\"".$request['firstName']."".$request['lastName']."\">".$request['firstName']." ".$request['lastName']."</h5></b>
+                            <b><h5 style='color:#fff;' id=\"".$idName."\">".$request['firstName']." ".$request['lastName']."</h5></b>
                         </td>
                     </tr>   
                     <tr>
@@ -63,6 +73,7 @@
                        <th>Status</th>
                    </tr> 
                 ";
+                $z++;
             }
             echo "
             <tr>
