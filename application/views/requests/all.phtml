@@ -40,9 +40,14 @@
                     $previousName = "";
                     foreach($this->requests as $request)
                     {
+                        $idName = $request['firstName']." ".$request['lastName'];
+                        $idName = str_replace(" ","",$idName);
+
                         if($request['firstName']." ".$request['lastName'] != $previousName)
-                        echo "<option value='".$request['firstName']."".$request['lastName']."'>".$request['firstName']." ".$request['lastName']."</option>";
-                        $previousName = $request['firstName']." ".$request['lastName'];
+                        {
+                            echo "<option value='".$idName."'>".$request['firstName']." ".$request['lastName']."</option>";
+                            $previousName = $request['firstName']." ".$request['lastName'];
+                        }
                     }
                 echo "</select>
                 </div>
@@ -59,11 +64,13 @@
         {
             if($request['firstName']." ".$request['lastName'] != $lastRequestName)
             {
+                $idName = $request['firstName']." ".$request['lastName'];
+                $idName = str_replace(" ","",$idName);
                 echo "
                     
                     <tr>
                         <td colspan='7' class='text-center' style='background-color:#999;'>
-                            <b><h5 style='color:#fff;' id=\"".$request['firstName']."".$request['lastName']."\">".$request['firstName']." ".$request['lastName']."</h5></b>
+                            <b><h5 style='color:#fff;' id=\"".$idName."\">".$request['firstName']." ".$request['lastName']."</h5></b>
                         </td>
                     </tr>   
                     <tr>
