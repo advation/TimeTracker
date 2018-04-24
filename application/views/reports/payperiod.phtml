@@ -155,11 +155,18 @@
 
                                     $requestDates = array();
 
-                                    foreach($requestDays as $day)
+                                    if(count($requestDays) > 0)
                                     {
-                                        $z = new DateTime();
-                                        $z->setTimestamp($day->date);
-                                        $requestDates[] = $z->format("m/d/Y");
+                                        foreach($requestDays as $day)
+                                        {
+                                            $z = new DateTime();
+                                            $z->setTimestamp($day->date);
+                                            $requestDates[] = $z->format("m/d/Y");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        echo "<br>Error-Request-ID:".$request['id']."<br>";
                                     }
 
                                     if(in_array($date->format('m/d/Y'),$requestDates) && $name == $user)

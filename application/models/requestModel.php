@@ -773,10 +773,10 @@ class requestModel extends Staple_Model
         $this->load($requestId);
         $superUser = new userModel();
         $email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
-        //$email = "aday@tfpl.org";
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
-        $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
+        $msg = "TEST REQUEST - THIS WILL NOT SHOW IN TIMETRACKER.\r\n";
+        $msg .= $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
         $codeName = $this->codeName;
         $msg .= "Code: ".$codeName."\r\n";
 
@@ -793,7 +793,9 @@ class requestModel extends Staple_Model
         $msg .= "\r\n\r\nPlease login to http://timetracker to review.";
         $headers = "";
         $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
-        mail($email, "New TimeTracker Request",$msg,$headers);
+
+        mail($email, "[TEST] New TimeTracker Request",$msg,$headers);
+        //    mail("aday@tfpl.org", "[TEST] New TimeTracker Request",$msg,$headers);
     }
 
     function remove($requestId)
