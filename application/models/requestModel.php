@@ -793,7 +793,7 @@ class requestModel extends Staple_Model
         $headers = "";
         $headers .= "From: TFPL TimeTracker <noreply@tfpl.org> \r\n";
 
-        mail($email, "[TEST] New TimeTracker Request",$msg,$headers);
+        mail($email, "New TimeTracker Request",$msg,$headers);
         //    mail("aday@tfpl.org", "[TEST] New TimeTracker Request",$msg,$headers);
     }
 
