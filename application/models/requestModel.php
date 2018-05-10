@@ -775,8 +775,7 @@ class requestModel extends Staple_Model
         $email = $superUser->userSupervisor()."@twinfallspubliclibrary.org";
         $user = new userModel();
         $userInfo = $user->userInfo($this->userId);
-        $msg = "TEST REQUEST - THIS WILL NOT SHOW IN TIMETRACKER.\r\n";
-        $msg .= $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
+        $msg = $userInfo['firstName']." ".$userInfo['lastName']." has requested time off for the following:\r\n\r\n";
         $codeName = $this->codeName;
         $msg .= "Code: ".$codeName."\r\n";
 
