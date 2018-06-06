@@ -7,7 +7,11 @@ if(count($this->messages->systemMessages) > 0)
                     <div class=\"small-12 columns\"><br>";
     foreach($this->messages->systemMessages as $message)
     {
-        echo "<p><i class='fa fa-warning'></i> ".$message['message']."</p>";
+        $newMessage = str_replace("\\\\r\\\\n"," ", $message['message']);
+        $newMessage = str_replace("\\r\\n"," ", $newMessage);
+        $newMessage = str_replace("\\","", $newMessage);
+
+        echo "<p><i class='fa fa-warning'></i> $newMessage</p>";
     }
     echo "
                     </div>
