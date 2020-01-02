@@ -34,6 +34,7 @@ class requestForLeavePartTimeDaysForm extends Staple_Form
                     ->addFilter(new Staple_Form_Filter_Trim())
                     ->addClass("hours")
                     ->addValidator(new Staple_Form_Validate_Numeric());
+                    //->addValidator(new Staple_Form_Validate_Float());
 
                 $this->addField($hours);
 
