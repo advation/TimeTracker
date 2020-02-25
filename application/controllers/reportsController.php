@@ -590,7 +590,6 @@ class reportsController extends Staple_Controller
                     $data = $form->exportFormData();
                     $startDate = $data['startDate'];
                     $endDate = $data['endDate'];
-
                     $this->view->report = $report->dateRangeRequests($startDate, $endDate);
                     $form = new changeDateRangeForm();
                     $this->view->form = $form;
